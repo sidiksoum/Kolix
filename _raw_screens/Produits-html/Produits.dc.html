@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Kolix — Produits</title>
+<script src="./vendor/react.js"></script>
+<script src="./vendor/react-dom.js"></script>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#5A3BD8}a:hover{color:#3F25A8}
+</style>
+</helmet>
+<div style="font-family: 'Plus Jakarta Sans', 'Helvetica Neue', sans-serif; color: #16131F; background: #F7F5FE; min-height: 100vh; display: flex; flex-wrap: wrap">
+
+<nav aria-label="Navigation principale" style="flex: 1 1 240px; max-width: 100%; background: {{side}}; color: #FFFFFF; padding: 26px 16px; box-sizing: border-box; display: flex; flex-direction: column; gap: 22px">
+<div style="display: flex; align-items: center; gap: 10px; padding-left: 8px">
+<span style="width: 40px; height: 40px; border-radius: 12px; background: #FFFFFF; color: {{side}}; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 800">K</span>
+<span style="display: flex; flex-direction: column"><span style="font-size: 26px; font-weight: 800; letter-spacing: -0.03em; line-height: 1">Kolix</span><span style="font-size: 11px; color: #E2DCFF; font-weight: 600">Votre succès, notre mission</span></span>
+</div>
+
+<div style="position: relative">
+<button onClick="{{toggleSwitcher}}" aria-expanded="{{switcherExpanded}}" aria-label="Changer de boutique" style="font: inherit; width: 100%; display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.14); color: #FFFFFF; border: 0; border-radius: 14px; padding: 10px 12px; min-height: 56px; cursor: pointer; text-align: left">
+<span style="{{shopLogo}}">{{shopInitial}}</span>
+<span style="flex: 1; display: flex; flex-direction: column; min-width: 0"><span style="font-size: 11px; color: #E2DCFF; font-weight: 700">Boutique active</span><span style="font-size: 14px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{shopName}}</span></span>
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 9l4-4 4 4M8 15l4 4 4-4"></path></svg>
+</button>
+<sc-if value="{{switcherOpen}}" hint-placeholder-val="{{ false }}">
+<div style="position: absolute; top: 64px; left: 0; right: 0; z-index: 10; background: #FFFFFF; color: #16131F; border-radius: 16px; padding: 8px; display: flex; flex-direction: column; gap: 2px; box-shadow: 0 20px 50px rgba(36,29,94,0.28)">
+<span style="font-size: 11px; font-weight: 800; color: #5E5A70; text-transform: uppercase; letter-spacing: 0.08em; padding: 8px 10px 4px">Mes boutiques</span>
+<sc-for list="{{shopOptions}}" as="s" hint-placeholder-count="2">
+<button onClick="{{s.pick}}" aria-pressed="{{s.pressed}}" style="{{s.style}}">
+<span style="{{s.logo}}">{{s.initial}}</span>
+<span style="flex: 1; display: flex; flex-direction: column; text-align: left"><span style="font-size: 14px; font-weight: 800">{{s.name}}</span><span style="font-size: 12px; color: #5E5A70">{{s.domain}}</span></span>
+<sc-if value="{{s.active}}" hint-placeholder-val="{{ false }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4B2FC9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg></sc-if>
+</button>
+</sc-for>
+<a href="#" style="display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 10px; border-top: 1px solid #EEEAFB; margin-top: 4px; font-size: 13px; font-weight: 800; text-decoration: none">+ Créer une boutique (Paramètres)</a>
+</div>
+</sc-if>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 2px; font-size: 15px">
+<sc-for list="{{nav}}" as="n" hint-placeholder-count="12">
+<a href="{{n.href}}" style="{{n.style}}">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{n.icon}}"></path></svg>
+<span style="flex: 1">{{n.label}}</span>
+<sc-if value="{{n.hasBadge}}" hint-placeholder-val="{{ false }}"><span style="font-size: 11px; font-weight: 800; background: rgba(255,255,255,0.22); color: #FFFFFF; border-radius: 20px; padding: 2px 8px">{{n.badge}}</span></sc-if>
+</a>
+</sc-for>
+</div>
+</nav>
+
+<div style="flex: 999 1 600px; min-width: 0; display: flex; flex-direction: column">
+
+<header style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; padding: 16px 32px; background: #FFFFFF; border-bottom: 1px solid #EEEAFB">
+<label style="flex: 0 1 560px; display: flex; align-items: center; gap: 10px; background: #F4F1FE; border-radius: 24px; padding: 0 18px; min-height: 46px">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5E5A70" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Rechercher</span>
+<input type="search" placeholder="Rechercher une commande, un produit, un client…" style="flex: 1; font: inherit; font-size: 14px; border: 0; background: transparent; color: #16131F; min-height: 44px">
+</label>
+<div style="display: flex; align-items: center; gap: 18px">
+<button aria-label="Notifications, 3 non lues" style="position: relative; background: transparent; border: 0; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#16131F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.7 21a2 2 0 0 1-3.4 0"></path></svg><span style="position: absolute; top: 4px; right: 4px; min-width: 18px; height: 18px; border-radius: 9px; background: #D6304A; color: #FFFFFF; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center">3</span></button>
+<button style="font: inherit; display: flex; align-items: center; gap: 12px; background: transparent; border: 0; cursor: pointer; color: #16131F; min-height: 44px">
+<span style="width: 42px; height: 42px; border-radius: 21px; background: #EEE9FF; color: #4B2FC9; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800">SS</span>
+<span style="display: flex; flex-direction: column; text-align: left"><span style="font-size: 14px; font-weight: 800">Souleymane Sanogo</span><span style="font-size: 12px; color: #5E5A70">Propriétaire</span></span>
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg>
+</button>
+</div>
+</header>
+
+<main style="padding: 24px 32px 40px; display: flex; flex-direction: column; gap: 18px">
+
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 14px">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h1 style="margin: 0; font-size: 30px; font-weight: 800; letter-spacing: -0.03em">Produits</h1>
+<span style="font-size: 14px; color: #5E5A70">{{subtitle}}</span>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<a href="#" style="display: flex; align-items: center; min-height: 44px; padding: 0 16px; border-radius: 12px; font-size: 14px; font-weight: 700; text-decoration: none; color: #3F25A8">Personnaliser ma boutique ↗</a>
+<button style="font: inherit; font-size: 14px; font-weight: 700; background: #FFFFFF; color: #16131F; border: 1px solid #E2DCF8; border-radius: 12px; padding: 0 16px; min-height: 44px; cursor: pointer">Exporter</button>
+<button style="font: inherit; font-size: 14px; font-weight: 700; background: #FFFFFF; color: #16131F; border: 1px solid #E2DCF8; border-radius: 12px; padding: 0 16px; min-height: 44px; cursor: pointer">Importer</button>
+<button style="font: inherit; display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 700; background: #FFFFFF; color: #16131F; border: 1px solid #E2DCF8; border-radius: 12px; padding: 0 16px; min-height: 44px; cursor: pointer">Plus d’actions<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button>
+<button style="font: inherit; font-size: 14px; font-weight: 800; background: {{accent}}; color: #FFFFFF; border: 0; border-radius: 12px; padding: 0 20px; min-height: 44px; cursor: pointer; box-shadow: 0 8px 20px rgba(108,76,241,0.30)">+ Ajouter un produit</button>
+</div>
+</div>
+
+<section style="background: #FFFFFF; border-radius: 18px; box-shadow: 0 6px 20px rgba(108,76,241,0.06); overflow: hidden">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 1px solid #EEEAFB">
+<div role="tablist" aria-label="Filtrer par statut" style="display: flex; flex-wrap: wrap; gap: 4px">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="4">
+<button role="tab" aria-selected="{{t.selected}}" onClick="{{t.pick}}" style="{{t.style}}">{{t.label}} <span style="opacity: 0.7; margin-left: 2px">{{t.n}}</span></button>
+</sc-for>
+<button aria-label="Ajouter une vue" style="font: inherit; width: 36px; height: 36px; border-radius: 10px; border: 0; background: transparent; color: #5E5A70; font-size: 18px; cursor: pointer">+</button>
+</div>
+<div style="display: flex; gap: 8px">
+<button aria-label="Rechercher et filtrer" style="width: 40px; height: 40px; border-radius: 10px; border: 1px solid #E2DCF8; background: #FFFFFF; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16131F" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg></button>
+<button aria-label="Trier" style="width: 40px; height: 40px; border-radius: 10px; border: 1px solid #E2DCF8; background: #FFFFFF; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16131F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4v16M3 8l4-4 4 4M17 20V4M13 16l4 4 4-4"></path></svg></button>
+</div>
+</div>
+
+<sc-if value="{{hasSelection}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 10px 16px; background: #EEE9FF; font-size: 14px">
+<span style="font-weight: 800; color: #3F25A8">{{selCount}}</span>
+<button style="font: inherit; font-size: 13px; font-weight: 700; background: #FFFFFF; color: #16131F; border: 1px solid #CFC7F2; border-radius: 10px; padding: 0 12px; min-height: 36px; cursor: pointer">Mettre en ligne</button>
+<button style="font: inherit; font-size: 13px; font-weight: 700; background: #FFFFFF; color: #16131F; border: 1px solid #CFC7F2; border-radius: 10px; padding: 0 12px; min-height: 36px; cursor: pointer">Passer en brouillon</button>
+<button style="font: inherit; font-size: 13px; font-weight: 700; background: #FFFFFF; color: #16131F; border: 1px solid #CFC7F2; border-radius: 10px; padding: 0 12px; min-height: 36px; cursor: pointer">Archiver</button>
+<button style="font: inherit; font-size: 13px; font-weight: 700; background: #FFFFFF; color: #A3202F; border: 1px solid #F2C4C9; border-radius: 10px; padding: 0 12px; min-height: 36px; cursor: pointer">Supprimer</button>
+</div>
+</sc-if>
+
+<div style="overflow-x: auto">
+<table style="width: 100%; border-collapse: collapse; font-size: 14px; min-width: 900px">
+<thead>
+<tr style="text-align: left; color: #5E5A70; font-size: 12px; background: #FAF9FE">
+<th style="padding: 10px 8px 10px 16px; width: 28px"><input type="checkbox" checked="{{allChecked}}" onChange="{{toggleAll}}" aria-label="Tout sélectionner" style="width: 18px; height: 18px; accent-color: #6C4CF1"></th>
+<th style="padding: 10px 8px; font-weight: 700">Produit</th>
+<th style="padding: 10px 8px; font-weight: 700">Statut</th>
+<th style="padding: 10px 8px; font-weight: 700">Stock</th>
+<th style="padding: 10px 8px; font-weight: 700">Prix</th>
+<th style="padding: 10px 8px; font-weight: 700">Ventes (30 j)</th>
+<th style="padding: 10px 8px; font-weight: 700">Catégorie</th>
+<th style="padding: 10px 8px; font-weight: 700">Type</th>
+<th style="padding: 10px 16px 10px 8px; font-weight: 700"><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Actions</span></th>
+</tr>
+</thead>
+<tbody>
+<sc-for list="{{rows}}" as="p" hint-placeholder-count="10">
+<tr style="{{p.rowStyle}}">
+<td style="padding: 10px 8px 10px 16px"><input type="checkbox" checked="{{p.checked}}" onChange="{{p.toggle}}" aria-label="Sélectionner le produit" style="width: 18px; height: 18px; accent-color: #6C4CF1"></td>
+<td style="padding: 10px 8px">
+<div style="display: flex; align-items: center; gap: 12px">
+<span style="{{p.thumb}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{p.icon}}"></path></svg></span>
+<span style="display: flex; flex-direction: column; gap: 3px">
+<a href="#" style="font-weight: 700; color: #16131F; text-decoration: none">{{p.name}}</a>
+<sc-if value="{{p.countdown}}" hint-placeholder-val="{{ false }}"><span style="align-self: flex-start; font-size: 11px; font-weight: 800; background: #FFF0D6; color: #6B4100; border-radius: 6px; padding: 2px 7px">Compte à rebours actif</span></sc-if>
+</span>
+</div>
+</td>
+<td style="padding: 10px 8px"><span style="{{p.statusStyle}}">{{p.status}}</span></td>
+<td style="padding: 10px 8px; white-space: nowrap"><span style="{{p.stockStyle}}">{{p.stockMain}}</span><span style="color: #5E5A70">{{p.stockRest}}</span></td>
+<td style="padding: 10px 8px; white-space: nowrap"><div style="font-weight: 800">{{p.priceMain}}</div><sc-if value="{{p.hasPromo}}" hint-placeholder-val="{{ false }}"><div style="font-size: 12px; color: #8B869C; text-decoration: line-through">{{p.priceOld}}</div></sc-if></td>
+<td style="padding: 10px 8px; font-weight: 700">{{p.sales}}</td>
+<td style="padding: 10px 8px; color: #3A3647">{{p.cat}}</td>
+<td style="padding: 10px 8px; color: #3A3647">{{p.type}}</td>
+<td style="padding: 10px 16px 10px 8px; text-align: right"><button aria-label="Plus d’actions" style="width: 36px; height: 36px; border-radius: 10px; border: 0; background: transparent; cursor: pointer; display: inline-flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3A3647" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M5 12h.01M12 12h.01M19 12h.01"></path></svg></button></td>
+</tr>
+</sc-for>
+</tbody>
+</table>
+</div>
+<sc-if value="{{empty}}" hint-placeholder-val="{{ false }}"><div style="padding: 30px; text-align: center; font-size: 14px; color: #5E5A70">Aucun produit dans cette vue.</div></sc-if>
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-top: 1px solid #EEEAFB; font-size: 13px; color: #5E5A70">
+<span>{{footer}}</span>
+<span>Les quantités se gèrent dans le module <a href="#" style="font-weight: 700; text-decoration: none">Stock</a></span>
+</div>
+</section>
+
+</main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#6C4CF1","options":["#6C4CF1","#7C5CFA","#5A3BD8"]},"side":{"editor":"color","default":"#5B3FD6","options":["#5B3FD6","#6C4CF1","#241D5E"]},"$preview":{"width":1440,"height":1040}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { shop: 0, tab: 'all', switcherOpen: false, checked: {} };
+  }
+  renderVals() {
+    const accent = this.props.accent ?? '#6C4CF1';
+    const side = this.props.side ?? '#5B3FD6';
+    const fmt = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    const I = {
+      bag: 'M6 8h12l1 13H5zM9 8V6a3 3 0 0 1 6 0v2',
+      shoe: 'M3 16v-4l5-1 3 2 5 1 5 2v2H3zM3 18h18',
+      watch: 'M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM12 10v2l1 1M9 8l1-5h4l1 5M9 16l1 5h4l1-5',
+      beauty: 'M9 3h6v4H9zM8 7h8v14H8zM12 11v6',
+      shirt: 'M8 3l-5 3 2 5 3-1v11h8V10l3 1 2-5-5-3a4 4 0 0 1-8 0z',
+      phone: 'M7 2h10v20H7zM11 18h2',
+      dress: 'M9 3h6l-1 5 5 13H5l5-13z',
+      home: 'M3 11l9-7 9 7v9H3zM9 20v-6h6v6',
+      audio: 'M3 18v-6a9 9 0 0 1 18 0v6M21 19a2 2 0 0 1-2 2h-1v-6h3zM3 19a2 2 0 0 0 2 2h1v-6H3z',
+      fabric: 'M4 4h16v16H4zM4 9h16M4 14h16M9 4v16M14 4v16',
+      plug: 'M9 2v6M15 2v6M6 8h12v4a6 6 0 0 1-12 0zM12 18v4',
+      laptop: 'M4 5h16v11H4zM2 19h20'
+    };
+    const tints = { Vêtements: '#EEE9FF', Chaussures: '#F2F2F5', Accessoires: '#F4EFE8', Beauté: '#FBEDE8', Maison: '#EEF3EC', Électronique: '#ECEFF6', Autres: '#F6EEF8' };
+    const shops = [
+      { name: 'Style & Élégance', domain: 'styleelegance.kolix.shop', color: '#C93C72', products: [
+        ['Sac à main chic', 'Accessoires', 'Mode', 'En ligne', 18, 1, 15000, '', 42, I.bag, false],
+        ['Baskets tendance', 'Chaussures', 'Mode', 'En ligne', 25, 4, 12000, '', 37, I.shoe, false],
+        ['Montre élégante', 'Accessoires', 'Mode', 'En ligne', 9, 1, 22000, 17500, 58, I.watch, true],
+        ['Kit beauté visage', 'Beauté', 'Cosmétique', 'Brouillon', 14, 1, 18000, '', 0, I.beauty, false],
+        ['Chemise homme', 'Vêtements', 'Mode', 'En ligne', 30, 5, 10000, '', 21, I.shirt, false],
+        ['Robe élégante', 'Vêtements', 'Mode', 'En ligne', 7, 3, 22000, 19000, 16, I.dress, true],
+        ['Baskets sport', 'Chaussures', 'Mode', 'En ligne', 0, 6, 14000, '', 12, I.shoe, false],
+        ['Lampe déco', 'Maison', 'Déco', 'En ligne', 12, 1, 9000, '', 8, I.home, false],
+        ['Sérum éclat 30 ml', 'Beauté', 'Cosmétique', 'En ligne', 22, 1, 12000, 9500, 34, I.beauty, false],
+        ['Pagne wax 6 yards', 'Autres', 'Textile', 'En ligne', 40, 8, 7500, '', 19, I.fabric, false],
+        ['Coque téléphone', 'Accessoires', 'Mode', 'Archivé', 0, 3, 5000, '', 0, I.phone, false],
+        ['Foulard soie', 'Accessoires', 'Mode', 'Brouillon', 15, 4, 6000, '', 0, I.fabric, false]
+      ] },
+      { name: 'Tech Express CI', domain: 'techexpress.ci', color: '#1F7A63', products: [
+        ['Écouteurs sans fil', 'Électronique', 'Audio', 'En ligne', 11, 2, 24000, '', 27, I.audio, false],
+        ['Montre connectée X2', 'Électronique', 'Objets connectés', 'En ligne', 3, 3, 22000, 17500, 64, I.watch, true],
+        ['Chargeur rapide 65 W', 'Électronique', 'Accessoires', 'En ligne', 48, 1, 8500, '', 31, I.plug, false],
+        ['Coque antichoc', 'Électronique', 'Accessoires', 'En ligne', 0, 6, 4000, '', 22, I.phone, false],
+        ['Support PC portable', 'Électronique', 'Bureau', 'Brouillon', 20, 1, 11000, '', 0, I.laptop, false],
+        ['Enceinte Bluetooth', 'Électronique', 'Audio', 'En ligne', 9, 2, 18000, 15000, 13, I.audio, true]
+      ] }
+    ];
+    const shop = shops[this.state.shop];
+    const products = shop.products.map(([name, cat, type, status, stock, variants, price, promo, sales, icon, countdown], i) => ({ key: this.state.shop + '-' + i, name, cat, type, status, stock, variants, price, promo, sales, icon, countdown }));
+
+    const statusStyles = {
+      'En ligne': 'background: #E3F4EC; color: #1E5E3F',
+      'Brouillon': 'background: #E8EEFB; color: #1F3F8A',
+      'Archivé': 'background: #ECEAF3; color: #3A3647'
+    };
+    const tabDefs = [['all', 'Tous'], ['En ligne', 'En ligne'], ['Brouillon', 'Brouillons'], ['Archivé', 'Archivés']];
+    const tabs = tabDefs.map(([id, label]) => {
+      const on = this.state.tab === id;
+      const n = id === 'all' ? products.length : products.filter(p => p.status === id).length;
+      return { label, n: String(n), selected: on ? 'true' : 'false', pick: () => this.setState({ tab: id, checked: {} }), style: 'font: inherit; font-size: 14px; border: 0; border-radius: 10px; padding: 0 14px; min-height: 36px; cursor: pointer; ' + (on ? 'background: #EEE9FF; color: #3F25A8; font-weight: 800' : 'background: transparent; color: #3A3647; font-weight: 600') };
+    });
+    const visible = this.state.tab === 'all' ? products : products.filter(p => p.status === this.state.tab);
+    const checked = this.state.checked;
+    const selN = visible.filter(p => checked[p.key]).length;
+
+    const rows = visible.map(p => {
+      const out = p.stock === 0;
+      const hasPromo = p.promo !== '' && p.promo > 0;
+      return {
+        ...p,
+        checked: !!checked[p.key],
+        toggle: () => this.setState({ checked: { ...this.state.checked, [p.key]: !this.state.checked[p.key] } }),
+        rowStyle: 'border-top: 1px solid #F0EDFB; ' + (checked[p.key] ? 'background: #FAF8FF' : ''),
+        thumb: 'width: 44px; height: 44px; border-radius: 10px; flex: none; display: flex; align-items: center; justify-content: center; color: #3A3647; border: 1px solid #EEEAFB; background: ' + tints[p.cat],
+        statusStyle: 'display: inline-block; font-size: 12px; font-weight: 800; border-radius: 8px; padding: 4px 9px; ' + statusStyles[p.status],
+        stockMain: out ? '0 en stock' : p.stock + ' en stock',
+        stockRest: ' · ' + p.variants + (p.variants > 1 ? ' variantes' : ' variante'),
+        stockStyle: 'font-weight: 700; color: ' + (out ? '#A3202F' : p.stock <= 5 ? '#8A4B00' : '#16131F'),
+        hasPromo,
+        priceMain: fmt(hasPromo ? p.promo : p.price) + ' FCFA',
+        priceOld: fmt(p.price) + ' FCFA',
+        sales: String(p.sales)
+      };
+    });
+
+    const shopOptions = shops.map((s, i) => {
+      const on = i === this.state.shop;
+      return {
+        name: s.name, domain: s.domain, initial: s.name.charAt(0), active: on,
+        pressed: on ? 'true' : 'false',
+        pick: () => this.setState({ shop: i, switcherOpen: false, tab: 'all', checked: {} }),
+        logo: 'width: 34px; height: 34px; border-radius: 10px; flex: none; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #FFFFFF; background: ' + s.color,
+        style: 'font: inherit; display: flex; align-items: center; gap: 10px; border: 0; border-radius: 12px; padding: 8px 10px; min-height: 52px; cursor: pointer; color: #16131F; ' + (on ? 'background: #F4F1FE' : 'background: transparent')
+      };
+    });
+
+    const navItems = [
+      ['Accueil', 'Accueil.dc.html', 'M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z'],
+      ['Produits', 'Produits.dc.html', 'M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L2 12V2h10l8.6 8.6a2 2 0 0 1 0 2.8zM7 7h.01'],
+      ['Commandes', 'Commandes.dc.html', 'M3 4h2l2.5 11h11L21 7H6.5M9 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2zM18 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2z', '12'],
+      ['Stock', '#', 'M21 8l-9-5-9 5 9 5 9-5zM3 8v8l9 5 9-5V8M12 13v8'],
+      ['Comptabilité', '#', 'M6 2h9l5 5v15H6zM14 2v6h6M9 13h6M9 17h6'],
+      ['Portefeuille', 'Portefeuille.dc.html', 'M3 6h18v13H3zM3 10h18M16 14.5h2'],
+      ['Client', '#', 'M16 21v-2a4 4 0 0 0-8 0v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z'],
+      ['WhatsApp Marketing', '#', 'M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 21l2.1-5.6A8.4 8.4 0 1 1 21 11.5z'],
+      ['Analytics', '#', 'M4 20V10M10 20V4M16 20v-7M22 20H2'],
+      ['Utilisateurs', '#', 'M17 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9.5 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8'],
+      ['Kolix AI', '#', 'M12 3l2.2 5.8L20 11l-5.8 2.2L12 19l-2.2-5.8L4 11l5.8-2.2z'],
+      ['Paramètres', '#', 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1']
+    ];
+    const nav = navItems.map(([label, href, icon, badge], i) => ({
+      label, href, icon, badge: badge || '', hasBadge: !!badge,
+      style: 'display: flex; align-items: center; gap: 14px; padding: 12px 14px; border-radius: 12px; text-decoration: none; color: #FFFFFF; ' + (i === 1 ? 'background: rgba(255,255,255,0.20); font-weight: 800' : 'font-weight: 600')
+    }));
+
+    return {
+      accent, side, nav, tabs, rows, shopOptions,
+      shopName: shop.name,
+      shopInitial: shop.name.charAt(0),
+      shopLogo: 'width: 36px; height: 36px; border-radius: 10px; flex: none; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #FFFFFF; background: ' + shop.color,
+      subtitle: 'Catalogue de la boutique ' + shop.name + ' · ' + shop.domain,
+      switcherOpen: this.state.switcherOpen,
+      switcherExpanded: this.state.switcherOpen ? 'true' : 'false',
+      toggleSwitcher: () => this.setState({ switcherOpen: !this.state.switcherOpen }),
+      hasSelection: selN > 0,
+      selCount: selN + (selN > 1 ? ' produits sélectionnés' : ' produit sélectionné'),
+      allChecked: visible.length > 0 && selN === visible.length,
+      toggleAll: () => {
+        const all = visible.length > 0 && selN === visible.length;
+        const next = { ...this.state.checked };
+        visible.forEach(p => { next[p.key] = !all; });
+        this.setState({ checked: next });
+      },
+      empty: rows.length === 0,
+      footer: rows.length + (rows.length > 1 ? ' produits' : ' produit')
+    };
+  }
+}
+</script>
+</body>
+</html>

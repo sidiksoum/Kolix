@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Kolix — Boutique et templates</title>
+<script src="./vendor/react.js"></script>
+<script src="./vendor/react-dom.js"></script>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#5A3BD8}a:hover{color:#3F25A8}
+</style>
+</helmet>
+<div style="font-family: 'Plus Jakarta Sans', 'Helvetica Neue', sans-serif; color: #16131F; background: #F7F5FE; min-height: 100vh; display: flex; flex-wrap: wrap; position: relative">
+
+<nav aria-label="Navigation principale" style="flex: 1 1 240px; max-width: 100%; background: {{side}}; color: #FFFFFF; padding: 26px 16px; box-sizing: border-box; display: flex; flex-direction: column; gap: 22px">
+<div style="display: flex; align-items: center; gap: 10px; padding-left: 8px">
+<span style="width: 40px; height: 40px; border-radius: 12px; background: #FFFFFF; color: {{side}}; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 800">K</span>
+<span style="display: flex; flex-direction: column"><span style="font-size: 26px; font-weight: 800; letter-spacing: -0.03em; line-height: 1">Kolix</span><span style="font-size: 11px; color: #E2DCFF; font-weight: 600">Votre succès, notre mission</span></span>
+</div>
+<button onClick="{{goShops}}" aria-label="Changer de boutique" style="font: inherit; width: 100%; display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.14); color: #FFFFFF; border: 0; border-radius: 14px; padding: 10px 12px; min-height: 56px; cursor: pointer; text-align: left">
+<span style="{{shopLogo}}">{{shopInitial}}</span>
+<span style="flex: 1; display: flex; flex-direction: column; min-width: 0"><span style="font-size: 11px; color: #E2DCFF; font-weight: 700">Boutique active</span><span style="font-size: 14px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{shopName}}</span></span>
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 9l4-4 4 4M8 15l4 4 4-4"></path></svg>
+</button>
+<div style="display: flex; flex-direction: column; gap: 2px; font-size: 15px">
+<sc-for list="{{nav}}" as="n" hint-placeholder-count="13">
+<a href="{{n.href}}" style="{{n.style}}">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{n.icon}}"></path></svg>
+<span style="flex: 1">{{n.label}}</span>
+<sc-if value="{{n.hasBadge}}" hint-placeholder-val="{{ false }}"><span style="font-size: 11px; font-weight: 800; background: rgba(255,255,255,0.22); color: #FFFFFF; border-radius: 20px; padding: 2px 8px">{{n.badge}}</span></sc-if>
+</a>
+</sc-for>
+</div>
+</nav>
+
+<div style="flex: 999 1 600px; min-width: 0; display: flex; flex-direction: column">
+
+<header style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; padding: 16px 32px; background: #FFFFFF; border-bottom: 1px solid #EEEAFB">
+<label style="flex: 0 1 560px; display: flex; align-items: center; gap: 10px; background: #F4F1FE; border-radius: 24px; padding: 0 18px; min-height: 46px">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5E5A70" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Rechercher</span>
+<input type="search" placeholder="Rechercher une commande, un produit, un client…" style="flex: 1; font: inherit; font-size: 14px; border: 0; background: transparent; color: #16131F; min-height: 44px">
+</label>
+<div style="display: flex; align-items: center; gap: 18px">
+<button aria-label="Notifications, 3 non lues" style="position: relative; background: transparent; border: 0; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#16131F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.7 21a2 2 0 0 1-3.4 0"></path></svg><span style="position: absolute; top: 4px; right: 4px; min-width: 18px; height: 18px; border-radius: 9px; background: #D6304A; color: #FFFFFF; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center">3</span></button>
+<div style="display: flex; align-items: center; gap: 12px">
+<span style="width: 42px; height: 42px; border-radius: 21px; background: #EEE9FF; color: #4B2FC9; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800">SS</span>
+<span style="display: flex; flex-direction: column"><span style="font-size: 14px; font-weight: 800">Souleymane Sanogo</span><span style="font-size: 12px; color: #5E5A70">Propriétaire</span></span>
+</div>
+</div>
+</header>
+
+<main style="padding: 24px 32px 40px; display: flex; flex-direction: column; gap: 18px">
+
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 14px">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h1 style="margin: 0; font-size: 30px; font-weight: 800; letter-spacing: -0.03em">Boutique</h1>
+<span style="font-size: 14px; color: #5E5A70">Créez vos boutiques, choisissez un template adapté à votre niche et personnalisez-le à votre goût.</span>
+</div>
+<a href="#" style="display: flex; align-items: center; min-height: 46px; padding: 0 20px; border-radius: 12px; background: #FFFFFF; border: 1px solid #E2DCF8; font-size: 14px; font-weight: 800; text-decoration: none">Voir ma boutique en ligne ↗</a>
+</div>
+
+<div role="tablist" aria-label="Sections du module Boutique" style="display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 1px solid #E2DCF8">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="4">
+<button role="tab" aria-selected="{{t.selected}}" onClick="{{t.pick}}" style="{{t.style}}">{{t.label}}</button>
+</sc-for>
+</div>
+
+<sc-if value="{{tabTemplates}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-direction: column; gap: 16px">
+
+<section style="display: flex; flex-wrap: wrap; align-items: center; gap: 18px; background: #FFFFFF; border-radius: 18px; padding: 16px 18px; box-shadow: 0 6px 20px rgba(108,76,241,0.06)">
+<div style="width: 120px; flex: none"><div style="{{activeCard.frame}}"><div style="{{activeCard.header}}"></div><div style="{{activeCard.hero}}"><span style="{{activeCard.line1}}"></span><span style="{{activeCard.line2}}"></span></div><div style="{{activeCard.grid}}"><span style="{{activeCard.tile}}"></span><span style="{{activeCard.tile}}"></span><span style="{{activeCard.tile}}"></span><span style="{{activeCard.tile}}"></span></div></div></div>
+<div style="flex: 1 1 260px; display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 12px; font-weight: 800; color: #5E5A70; text-transform: uppercase; letter-spacing: 0.08em">Template actif sur {{shopName}}</span>
+<span style="font-size: 20px; font-weight: 800">{{activeTpl.name}}</span>
+<span style="font-size: 13px; color: #5E5A70">{{activeTpl.niche}} · {{activeTpl.style}}</span>
+</div>
+<button onClick="{{goEditor}}" style="font: inherit; font-size: 14px; font-weight: 800; background: {{accent}}; color: #FFFFFF; border: 0; border-radius: 12px; padding: 0 20px; min-height: 46px; cursor: pointer">Personnaliser</button>
+</section>
+
+<div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end">
+<label style="flex: 0 1 300px; display: flex; flex-direction: column; gap: 6px; font-size: 12px; font-weight: 700; color: #5E5A70">Niche
+<select value="{{nicheValue}}" onChange="{{setNiche}}" style="font: inherit; font-size: 14px; border: 1px solid #E2DCF8; border-radius: 12px; padding: 0 12px; min-height: 46px; background: #FFFFFF; color: #16131F">
+<sc-for list="{{nicheOptions}}" as="o" hint-placeholder-count="11"><option value="{{o.value}}">{{o.label}}</option></sc-for>
+</select></label>
+<div role="group" aria-label="Style" style="display: flex; flex-direction: column; gap: 6px"><span style="font-size: 12px; font-weight: 700; color: #5E5A70">Style</span>
+<div style="display: flex; gap: 6px; flex-wrap: wrap"><sc-for list="{{styleChips}}" as="c" hint-placeholder-count="4"><button onClick="{{c.pick}}" aria-pressed="{{c.pressed}}" style="{{c.style}}">{{c.label}}</button></sc-for></div></div>
+<div role="group" aria-label="Prix" style="display: flex; flex-direction: column; gap: 6px"><span style="font-size: 12px; font-weight: 700; color: #5E5A70">Prix</span>
+<div style="display: flex; gap: 6px; flex-wrap: wrap"><sc-for list="{{priceChips}}" as="c" hint-placeholder-count="4"><button onClick="{{c.pick}}" aria-pressed="{{c.pressed}}" style="{{c.style}}">{{c.label}}</button></sc-for></div></div>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px; background: #EEE9FF; color: #2E1F86; border-radius: 14px; padding: 12px 16px; font-size: 14px; font-weight: 600">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M20 12v9H4v-9M2 7h20v5H2zM12 21V7M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path></svg>
+<span style="flex: 1">Pack niche : les 3 templates d’une niche pour 18 000 FCFA. Un template premium offert avec Kolix Pro et Empire.</span>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px">
+<sc-for list="{{cards}}" as="c" hint-placeholder-count="8">
+<article style="background: #FFFFFF; border-radius: 18px; padding: 12px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 6px 20px rgba(108,76,241,0.06)">
+<div style="position: relative; background: #F1EEFA; border-radius: 12px; padding: 14px 18px; display: flex; justify-content: center">
+<div style="{{c.frame}}"><div style="{{c.header}}"></div><div style="{{c.hero}}"><span style="{{c.line1}}"></span><span style="{{c.line2}}"></span><span style="{{c.btn}}"></span></div><div style="{{c.grid}}"><span style="{{c.tile}}"></span><span style="{{c.tile}}"></span><span style="{{c.tile}}"></span><span style="{{c.tile}}"></span></div></div>
+<span style="{{c.priceTag}}">{{c.priceLabel}}</span>
+<sc-if value="{{c.isActive}}" hint-placeholder-val="{{ false }}"><span style="position: absolute; top: 8px; left: 8px; font-size: 11px; font-weight: 800; background: #16131F; color: #FFFFFF; border-radius: 8px; padding: 3px 8px">Actif</span></sc-if>
+</div>
+<div style="display: flex; flex-direction: column; gap: 2px; padding: 0 4px">
+<span style="font-size: 15px; font-weight: 800">{{c.name}}</span>
+<span style="font-size: 12px; color: #5E5A70">{{c.niche}} · {{c.style}}</span>
+</div>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+<button onClick="{{c.preview}}" style="font: inherit; font-size: 13px; font-weight: 800; background: #F4F1FE; color: #3F25A8; border: 0; border-radius: 10px; min-height: 42px; cursor: pointer">Aperçu</button>
+<button onClick="{{c.primary}}" style="{{c.primaryStyle}}">{{c.primaryLabel}}</button>
+</div>
+</article>
+</sc-for>
+</div>
+<sc-if value="{{hasMore}}" hint-placeholder-val="{{ true }}">
+<button onClick="{{showMore}}" style="align-self: center; font: inherit; font-size: 14px; font-weight: 800; background: #FFFFFF; color: #3F25A8; border: 1.5px solid #B9AAFF; border-radius: 12px; padding: 0 22px; min-height: 46px; cursor: pointer">{{moreLabel}}</button>
+</sc-if>
+<sc-if value="{{noCards}}" hint-placeholder-val="{{ false }}"><div style="padding: 30px; text-align: center; color: #5E5A70; font-size: 14px">Aucun template pour ces filtres.</div></sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{tabShops}}" hint-placeholder-val="{{ false }}">
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px">
+<sc-for list="{{shopCards}}" as="s" hint-placeholder-count="2">
+<article style="background: #FFFFFF; border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 6px 20px rgba(108,76,241,0.06)">
+<div style="display: flex; align-items: center; gap: 12px"><span style="{{s.logo}}">{{s.initial}}</span><span style="flex: 1; display: flex; flex-direction: column"><span style="font-size: 16px; font-weight: 800">{{s.name}}</span><span style="font-size: 13px; color: #5E5A70">{{s.domain}}</span></span><span style="{{s.statusStyle}}">{{s.status}}</span></div>
+<div style="display: flex; gap: 20px; font-size: 13px; color: #5E5A70"><span><strong style="color: #16131F; font-size: 15px">{{s.products}}</strong> produits</span><span><strong style="color: #16131F; font-size: 15px">{{s.orders}}</strong> commandes (7 j)</span></div>
+<span style="font-size: 13px; color: #3A3647">Template : <strong>{{s.tpl}}</strong></span>
+<button onClick="{{s.pick}}" style="{{s.btnStyle}}">{{s.btnLabel}}</button>
+</article>
+</sc-for>
+<article style="border: 2px dashed #CFC7F2; background: #FAF8FF; border-radius: 18px; padding: 18px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; text-align: center; min-height: 200px">
+<span style="font-size: 16px; font-weight: 800; color: #3F25A8">+ Créer une nouvelle boutique</span>
+<span style="font-size: 13px; color: #5E5A70; line-height: 1.5">Choisissez une niche, un template, et votre boutique est prête en quelques minutes.</span>
+<button style="font: inherit; font-size: 14px; font-weight: 800; background: {{accent}}; color: #FFFFFF; border: 0; border-radius: 12px; padding: 0 18px; min-height: 44px; cursor: pointer">Créer ma boutique</button>
+</article>
+</div>
+</sc-if>
+
+<sc-if value="{{tabEditor}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start">
+<section style="flex: 1 1 420px; background: #FFFFFF; border-radius: 18px; padding: 20px; display: flex; flex-direction: column; gap: 18px; box-shadow: 0 6px 20px rgba(108,76,241,0.06)">
+<div style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 12px; font-weight: 800; color: #5E5A70; text-transform: uppercase; letter-spacing: 0.08em">Vous personnalisez</span><span style="font-size: 18px; font-weight: 800">{{activeTpl.name}}</span></div>
+<div style="display: grid; grid-template-columns: 130px 1fr; gap: 12px">
+<button style="font: inherit; min-height: 100px; border-radius: 14px; border: 2px dashed #CFC7F2; background: #FAF8FF; color: #4B2FC9; font-size: 13px; font-weight: 800; cursor: pointer">+ Logo</button>
+<button style="font: inherit; min-height: 100px; border-radius: 14px; border: 2px dashed #CFC7F2; background: #FAF8FF; color: #4B2FC9; font-size: 13px; font-weight: 800; cursor: pointer">+ Bannière (1200 × 400)</button>
+</div>
+<div style="display: flex; flex-direction: column; gap: 10px"><span style="font-size: 13px; font-weight: 800">Couleur principale</span>
+<div style="display: flex; gap: 10px; flex-wrap: wrap"><sc-for list="{{swatches}}" as="s" hint-placeholder-count="6"><button onClick="{{s.pick}}" aria-label="{{s.name}}" aria-pressed="{{s.pressed}}" style="{{s.style}}"></button></sc-for></div></div>
+<div style="display: flex; flex-direction: column; gap: 8px"><span style="font-size: 13px; font-weight: 800">Sections de la page</span>
+<sc-for list="{{sections}}" as="s" hint-placeholder-count="5">
+<div style="display: flex; align-items: center; gap: 10px; background: #F8F6FF; border-radius: 12px; padding: 8px 10px 8px 14px; font-size: 14px; font-weight: 700">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="#8B869C" aria-hidden="true"><circle cx="9" cy="6" r="1.6"></circle><circle cx="15" cy="6" r="1.6"></circle><circle cx="9" cy="12" r="1.6"></circle><circle cx="15" cy="12" r="1.6"></circle><circle cx="9" cy="18" r="1.6"></circle><circle cx="15" cy="18" r="1.6"></circle></svg>
+<span style="flex: 1">{{s.label}}</span>
+<button onClick="{{s.up}}" aria-label="Monter" style="width: 34px; height: 34px; border-radius: 8px; border: 0; background: #FFFFFF; cursor: pointer; font-size: 14px">↑</button>
+<button onClick="{{s.down}}" aria-label="Descendre" style="width: 34px; height: 34px; border-radius: 8px; border: 0; background: #FFFFFF; cursor: pointer; font-size: 14px">↓</button>
+</div>
+</sc-for>
+</div>
+</section>
+<section aria-label="Aperçu en direct" style="flex: 0 1 340px; display: flex; flex-direction: column; align-items: center; gap: 10px">
+<span style="font-size: 12px; font-weight: 800; color: #5E5A70; text-transform: uppercase; letter-spacing: 0.08em">Aperçu en direct</span>
+<div style="width: 320px; max-width: 100%; background: #16131F; border-radius: 36px; padding: 10px; box-sizing: border-box; box-shadow: 0 20px 50px rgba(36,29,94,0.25)">
+<div style="background: #FFFFFF; border-radius: 28px; overflow: hidden; display: flex; flex-direction: column">
+<sc-for list="{{livePreview}}" as="b" hint-placeholder-count="5"><div style="{{b.style}}">{{b.text}}</div></sc-for>
+</div>
+</div>
+</section>
+</div>
+</sc-if>
+
+<sc-if value="{{tabDomain}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start">
+<section style="flex: 1 1 360px; background: #FFFFFF; border-radius: 18px; padding: 20px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 6px 20px rgba(108,76,241,0.06)">
+<h2 style="margin: 0; font-size: 18px; font-weight: 800">Nom de domaine</h2>
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; background: #FAF8FF; border-radius: 14px; padding: 14px 16px"><span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 12px; color: #5E5A70; font-weight: 700">Adresse actuelle</span><span style="font-size: 16px; font-weight: 800">{{shopDomain}}</span></span><span style="font-size: 12px; font-weight: 800; background: #E3F4EC; color: #1E5E3F; border-radius: 20px; padding: 4px 10px">Active</span></div>
+<button style="font: inherit; font-size: 14px; font-weight: 800; background: {{accent}}; color: #FFFFFF; border: 0; border-radius: 12px; min-height: 48px; cursor: pointer">Acheter un domaine personnalisé</button>
+</section>
+<section style="flex: 1 1 360px; background: #FFFFFF; border-radius: 18px; padding: 20px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 6px 20px rgba(108,76,241,0.06)">
+<h2 style="margin: 0; font-size: 18px; font-weight: 800">Formulaire de commande COD</h2>
+<sc-for list="{{codFields}}" as="f" hint-placeholder-count="5"><div style="display: flex; justify-content: space-between; align-items: center; border: 1px solid #EEEAFB; border-radius: 12px; padding: 12px 16px; font-size: 14px; font-weight: 700"><span>{{f.label}}</span><span style="{{f.tagStyle}}">{{f.tag}}</span></div></sc-for>
+<a href="#" style="font-size: 14px; font-weight: 800; text-decoration: none">Modifier les champs et le message de confirmation →</a>
+</section>
+</div>
+</sc-if>
+
+</main>
+</div>
+
+<sc-if value="{{hasModal}}" hint-placeholder-val="{{ false }}">
+<div style="position: fixed; inset: 0; z-index: 20; background: rgba(22,19,31,0.55); display: flex; align-items: center; justify-content: center; padding: 24px">
+<div role="dialog" aria-modal="true" aria-label="Aperçu du template" style="background: #FFFFFF; border-radius: 24px; width: 860px; max-width: 100%; max-height: 92vh; overflow: auto; display: flex; flex-wrap: wrap">
+<div style="flex: 1 1 340px; background: #F1EEFA; padding: 28px; display: flex; justify-content: center; align-items: flex-start">
+<div style="width: 280px; background: #16131F; border-radius: 32px; padding: 9px; box-sizing: border-box"><div style="border-radius: 24px; overflow: hidden; display: flex; flex-direction: column">
+<sc-for list="{{modalPreview}}" as="b" hint-placeholder-count="5"><div style="{{b.style}}">{{b.text}}</div></sc-for>
+</div></div>
+</div>
+<div style="flex: 1 1 320px; padding: 28px; display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; justify-content: space-between; gap: 12px"><span style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 24px; font-weight: 800">{{modal.name}}</span><span style="font-size: 14px; color: #5E5A70">{{modal.niche}} · {{modal.style}}</span></span>
+<button onClick="{{closeModal}}" aria-label="Fermer" style="width: 44px; height: 44px; border-radius: 22px; border: 0; background: #F4F1FE; cursor: pointer; font-size: 18px">✕</button></div>
+<span style="font-size: 28px; font-weight: 800; color: #3F25A8">{{modal.priceLabel}}</span>
+<button onClick="{{toggleMine}}" aria-pressed="{{minePressed}}" style="font: inherit; text-align: left; display: flex; align-items: center; gap: 14px; background: #F8F6FF; border: 0; border-radius: 14px; padding: 14px 16px; min-height: 60px; cursor: pointer; color: #16131F">
+<span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 14px; font-weight: 800">Prévisualiser avec mes produits</span><span style="font-size: 12px; color: #5E5A70">Testez le rendu avant d’acheter</span></span>
+<span style="{{switchTrack}}"><span style="width: 22px; height: 22px; border-radius: 11px; background: #FFFFFF"></span></span>
+</button>
+<div style="font-size: 13px; color: #3A3647; line-height: 1.6">Mobile d’abord, formulaire COD intégré, chargement rapide même en 3G. Entièrement personnalisable : couleurs, logo, bannière et ordre des sections.</div>
+<sc-if value="{{modalCanBuy}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<button onClick="{{buyModal}}" style="font: inherit; font-size: 15px; font-weight: 800; background: {{accent}}; color: #FFFFFF; border: 0; border-radius: 12px; min-height: 50px; cursor: pointer">Acheter et appliquer · {{modal.priceLabel}}</button>
+<button style="font: inherit; font-size: 14px; font-weight: 800; background: #FFFFFF; color: #3F25A8; border: 1.5px solid #B9AAFF; border-radius: 12px; min-height: 46px; cursor: pointer">Pack {{modal.niche}} · 18 000 FCFA</button>
+<span style="font-size: 12px; color: #5E5A70">Paiement par Mobile Money ou depuis votre Portefeuille Kolix. Achat unique, valable pour toutes vos boutiques.</span>
+</div>
+</sc-if>
+<sc-if value="{{modalOwned}}" hint-placeholder-val="{{ false }}">
+<button onClick="{{applyModal}}" style="font: inherit; font-size: 15px; font-weight: 800; background: {{accent}}; color: #FFFFFF; border: 0; border-radius: 12px; min-height: 50px; cursor: pointer">{{applyLabel}}</button>
+</sc-if>
+</div>
+</div>
+</div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#6C4CF1","options":["#6C4CF1","#7C5CFA","#5A3BD8"]},"side":{"editor":"color","default":"#5B3FD6","options":["#5B3FD6","#6C4CF1","#241D5E"]},"$preview":{"width":1440,"height":1400}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { tab: 'templates', niche: 'all', style: 'all', price: 'all', limit: 8, shop: 0, owned: { 'f-0': true, 'f-1': true }, active: ['f-0', 'f-1'], modal: null, mine: false, color: null, sections: ['Bannière', 'Catégories', 'Meilleures ventes', 'Compte à rebours', 'Formulaire COD'] };
+  }
+  renderVals() {
+    const accent = this.props.accent ?? '#6C4CF1';
+    const side = this.props.side ?? '#5B3FD6';
+    const PRICE = 9000;
+    const fmt = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    const niches = [
+      ['Mode féminine', '#C93C72', ['Amina', 'Kenza', 'Nala'], ['Robe portefeuille', 'Ensemble wax', 'Sac cabas', 'Sandales']],
+      ['Beauté et cosmétiques', '#A8456B', ['Glow', 'Ébène', 'Lumière'], ['Sérum éclat', 'Perruque lisse', 'Parfum oud', 'Gloss']],
+      ['Électronique et gadgets', '#2453C9', ['Volt', 'Pixel', 'Nova'], ['Écouteurs', 'Montre X2', 'Chargeur 65 W', 'Coque']],
+      ['Maison et électroménager', '#2F7A5B', ['Cocon', 'Habitat', 'Prestige'], ['Mixeur', 'Lampe déco', 'Poêle', 'Coussin']],
+      ['Compléments et bien-être', '#4E7F2A', ['Vitalis', 'Nature+', 'Essence'], ['Moringa', 'Tisane', 'Huile de neem', 'Miel']],
+      ['Mode masculine', '#1F2A44', ['Urbain', 'Classique', 'Baron'], ['Chemise', 'Mocassins', 'Ceinture', 'Polo']],
+      ['Bijoux et accessoires', '#8A6A1F', ['Perle', 'Éclat', 'Carat'], ['Collier', 'Lunettes', 'Bracelet', 'Montre']],
+      ['Enfants et puériculture', '#C2611B', ['Bambin', 'Kiddo', 'Petit Prince'], ['Body bébé', 'Jouet éveil', 'Biberon', 'Sac à langer']],
+      ['Articles religieux', '#5B3FD6', ['Foi', 'Sérénité', 'Lumière Divine'], ['Tapis de prière', 'Chapelet', 'Livre', 'Encens']],
+      ['Produits locaux et artisanat', '#9A4A22', ['Terroir', 'Wax', 'Héritage'], ['Pagne baoulé', 'Masque', 'Beurre de karité', 'Panier']]
+    ];
+    const styles = ['Sobre', 'Moderne', 'Premium'];
+    const tpls = [
+      { id: 'f-0', name: 'Kolix Essentiel', niche: 'Toutes niches', nicheIdx: -1, style: 'Moderne', color: '#5B3FD6', free: true, items: ['Produit 1', 'Produit 2', 'Produit 3', 'Produit 4'] },
+      { id: 'f-1', name: 'Kolix Vitrine', niche: 'Toutes niches', nicheIdx: -1, style: 'Sobre', color: '#16131F', free: true, items: ['Produit 1', 'Produit 2', 'Produit 3', 'Produit 4'] }
+    ];
+    niches.forEach(([niche, color, names, items], ni) => styles.forEach((style, si) => tpls.push({ id: 'p-' + ni + '-' + si, name: names[si], niche, nicheIdx: ni, style, color, free: false, items })));
+    const byId = id => tpls.find(t => t.id === id);
+
+    const mini = (t, w, colorOverride) => {
+      const c = colorOverride || t.color;
+      const prem = t.style === 'Premium', sob = t.style === 'Sobre';
+      const r = sob ? 2 : prem ? 4 : 8;
+      const bg = prem ? '#16131F' : '#FFFFFF';
+      const tileBg = prem ? '#2A2635' : '#F1F1F4';
+      return {
+        frame: 'width: ' + w + 'px; border-radius: 10px; overflow: hidden; background: ' + bg + '; box-shadow: 0 6px 16px rgba(22,19,31,0.18); display: flex; flex-direction: column; gap: 6px; padding-bottom: 8px',
+        header: 'height: 12px; background: ' + (sob ? '#FFFFFF' : prem ? '#16131F' : c) + '; border-bottom: 2px solid ' + (prem ? '#D9B26A' : c),
+        hero: 'margin: 0 6px; height: ' + Math.round(w * 0.42) + 'px; border-radius: ' + r + 'px; padding: 8px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; gap: 4px; background: ' + (sob ? '#F1F1F4' : prem ? '#2A2635' : c),
+        line1: 'height: 6px; width: 70%; border-radius: 3px; background: ' + (sob ? '#16131F' : prem ? '#D9B26A' : '#FFFFFF'),
+        line2: 'height: 4px; width: 45%; border-radius: 2px; background: ' + (sob ? '#8B869C' : 'rgba(255,255,255,0.6)'),
+        btn: 'margin-top: 3px; height: 8px; width: 34%; border-radius: ' + r + 'px; background: ' + (sob ? c : prem ? '#D9B26A' : '#FFFFFF'),
+        grid: 'margin: 0 6px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px',
+        tile: 'height: ' + Math.round(w * 0.26) + 'px; border-radius: ' + r + 'px; background: ' + tileBg
+      };
+    };
+    const phone = (t, colorOverride, sectionOrder, items) => {
+      const c = colorOverride || t.color;
+      const prem = t.style === 'Premium', sob = t.style === 'Sobre';
+      const r = sob ? 2 : prem ? 6 : 14;
+      const bg = prem ? '#16131F' : '#FFFFFF', fg = prem ? '#FFFFFF' : '#16131F';
+      const blocks = [{ style: 'padding: 14px 16px; font-size: 14px; font-weight: 800; background: ' + (sob ? '#FFFFFF' : prem ? '#16131F' : c) + '; color: ' + (sob ? c : '#FFFFFF') + '; border-bottom: 2px solid ' + (prem ? '#D9B26A' : c), text: this.shopName }];
+      const map = {
+        'Bannière': { style: 'margin: 10px; border-radius: ' + r + 'px; padding: 26px 16px; font-size: 18px; font-weight: 800; line-height: 1.2; background: ' + (sob ? '#F1F1F4' : prem ? '#2A2635' : c) + '; color: ' + (sob ? '#16131F' : prem ? '#D9B26A' : '#FFFFFF'), text: t.nicheIdx >= 0 ? t.niche : 'Bienvenue dans notre boutique' },
+        'Catégories': { style: 'padding: 6px 12px; font-size: 12px; font-weight: 700; color: ' + fg + '; background: ' + bg, text: '● Nouveautés   ● Promos   ● Best-sellers' },
+        'Meilleures ventes': { style: 'padding: 10px 12px; font-size: 12px; font-weight: 700; color: ' + fg + '; background: ' + bg + '; line-height: 1.9', text: items.slice(0, 4).join('  ·  ') },
+        'Compte à rebours': { style: 'margin: 8px 12px; border-radius: ' + r + 'px; padding: 10px; text-align: center; font-size: 13px; font-weight: 800; background: ' + (prem ? '#D9B26A' : c) + '; color: ' + (prem ? '#16131F' : '#FFFFFF'), text: 'Offre : 02 : 14 : 37' },
+        'Formulaire COD': { style: 'margin: 8px 12px 14px; border-radius: ' + r + 'px; padding: 12px; font-size: 12px; font-weight: 700; color: ' + fg + '; background: ' + (prem ? '#2A2635' : '#F7F7F9') + '; line-height: 1.8', text: 'Nom · Prénom · Téléphone · Lieu de livraison → Commander, payer à la livraison' }
+      };
+      sectionOrder.forEach(s => blocks.push(map[s]));
+      return blocks.map(b => ({ ...b, style: b.style.indexOf('background') === -1 ? b.style + '; background: ' + bg : b.style }));
+    };
+
+    const shops = [
+      { name: 'Style & Élégance', domain: 'styleelegance.kolix.shop', color: '#C93C72', status: 'En ligne', products: 12, orders: 326, mine: ['Sac à main chic', 'Robe élégante', 'Montre élégante', 'Baskets tendance'] },
+      { name: 'Tech Express CI', domain: 'techexpress.ci', color: '#1F7A63', status: 'En ligne', products: 6, orders: 142, mine: ['Écouteurs sans fil', 'Montre X2', 'Chargeur 65 W', 'Enceinte'] }
+    ];
+    const shop = shops[this.state.shop];
+    this.shopName = shop.name;
+    const activeTpl = byId(this.state.active[this.state.shop]);
+
+    const tabDefs = [['templates', 'Templates'], ['shops', 'Mes boutiques'], ['editor', 'Éditeur'], ['domain', 'Domaine et formulaire COD']];
+    const tabs = tabDefs.map(([id, label]) => {
+      const on = this.state.tab === id;
+      return { label, selected: on ? 'true' : 'false', pick: () => this.setState({ tab: id }), style: 'font: inherit; background: transparent; border: 0; padding: 0 16px; min-height: 50px; font-size: 14px; cursor: pointer; margin-bottom: -1px; ' + (on ? 'color: #3F25A8; font-weight: 800; border-bottom: 3px solid ' + accent : 'color: #5E5A70; font-weight: 600; border-bottom: 3px solid transparent') };
+    });
+
+    const chip = on => 'font: inherit; font-size: 13px; border-radius: 20px; padding: 0 14px; min-height: 40px; cursor: pointer; ' + (on ? 'background: #EEE9FF; color: #3F25A8; font-weight: 800; border: 1.5px solid #B9AAFF' : 'background: #FFFFFF; color: #3A3647; font-weight: 600; border: 1px solid #E2DCF8');
+    const styleChips = [['all', 'Tous']].concat(styles.map(s => [s, s])).map(([id, label]) => ({ label, pressed: this.state.style === id ? 'true' : 'false', pick: () => this.setState({ style: id, limit: 8 }), style: chip(this.state.style === id) }));
+    const priceChips = [['all', 'Tous'], ['free', 'Gratuits'], ['premium', 'Premium'], ['owned', 'Achetés']].map(([id, label]) => ({ label, pressed: this.state.price === id ? 'true' : 'false', pick: () => this.setState({ price: id, limit: 8 }), style: chip(this.state.price === id) }));
+    const nicheOptions = [{ value: 'all', label: 'Toutes les niches (32 templates)', selected: this.state.niche === 'all' }].concat(niches.map((n, i) => ({ value: String(i), label: (i + 1) + '. ' + n[0], selected: this.state.niche === String(i) })));
+
+    const owned = this.state.owned;
+    const filtered = tpls.filter(t =>
+      (this.state.niche === 'all' || t.nicheIdx === Number(this.state.niche) || (t.free && this.state.niche !== 'all' && false)) &&
+      (this.state.style === 'all' || t.style === this.state.style) &&
+      (this.state.price === 'all' || (this.state.price === 'free' && t.free) || (this.state.price === 'premium' && !t.free) || (this.state.price === 'owned' && owned[t.id])));
+    const shown = filtered.slice(0, this.state.limit);
+    const apply = id => { const a = this.state.active.slice(); a[this.state.shop] = id; this.setState({ active: a, modal: null }); };
+    const cards = shown.map(t => {
+      const isOwned = !!owned[t.id];
+      const isActive = activeTpl.id === t.id;
+      const m = mini(t, 150);
+      return {
+        ...t, ...m, isActive,
+        priceLabel: t.free ? 'Gratuit' : isOwned ? 'Acheté' : fmt(PRICE) + ' FCFA',
+        priceTag: 'position: absolute; top: 8px; right: 8px; font-size: 11px; font-weight: 800; border-radius: 8px; padding: 3px 8px; ' + (t.free ? 'background: #E3F4EC; color: #1E5E3F' : isOwned ? 'background: #E8EEFB; color: #1F3F8A' : 'background: #FFFFFF; color: #3F25A8'),
+        preview: () => this.setState({ modal: t.id, mine: false }),
+        primary: () => isOwned || t.free ? apply(t.id) : this.setState({ modal: t.id, mine: false }),
+        primaryLabel: isActive ? 'Appliqué' : (isOwned || t.free) ? 'Appliquer' : 'Acheter',
+        primaryStyle: 'font: inherit; font-size: 13px; font-weight: 800; border: 0; border-radius: 10px; min-height: 42px; cursor: pointer; ' + (isActive ? 'background: #ECEAF3; color: #3A3647' : 'background: ' + accent + '; color: #FFFFFF')
+      };
+    });
+
+    const modalT = this.state.modal ? byId(this.state.modal) : null;
+    let modal = { name: '', niche: '', style: '', priceLabel: '' };
+    let modalPreview = [];
+    if (modalT) {
+      modal = { name: modalT.name, niche: modalT.niche, style: modalT.style, priceLabel: modalT.free ? 'Gratuit' : fmt(PRICE) + ' FCFA' };
+      modalPreview = phone(modalT, null, ['Bannière', 'Catégories', 'Meilleures ventes', 'Compte à rebours', 'Formulaire COD'], this.state.mine ? shop.mine : modalT.items);
+    }
+    const modalOwnedFlag = !!(modalT && (modalT.free || owned[modalT.id]));
+
+    const shopCards = shops.map((s, i) => {
+      const on = i === this.state.shop;
+      return {
+        ...s, initial: s.name.charAt(0), tpl: byId(this.state.active[i]).name,
+        logo: 'width: 44px; height: 44px; border-radius: 12px; flex: none; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #FFFFFF; background: ' + s.color,
+        statusStyle: 'font-size: 12px; font-weight: 800; background: #E3F4EC; color: #1E5E3F; border-radius: 20px; padding: 4px 10px',
+        pick: () => this.setState({ shop: i, color: null }),
+        btnLabel: on ? 'Boutique active' : 'Basculer sur cette boutique',
+        btnStyle: 'font: inherit; font-size: 14px; font-weight: 800; border-radius: 12px; min-height: 46px; cursor: pointer; ' + (on ? 'background: #ECEAF3; color: #3A3647; border: 0' : 'background: #FFFFFF; color: #3F25A8; border: 1.5px solid #B9AAFF')
+      };
+    });
+
+    const colorNow = this.state.color || activeTpl.color;
+    const swatches = [['#5B3FD6', 'Violet'], ['#C93C72', 'Rose'], ['#2453C9', 'Bleu'], ['#2F7A5B', 'Vert'], ['#B85C0E', 'Orange'], ['#16131F', 'Noir']].map(([c, name]) => ({
+      name, pressed: colorNow === c ? 'true' : 'false', pick: () => this.setState({ color: c }),
+      style: 'width: 44px; height: 44px; border-radius: 22px; border: 0; cursor: pointer; background: ' + c + (colorNow === c ? '; box-shadow: 0 0 0 3px #FFFFFF, 0 0 0 5px #16131F' : '')
+    }));
+    const secs = this.state.sections;
+    const move = (i, d) => { const a = secs.slice(); const j = i + d; if (j < 0 || j >= a.length) return; [a[i], a[j]] = [a[j], a[i]]; this.setState({ sections: a }); };
+    const sections = secs.map((label, i) => ({ label, up: () => move(i, -1), down: () => move(i, 1) }));
+    const livePreview = phone(activeTpl, colorNow, secs, shop.mine);
+
+    const codFields = [['Nom', true], ['Prénom', true], ['Numéro de téléphone', true], ['Lieu de livraison', true], ['Note de commande', false]].map(([label, req]) => ({ label, tag: req ? 'Obligatoire' : 'Facultatif', tagStyle: 'font-size: 12px; font-weight: 800; border-radius: 20px; padding: 4px 10px; ' + (req ? 'background: #EEE9FF; color: #3F25A8' : 'background: #ECEAF3; color: #3A3647') }));
+
+    const navItems = [
+      ['Accueil', 'Accueil.dc.html', 'M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z'],
+      ['Boutique', 'Boutique.dc.html', 'M3 9l1.5-5h15L21 9M3 9h18v11H3zM9 20v-6h6v6'],
+      ['Produits', 'Produits.dc.html', 'M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L2 12V2h10l8.6 8.6a2 2 0 0 1 0 2.8zM7 7h.01'],
+      ['Commandes', 'Commandes.dc.html', 'M3 4h2l2.5 11h11L21 7H6.5M9 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2zM18 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2z', '12'],
+      ['Stock', '#', 'M21 8l-9-5-9 5 9 5 9-5zM3 8v8l9 5 9-5V8M12 13v8'],
+      ['Comptabilité', '#', 'M6 2h9l5 5v15H6zM14 2v6h6M9 13h6M9 17h6'],
+      ['Portefeuille', 'Portefeuille.dc.html', 'M3 6h18v13H3zM3 10h18M16 14.5h2'],
+      ['Client', '#', 'M16 21v-2a4 4 0 0 0-8 0v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z'],
+      ['WhatsApp Marketing', '#', 'M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 21l2.1-5.6A8.4 8.4 0 1 1 21 11.5z'],
+      ['Analytics', '#', 'M4 20V10M10 20V4M16 20v-7M22 20H2'],
+      ['Utilisateurs', '#', 'M17 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9.5 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8'],
+      ['Kolix AI', '#', 'M12 3l2.2 5.8L20 11l-5.8 2.2L12 19l-2.2-5.8L4 11l5.8-2.2z'],
+      ['Paramètres', '#', 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1']
+    ];
+    const nav = navItems.map(([label, href, icon, badge], i) => ({
+      label, href, icon, badge: badge || '', hasBadge: !!badge,
+      style: 'display: flex; align-items: center; gap: 14px; padding: 11px 14px; border-radius: 12px; text-decoration: none; color: #FFFFFF; ' + (i === 1 ? 'background: rgba(255,255,255,0.20); font-weight: 800' : 'font-weight: 600')
+    }));
+
+    const remaining = filtered.length - shown.length;
+    return {
+      accent, side, nav, tabs, styleChips, priceChips, nicheOptions, cards, shopCards, swatches, sections, livePreview, codFields, modal, modalPreview,
+      activeTpl, activeCard: mini(activeTpl, 120, this.state.color),
+      shopName: shop.name, shopDomain: shop.domain, shopInitial: shop.name.charAt(0),
+      shopLogo: 'width: 36px; height: 36px; border-radius: 10px; flex: none; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #FFFFFF; background: ' + shop.color,
+      tabTemplates: this.state.tab === 'templates', tabShops: this.state.tab === 'shops', tabEditor: this.state.tab === 'editor', tabDomain: this.state.tab === 'domain',
+      goShops: () => this.setState({ tab: 'shops' }),
+      goEditor: () => this.setState({ tab: 'editor' }),
+      nicheValue: this.state.niche,
+      setNiche: e => this.setState({ niche: e.target.value, limit: 8 }),
+      hasMore: remaining > 0,
+      moreLabel: 'Voir plus de templates (' + remaining + ')',
+      showMore: () => this.setState({ limit: this.state.limit + 8 }),
+      noCards: cards.length === 0,
+      hasModal: !!modalT,
+      closeModal: () => this.setState({ modal: null }),
+      toggleMine: () => this.setState({ mine: !this.state.mine }),
+      minePressed: this.state.mine ? 'true' : 'false',
+      switchTrack: 'width: 48px; height: 28px; border-radius: 14px; flex: none; display: flex; align-items: center; padding: 3px; box-sizing: border-box; ' + (this.state.mine ? 'background: ' + accent + '; justify-content: flex-end' : 'background: #CFC7F2; justify-content: flex-start'),
+      modalCanBuy: !!modalT && !modalOwnedFlag,
+      modalOwned: modalOwnedFlag,
+      applyLabel: modalT && activeTpl.id === modalT.id ? 'Déjà appliqué sur ' + shop.name : 'Appliquer sur ' + shop.name,
+      buyModal: () => { if (!modalT) return; const o = { ...this.state.owned, [modalT.id]: true }; const a = this.state.active.slice(); a[this.state.shop] = modalT.id; this.setState({ owned: o, active: a, modal: null }); },
+      applyModal: () => modalT && apply(modalT.id)
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Kolix — Accueil</title>
+<script src="./vendor/react.js"></script>
+<script src="./vendor/react-dom.js"></script>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#5A3BD8}a:hover{color:#3F25A8}
+</style>
+</helmet>
+<div style="font-family: 'Plus Jakarta Sans', 'Helvetica Neue', sans-serif; color: #16131F; background: #F4F1FE; min-height: 100vh; display: flex; flex-wrap: wrap">
+
+<nav aria-label="Navigation principale" style="flex: 1 1 250px; max-width: 100%; background: {{navy}}; color: #FFFFFF; padding: 28px 18px; box-sizing: border-box; display: flex; flex-direction: column; gap: 24px">
+<div style="display: flex; flex-direction: column; gap: 2px; padding-left: 10px">
+<div style="display: flex; align-items: center; gap: 6px; font-size: 28px; font-weight: 800; letter-spacing: -0.04em">kolix<span style="width: 9px; height: 9px; border-radius: 50%; background: #A99BFA; display: inline-block; margin-top: 10px"></span></div>
+<div style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #BDB5E8">Espace marchand</div>
+</div>
+<button style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.08); color: #FFFFFF; border: 0; border-radius: 14px; padding: 12px 14px; font: inherit; font-size: 14px; cursor: pointer; min-height: 48px">
+<span style="font-weight: 700">[Nom de la boutique]</span>
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg>
+</button>
+<div style="display: flex; flex-direction: column; gap: 2px; font-size: 15px">
+<sc-for list="{{nav}}" as="n" hint-placeholder-count="12">
+<a href="{{n.href}}" style="{{n.style}}">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{n.icon}}"></path></svg>
+<span style="flex: 1">{{n.label}}</span>
+<sc-if value="{{n.locked}}" hint-placeholder-val="{{ false }}"><span style="font-size: 10px; font-weight: 800; background: rgba(255,255,255,0.14); color: #FFFFFF; border-radius: 20px; padding: 3px 8px">PRO</span></sc-if>
+</a>
+</sc-for>
+</div>
+<div style="margin-top: auto; background: rgba(255,255,255,0.08); border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 8px">
+<div style="font-size: 11px; color: #BDB5E8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em">Votre plan</div>
+<div style="font-size: 17px; font-weight: 800">Kolix Grow</div>
+<div style="font-size: 13px; color: #D9D3F5">412 / 1 500 commandes ce mois</div>
+<div style="height: 6px; background: rgba(255,255,255,0.15); border-radius: 3px; overflow: hidden"><div style="height: 100%; width: 27%; background: #A99BFA; border-radius: 3px"></div></div>
+<a href="#" style="font-size: 14px; font-weight: 700; color: #FFFFFF; text-decoration: none">Passer à Pro →</a>
+</div>
+</nav>
+
+<main style="flex: 999 1 560px; min-width: 0; padding: 30px 36px 40px; box-sizing: border-box; display: flex; flex-direction: column; gap: 22px">
+
+<header style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h1 style="margin: 0; font-size: 34px; font-weight: 800; letter-spacing: -0.035em; color: {{navy}}">Bienvenue [Prénom] !</h1>
+<div style="font-size: 15px; color: #5E5A70; font-weight: 500">Voici l’aperçu de votre activité</div>
+</div>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px">
+<label style="display: flex">
+<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Rechercher</span>
+<input type="search" placeholder="Rechercher…" style="font: inherit; font-size: 14px; border: 0; border-radius: 24px; padding: 0 18px; min-height: 46px; width: 240px; max-width: 100%; background: #FFFFFF; color: #16131F; box-shadow: 0 6px 18px rgba(108,76,241,0.08)">
+</label>
+<a href="#" style="display: flex; align-items: center; gap: 8px; background: #FCE3E0; color: #8A2414; border-radius: 24px; padding: 0 16px; min-height: 46px; font-size: 13px; font-weight: 700; text-decoration: none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v4M12 17h.01M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"></path></svg>Stock faible : 2</a>
+<button aria-label="Notifications, 5 non lues" style="position: relative; background: #FFFFFF; border: 0; border-radius: 23px; width: 46px; height: 46px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 6px 18px rgba(108,76,241,0.08)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16131F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.7 21a2 2 0 0 1-3.4 0"></path></svg><span style="position: absolute; top: 6px; right: 6px; min-width: 18px; height: 18px; border-radius: 9px; background: {{accent}}; color: #FFFFFF; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center">5</span></button>
+<span style="width: 46px; height: 46px; border-radius: 23px; background: {{navy}}; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px" aria-label="Profil">[PN]</span>
+</div>
+</header>
+
+<div style="display: flex; justify-content: flex-end">
+<div role="group" aria-label="Période" style="display: flex; background: #FFFFFF; border-radius: 24px; padding: 4px; gap: 4px; box-shadow: 0 6px 18px rgba(108,76,241,0.08)">
+<sc-for list="{{periods}}" as="p" hint-placeholder-count="3">
+<button onClick="{{p.pick}}" aria-pressed="{{p.pressed}}" style="{{p.style}}">{{p.label}}</button>
+</sc-for>
+</div>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 16px">
+<sc-for list="{{kpis}}" as="k" hint-placeholder-count="5">
+<div style="background: #FFFFFF; border-radius: 22px; padding: 20px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 8px 24px rgba(108,76,241,0.07)">
+<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px">
+<span style="{{k.iconBox}}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{k.icon}}"></path></svg></span>
+<span style="{{k.trendStyle}}">{{k.trend}}</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 4px">
+<div style="font-size: 26px; font-weight: 800; letter-spacing: -0.03em; color: {{navy}}; white-space: nowrap">{{k.value}}</div>
+<div style="font-size: 13px; color: #5E5A70; font-weight: 600">{{k.label}}</div>
+</div>
+</div>
+</sc-for>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; gap: 16px">
+<section style="flex: 2 1 560px; min-width: 0; background: #FFFFFF; border-radius: 24px; padding: 24px 26px; display: flex; flex-direction: column; gap: 16px; box-shadow: 0 8px 24px rgba(108,76,241,0.07)">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 2px">
+<h2 style="margin: 0; font-size: 18px; font-weight: 800; color: {{navy}}">Chiffre d’affaires et ventes</h2>
+<span style="font-size: 13px; color: #5E5A70">{{periodLabel}}</span>
+</div>
+<div style="display: flex; gap: 16px; font-size: 13px; font-weight: 600; color: #3A3647">
+<span style="display: flex; align-items: center; gap: 6px"><span style="width: 12px; height: 12px; border-radius: 3px; background: {{navy}}"></span>CA (FCFA)</span>
+<span style="display: flex; align-items: center; gap: 6px"><span style="width: 16px; height: 0; border-top: 3px solid #A99BFA"></span>Ventes livrées</span>
+</div>
+</div>
+<div style="display: grid; grid-template-columns: 56px 1fr; gap: 10px">
+<div style="display: flex; flex-direction: column; justify-content: space-between; height: 260px; font-size: 12px; color: #5E5A70; font-weight: 600; text-align: right; padding-bottom: 0">
+<sc-for list="{{yTicks}}" as="t" hint-placeholder-count="4"><span>{{t}}</span></sc-for>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px; min-width: 0">
+<div style="position: relative; height: 260px; border-bottom: 1px solid #E2DCF8; display: flex; align-items: flex-end; gap: 12px; padding: 0 6px">
+<div style="position: absolute; left: 0; right: 0; top: 0; border-top: 1px dashed #EEEAFB"></div>
+<div style="position: absolute; left: 0; right: 0; top: 33%; border-top: 1px dashed #EEEAFB"></div>
+<div style="position: absolute; left: 0; right: 0; top: 66%; border-top: 1px dashed #EEEAFB"></div>
+<sc-for list="{{bars}}" as="b" hint-placeholder-count="7">
+<div style="flex: 1; height: 100%; display: flex; align-items: flex-end; justify-content: center; position: relative">
+<sc-if value="{{b.peak}}" hint-placeholder-val="{{ false }}">
+<div style="{{b.tipStyle}}">{{b.tip}}</div>
+</sc-if>
+<div style="{{b.style}}"></div>
+</div>
+</sc-for>
+<svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; left: 6px; right: 6px; top: 0; width: calc(100% - 12px); height: 100%; overflow: visible; pointer-events: none">
+<path d="{{salesPath}}" fill="none" stroke="#A99BFA" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"></path>
+</svg>
+</div>
+<div style="{{labelGrid}}">
+<sc-for list="{{xLabels}}" as="x" hint-placeholder-count="7"><span style="text-align: center; font-size: 12px; font-weight: 600; color: #5E5A70">{{x}}</span></sc-for>
+</div>
+</div>
+</div>
+</section>
+
+<section style="flex: 1 1 300px; background: #FFFFFF; border-radius: 24px; padding: 24px 26px; display: flex; flex-direction: column; gap: 16px; box-shadow: 0 8px 24px rgba(108,76,241,0.07)">
+<h2 style="margin: 0; font-size: 18px; font-weight: 800; color: {{navy}}">Statuts des commandes</h2>
+<div style="position: relative; width: 190px; height: 190px; align-self: center">
+<svg viewBox="0 0 42 42" role="img" aria-label="{{donutLabel}}" style="width: 100%; height: 100%; transform: rotate(-90deg)">
+<circle cx="21" cy="21" r="15.9" fill="none" stroke="#F0EDFB" stroke-width="6"></circle>
+<sc-for list="{{donut}}" as="s" hint-placeholder-count="6">
+<circle cx="21" cy="21" r="15.9" fill="none" stroke="{{s.color}}" stroke-width="6" stroke-dasharray="{{s.dash}}" stroke-dashoffset="{{s.offset}}"></circle>
+</sc-for>
+</svg>
+<div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center">
+<span style="font-size: 28px; font-weight: 800; color: {{navy}}">{{convPct}}</span>
+<span style="font-size: 12px; color: #5E5A70; font-weight: 600">livrées</span>
+</div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 14px">
+<sc-for list="{{donut}}" as="s" hint-placeholder-count="6">
+<div style="display: flex; align-items: center; gap: 8px; font-size: 13px">
+<span style="{{s.swatch}}"></span>
+<span style="flex: 1; color: #3A3647; font-weight: 600">{{s.label}}</span>
+<span style="font-weight: 800">{{s.pctLabel}}</span>
+</div>
+</sc-for>
+</div>
+</section>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; gap: 16px">
+<section style="flex: 1 1 280px; background: #FFFFFF; border-radius: 24px; padding: 24px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 8px 24px rgba(108,76,241,0.07)">
+<h2 style="margin: 0; font-size: 18px; font-weight: 800; color: {{navy}}">Ventes par zone</h2>
+<sc-for list="{{zones}}" as="z" hint-placeholder-count="6">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<div style="display: flex; justify-content: space-between; font-size: 14px"><span style="font-weight: 600">{{z.name}}</span><span style="font-weight: 800">{{z.pctLabel}}</span></div>
+<div style="height: 8px; background: #F0EDFB; border-radius: 4px; overflow: hidden"><div style="{{z.bar}}"></div></div>
+</div>
+</sc-for>
+</section>
+
+<section style="flex: 1 1 300px; background: #FFFFFF; border-radius: 24px; padding: 24px; display: flex; flex-direction: column; gap: 6px; box-shadow: 0 8px 24px rgba(108,76,241,0.07)">
+<div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px">
+<h2 style="margin: 0; font-size: 18px; font-weight: 800; color: {{navy}}">Top produits</h2>
+<span style="font-size: 12px; color: #5E5A70; font-weight: 600">Ventes livrées</span>
+</div>
+<sc-for list="{{top}}" as="p" hint-placeholder-count="5">
+<div style="display: flex; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid #F0EDFB">
+<span style="width: 30px; height: 30px; border-radius: 10px; background: #F4F1FE; color: #4B2FC9; font-size: 13px; font-weight: 800; display: flex; align-items: center; justify-content: center">{{p.rank}}</span>
+<span style="flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0">
+<span style="font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{p.name}}</span>
+<span style="font-size: 12px; color: #5E5A70">{{p.ca}}</span>
+</span>
+<span style="font-size: 14px; font-weight: 800; color: {{navy}}">{{p.n}}</span>
+</div>
+</sc-for>
+</section>
+
+<section style="flex: 1 1 300px; background: #FFFFFF; border-radius: 24px; padding: 24px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 8px 24px rgba(108,76,241,0.07)">
+<div style="display: flex; justify-content: space-between; align-items: baseline">
+<h2 style="margin: 0; font-size: 18px; font-weight: 800; color: {{navy}}">Livraisons</h2>
+<span style="font-size: 13px; color: #5E5A70; font-weight: 700">Octobre 2026</span>
+</div>
+<div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; text-align: center">
+<sc-for list="{{weekdays}}" as="w" hint-placeholder-count="7"><span style="font-size: 11px; font-weight: 700; color: #5E5A70; padding: 4px 0">{{w}}</span></sc-for>
+<sc-for list="{{days}}" as="d" hint-placeholder-count="35"><span style="{{d.style}}">{{d.n}}</span></sc-for>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; color: #3A3647; font-weight: 600">
+<span style="display: flex; align-items: center; gap: 6px"><span style="width: 12px; height: 12px; border-radius: 4px; background: {{navy}}"></span>Aujourd’hui</span>
+<span style="display: flex; align-items: center; gap: 6px"><span style="width: 12px; height: 12px; border-radius: 4px; background: #E9E3FD; border: 1px solid #A99BFA; box-sizing: border-box"></span>Livraisons reportées</span>
+</div>
+</section>
+</div>
+
+</main>
+
+<button aria-label="Ouvrir Kolix AI" style="position: fixed; right: 28px; bottom: 28px; display: flex; align-items: center; gap: 10px; font: inherit; font-size: 15px; font-weight: 800; background: {{accent}}; color: #FFFFFF; border: 0; border-radius: 30px; padding: 0 22px 0 16px; min-height: 56px; cursor: pointer; box-shadow: 0 14px 34px rgba(108,76,241,0.40)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.2 5.8L20 11l-5.8 2.2L12 19l-2.2-5.8L4 11l5.8-2.2z"></path></svg>Kolix AI</button>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#6C4CF1","options":["#6C4CF1","#7C5CFA","#5A3BD8"]},"navy":{"editor":"color","default":"#241D5E","options":["#241D5E","#1B1640","#2E2475"]},"$preview":{"width":1440,"height":1360}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { period: 'mois' };
+  }
+  renderVals() {
+    const accent = this.props.accent ?? '#6C4CF1';
+    const navy = this.props.navy ?? '#241D5E';
+    const fmt = n => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    const short = n => n >= 1000000 ? (Math.round(n / 100000) / 10).toString().replace('.', ',') + ' M' : Math.round(n / 1000) + ' k';
+    const data = {
+      jour: { label: '7 derniers jours', x: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'], ca: [142000, 168500, 121000, 195000, 176500, 231000, 148500], ventes: [8, 10, 7, 11, 10, 13, 9], commandes: 104, visites: 3860, tr: ['+8,2 %', '+5,1 %', '+6,4 %', '+9,7 %', '+2,1 pts'] },
+      semaine: { label: '8 dernières semaines', x: ['S35', 'S36', 'S37', 'S38', 'S39', 'S40', 'S41', 'S42'], ca: [820000, 905000, 870000, 1010000, 1120000, 1065000, 1240000, 1182500], ventes: [52, 57, 55, 63, 70, 66, 74, 68], commandes: 790, visites: 29400, tr: ['+12,4 %', '+9,8 %', '+10,3 %', '+11,6 %', '−0,8 pt'] },
+      mois: { label: '12 derniers mois', x: ['Nov.', 'Déc.', 'Janv.', 'Févr.', 'Mars', 'Avr.', 'Mai', 'Juin', 'Juil.', 'Août', 'Sept.', 'Oct.'], ca: [1850000, 2640000, 1720000, 1980000, 2310000, 2450000, 2900000, 3150000, 3420000, 3880000, 4510000, 3260000], ventes: [118, 169, 110, 126, 148, 157, 182, 197, 214, 240, 281, 205], commandes: 3640, visites: 132500, tr: ['+18,6 %', '+15,2 %', '+16,9 %', '+17,4 %', '+1,3 pt'] }
+    };
+    const d = data[this.state.period];
+    const caTotal = d.ca.reduce((a, b) => a + b, 0);
+    const ventesTotal = d.ventes.reduce((a, b) => a + b, 0);
+    const conv = Math.round(ventesTotal / d.commandes * 100);
+
+    const segBase = 'font: inherit; font-size: 14px; border: 0; border-radius: 20px; padding: 0 18px; min-height: 40px; cursor: pointer; ';
+    const periods = [['jour', 'Jour'], ['semaine', 'Semaine'], ['mois', 'Mois']].map(([id, label]) => {
+      const on = this.state.period === id;
+      return { label, pressed: on ? 'true' : 'false', pick: () => this.setState({ period: id }), style: segBase + (on ? 'background: ' + navy + '; color: #FFFFFF; font-weight: 700' : 'background: transparent; color: #3A3647; font-weight: 600') };
+    });
+
+    const iconBoxes = [
+      'background: #E9E3FD; color: #4B2FC9',
+      'background: #E3EEFF; color: #1F4FA8',
+      'background: #FFEBDD; color: #8A3D0A',
+      'background: #E9E3FD; color: #4B2FC9',
+      'background: #E3EEFF; color: #1F4FA8'
+    ];
+    const kpiRaw = [
+      { label: 'Chiffre d’affaires (FCFA)', value: fmt(caTotal), icon: 'M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6' },
+      { label: 'Visites boutique', value: fmt(d.visites), icon: 'M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12zM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z' },
+      { label: 'Commandes reçues', value: fmt(d.commandes), icon: 'M6 7h12l-1 13H7zM9 7a3 3 0 0 1 6 0' },
+      { label: 'Ventes effectives', value: fmt(ventesTotal), icon: 'M20 6L9 17l-5-5' },
+      { label: 'Taux de conversion', value: conv + ' %', icon: 'M3 17l6-6 4 4 8-8M15 7h6v6' }
+    ];
+    const kpis = kpiRaw.map((k, i) => {
+      const t = d.tr[i];
+      const down = t.charAt(0) === '−';
+      return {
+        ...k,
+        trend: (down ? '↘ ' : '↗ ') + t,
+        trendStyle: 'font-size: 12px; font-weight: 800; border-radius: 20px; padding: 4px 9px; white-space: nowrap; ' + (down ? 'background: #FCE3E0; color: #8A2414' : 'background: #F4F1FE; color: #3F25A8'),
+        iconBox: 'width: 42px; height: 42px; border-radius: 14px; display: flex; align-items: center; justify-content: center; ' + iconBoxes[i]
+      };
+    });
+
+    const n = d.ca.length;
+    const maxCa = Math.max(...d.ca);
+    const top = Math.ceil(maxCa * 1.15 / 100000) * 100000;
+    const peakIdx = d.ca.indexOf(maxCa);
+    const bars = d.ca.map((v, i) => {
+      const h = v / top * 100;
+      return {
+        peak: i === peakIdx,
+        tip: d.x[i] + ' · ' + fmt(v),
+        tipStyle: 'position: absolute; bottom: calc(' + h.toFixed(1) + '% + 10px); left: 50%; transform: translateX(-50%); background: ' + navy + '; color: #FFFFFF; font-size: 12px; font-weight: 700; border-radius: 10px; padding: 6px 10px; white-space: nowrap; z-index: 2',
+        style: 'width: 100%; max-width: 46px; height: ' + h.toFixed(1) + '%; border-radius: 10px 10px 4px 4px; background: ' + (i % 2 === 0 ? navy : '#8B6CF6')
+      };
+    });
+    const yTicks = [top, top * 2 / 3, top / 3, 0].map(v => v === 0 ? '0' : short(v));
+    const maxV = Math.max(...d.ventes) * 1.15;
+    const salesPath = 'M' + d.ventes.map((v, i) => ((i + 0.5) / n * 100).toFixed(2) + ' ' + (100 - v / maxV * 100).toFixed(2)).join(' L');
+
+    const statusRaw = [
+      ['Livrée', conv, navy],
+      ['En cours', 14, accent],
+      ['Reportée', 8, '#A99BFA'],
+      ['Annulée', 6, '#D6CFF7'],
+      ['Injoignable', 5, '#8B869C'],
+      ['Contestée', 0, '#E3807A']
+    ];
+    const used = statusRaw.slice(0, 5).reduce((a, s) => a + s[1], 0);
+    statusRaw[5][1] = Math.max(0, 100 - used);
+    let acc = 0;
+    const donut = statusRaw.map(([label, pct, color]) => {
+      const item = {
+        label, color,
+        pctLabel: pct + ' %',
+        dash: pct + ' ' + (100 - pct),
+        offset: String(-acc),
+        swatch: 'width: 12px; height: 12px; border-radius: 4px; flex: none; background: ' + color + (color === '#D6CFF7' ? '; border: 1px solid #A99BFA; box-sizing: border-box' : '')
+      };
+      acc += pct;
+      return item;
+    });
+
+    const zonesRaw = [['Abidjan', 58], ['Bouaké', 12], ['Yamoussoukro', 9], ['San-Pédro', 8], ['Korhogo', 7], ['Daloa', 6]];
+    const zones = zonesRaw.map(([name, p], i) => ({ name, pctLabel: p + ' %', bar: 'height: 100%; border-radius: 4px; width: ' + Math.round(p / 58 * 100) + '%; background: ' + (i === 0 ? navy : '#8B6CF6') }));
+
+    const factor = { jour: 1, semaine: 7.4, mois: 27 }[this.state.period];
+    const prods = [['Montre connectée X2', 24, 22000], ['Sérum éclat 30 ml', 18, 9250], ['Écouteurs sans fil', 12, 24000], ['Lisseur céramique', 9, 15000], ['Sac bandoulière cuir', 5, 12000]];
+    const topList = prods.map(([name, v, price], i) => {
+      const q = Math.round(v * factor);
+      return { rank: String(i + 1), name, n: fmt(q), ca: fmt(q * price) + ' FCFA' };
+    });
+
+    const reportes = [19, 21, 22, 24, 27, 29];
+    const days = [];
+    for (let i = 0; i < 3; i++) days.push({ n: '', style: 'padding: 8px 0' });
+    for (let dd = 1; dd <= 31; dd++) {
+      const today = dd === 18;
+      const rep = reportes.indexOf(dd) !== -1;
+      let st = 'font-size: 13px; font-weight: 600; padding: 8px 0; border-radius: 10px; ';
+      if (today) st += 'background: ' + navy + '; color: #FFFFFF; font-weight: 800';
+      else if (rep) st += 'background: #E9E3FD; color: #3F25A8; font-weight: 800; box-shadow: inset 0 0 0 1px #A99BFA';
+      else st += 'color: ' + (dd < 18 ? '#8B869C' : '#16131F');
+      days.push({ n: String(dd), style: st });
+    }
+    while (days.length % 7 !== 0) days.push({ n: '', style: 'padding: 8px 0' });
+
+    const navItems = [
+      ['Accueil', 'Accueil.dc.html', 'M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z'],
+      ['Boutique', '#', 'M3 9l1.5-5h15L21 9M3 9h18v11H3zM9 20v-6h6v6'],
+      ['Commandes', 'Commandes.dc.html', 'M6 7h12l-1 13H7zM9 7a3 3 0 0 1 6 0'],
+      ['Stock', '#', 'M21 8l-9-5-9 5 9 5 9-5zM3 8v8l9 5 9-5V8M12 13v8'],
+      ['Comptabilité', '#', 'M4 3h16v18H4zM8 7h8M8 11h8M8 15h5'],
+      ['Portefeuille', 'Portefeuille.dc.html', 'M3 6h18v13H3zM3 10h18M16 14.5h2'],
+      ['Client', '#', 'M16 21v-2a4 4 0 0 0-8 0v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z'],
+      ['WhatsApp Marketing', '#', 'M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 21l2.1-5.6A8.4 8.4 0 1 1 21 11.5z', true],
+      ['Analytics', '#', 'M4 20V10M10 20V4M16 20v-7M22 20H2'],
+      ['Utilisateurs', '#', 'M17 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9.5 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8'],
+      ['Kolix AI', '#', 'M12 3l2.2 5.8L20 11l-5.8 2.2L12 19l-2.2-5.8L4 11l5.8-2.2z'],
+      ['Paramètres', '#', 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-2.9 1.2V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-2.9-1.2l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0-1.2-2.9H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.2-2.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 2.9-1.2V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 2.9 1.2l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0 1.2 2.9H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z']
+    ];
+    const nav = navItems.map(([label, href, icon, locked], i) => ({
+      label, href, icon, locked: !!locked,
+      style: 'display: flex; align-items: center; gap: 12px; padding: 11px 14px; border-radius: 14px; text-decoration: none; ' + (i === 0 ? 'background: ' + accent + '; color: #FFFFFF; font-weight: 700; box-shadow: 0 8px 20px rgba(108,76,241,0.35)' : 'color: #D9D3F5; font-weight: 600')
+    }));
+
+    return {
+      accent, navy, periods, kpis, nav, bars, yTicks, salesPath, donut, zones, days,
+      top: topList,
+      weekdays: ['L', 'M', 'M', 'J', 'V', 'S', 'D'],
+      xLabels: d.x,
+      periodLabel: d.label,
+      convPct: conv + ' %',
+      labelGrid: 'display: grid; grid-template-columns: repeat(' + n + ', minmax(0, 1fr)); gap: 12px; padding: 0 6px',
+      donutLabel: 'Répartition des statuts : ' + donut.map(s => s.label + ' ' + s.pctLabel).join(', ')
+    };
+  }
+}
+</script>
+</body>
+</html>

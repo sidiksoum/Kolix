@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Kolix — Portefeuille</title>
+<script src="./vendor/react.js"></script>
+<script src="./vendor/react-dom.js"></script>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#5A3BD8}a:hover{color:#3F25A8}
+</style>
+</helmet>
+<div style="font-family: 'Plus Jakarta Sans', 'Helvetica Neue', sans-serif; color: #16131F; background: #F7F5FE; min-height: 100vh; display: flex; flex-wrap: wrap; position: relative">
+
+<nav aria-label="Navigation principale" style="flex: 1 1 240px; max-width: 100%; background: {{side}}; color: #FFFFFF; padding: 26px 16px; box-sizing: border-box; display: flex; flex-direction: column; gap: 22px">
+<div style="display: flex; align-items: center; gap: 10px; padding-left: 8px">
+<span style="width: 40px; height: 40px; border-radius: 12px; background: #FFFFFF; color: {{side}}; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 800">K</span>
+<span style="display: flex; flex-direction: column"><span style="font-size: 26px; font-weight: 800; letter-spacing: -0.03em; line-height: 1">Kolix</span><span style="font-size: 11px; color: #E2DCFF; font-weight: 600">Votre succès, notre mission</span></span>
+</div>
+<button aria-label="Changer de boutique" style="font: inherit; width: 100%; display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.14); color: #FFFFFF; border: 0; border-radius: 14px; padding: 10px 12px; min-height: 56px; cursor: pointer; text-align: left">
+<span style="width: 36px; height: 36px; border-radius: 10px; flex: none; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #FFFFFF; background: #C93C72">S</span>
+<span style="flex: 1; display: flex; flex-direction: column; min-width: 0"><span style="font-size: 11px; color: #E2DCFF; font-weight: 700">Boutique active</span><span style="font-size: 14px; font-weight: 800">Style &amp; Élégance</span></span>
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 9l4-4 4 4M8 15l4 4 4-4"></path></svg>
+</button>
+<div style="display: flex; flex-direction: column; gap: 2px; font-size: 15px">
+<sc-for list="{{nav}}" as="n" hint-placeholder-count="13">
+<a href="{{n.href}}" style="{{n.style}}">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{n.icon}}"></path></svg>
+<span style="flex: 1">{{n.label}}</span>
+<sc-if value="{{n.hasBadge}}" hint-placeholder-val="{{ false }}"><span style="{{n.badgeStyle}}">{{n.badge}}</span></sc-if>
+</a>
+</sc-for>
+</div>
+</nav>
+
+<div style="flex: 999 1 600px; min-width: 0; display: flex; flex-direction: column">
+
+<header style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; padding: 16px 32px; background: #FFFFFF; border-bottom: 1px solid #EEEAFB">
+<label style="flex: 0 1 520px; display: flex; align-items: center; gap: 10px; background: #F4F1FE; border-radius: 24px; padding: 0 18px; min-height: 46px">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5E5A70" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Rechercher</span>
+<input type="search" placeholder="Rechercher une commande, un produit, un client…" style="flex: 1; font: inherit; font-size: 14px; border: 0; background: transparent; color: #16131F; min-height: 44px">
+</label>
+<div style="display: flex; align-items: center; gap: 14px">
+<a href="Stock.dc.html" style="display: flex; align-items: center; gap: 8px; background: #FCE3E0; color: #8A2414; border-radius: 24px; padding: 0 16px; min-height: 44px; font-size: 13px; font-weight: 800; text-decoration: none">Stock faible : 4 produits</a>
+<button aria-label="Notifications" style="position: relative; background: transparent; border: 0; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#16131F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.7 21a2 2 0 0 1-3.4 0"></path></svg><span style="position: absolute; top: 4px; right: 4px; min-width: 18px; height: 18px; border-radius: 9px; background: #D6304A; color: #FFFFFF; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center">4</span></button>
+<div style="display: flex; align-items: center; gap: 12px">
+<span style="width: 42px; height: 42px; border-radius: 21px; background: #EEE9FF; color: #4B2FC9; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800">SS</span>
+<span style="display: flex; flex-direction: column"><span style="font-size: 14px; font-weight: 800">Souleymane Sanogo</span><span style="font-size: 12px; color: #5E5A70">Propriétaire</span></span>
+</div>
+</div>
+</header>
+
+<main style="padding: 24px 32px 40px; display: flex; flex-direction: column; gap: 18px">
+
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 14px">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h1 style="margin: 0; font-size: 30px; font-weight: 800; letter-spacing: -0.03em">Portefeuille</h1>
+<span style="font-size: 14px; color: #5E5A70">Votre wallet Kolix, alimenté automatiquement par les paiements Mobile Money reçus via QR code.</span>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<button style="font: inherit; font-size: 14px; font-weight: 700; background: #FFFFFF; color: #16131F; border: 1px solid #E2DCF8; border-radius: 12px; padding: 0 16px; min-height: 46px; cursor: pointer">Exporter le relevé</button>
+<button onClick="{{openModal}}" style="font: inherit; font-size: 14px; font-weight: 800; background: {{accent}}; color: #FFFFFF; border: 0; border-radius: 12px; padding: 0 22px; min-height: 46px; cursor: pointer; box-shadow: 0 8px 20px rgba(108,76,241,0.30)">Retirer mes fonds</button>
+</div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 16px">
+<section aria-label="Portefeuille espèces" style="min-height: 230px; box-sizing: border-box; background: #F5C800; color: #16131F; border-radius: 22px; padding: 26px 28px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 14px 34px rgba(160,125,0,0.28)">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 10px">
+<span style="display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 800"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 7h20v10H2zM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM6 12h.01M18 12h.01"></path></svg>Portefeuille espèces · octobre</span>
+<span style="font-size: 12px; font-weight: 800; background: rgba(22,19,31,0.10); border-radius: 20px; padding: 4px 10px">Hors wallet numérique</span>
+</div>
+<span style="font-size: 44px; font-weight: 800; letter-spacing: -0.03em; line-height: 1">1 320 000 FCFA</span>
+<span style="font-size: 13px; font-weight: 600">Encaissés en espèces par vos livreurs. Non retirables ici, mais enregistrés en Comptabilité.</span>
+<div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: auto">
+<a href="Comptabilite.dc.html" style="display: flex; align-items: center; min-height: 48px; padding: 0 22px; border-radius: 12px; background: #16131F; color: #FFFFFF; font-size: 14px; font-weight: 800; text-decoration: none">Voir en Comptabilité</a>
+<button onClick="{{showCash}}" style="font: inherit; font-size: 14px; font-weight: 700; background: transparent; color: #16131F; border: 1.5px solid rgba(22,19,31,0.45); border-radius: 12px; padding: 0 18px; min-height: 48px; cursor: pointer">Voir les ventes en espèces</button>
+</div>
+</section>
+
+<section aria-label="Portefeuille numérique" style="min-height: 230px; box-sizing: border-box; background: {{accent}}; color: #FFFFFF; border-radius: 22px; padding: 26px 28px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 14px 34px rgba(108,76,241,0.32)">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 10px">
+<span style="display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 800"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18v13H3zM3 10h18M16 14.5h2"></path></svg>Portefeuille numérique · solde disponible</span>
+<span style="display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; background: rgba(255,255,255,0.16); border-radius: 20px; padding: 4px 10px"><span style="width: 7px; height: 7px; border-radius: 4px; background: #7CE0AE"></span>Temps réel</span>
+</div>
+<span style="font-size: 44px; font-weight: 800; letter-spacing: -0.03em; line-height: 1">{{balanceLabel}}</span>
+<span style="font-size: 13px; color: #EDE8FF">{{pendingLabel}}</span>
+<div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: auto">
+<button onClick="{{openModal}}" style="font: inherit; font-size: 14px; font-weight: 800; background: #FFFFFF; color: #3F25A8; border: 0; border-radius: 12px; padding: 0 22px; min-height: 48px; cursor: pointer">Retirer</button>
+<button onClick="{{showMomo}}" style="font: inherit; font-size: 14px; font-weight: 700; background: transparent; color: #FFFFFF; border: 1px solid rgba(255,255,255,0.55); border-radius: 12px; padding: 0 18px; min-height: 48px; cursor: pointer">Voir les encaissements</button>
+</div>
+</section>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px">
+<sc-for list="{{stats}}" as="s" hint-placeholder-count="4">
+<div style="background: #FFFFFF; border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 6px; box-shadow: 0 6px 20px rgba(108,76,241,0.06)">
+<span style="font-size: 13px; color: #5E5A70; font-weight: 700">{{s.label}}</span>
+<span style="font-size: 22px; font-weight: 800; white-space: nowrap">{{s.value}}</span>
+<span style="font-size: 12px; color: #5E5A70">{{s.note}}</span>
+</div>
+</sc-for>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; gap: 16px">
+<section style="flex: 3 1 560px; min-width: 0; background: #FFFFFF; border-radius: 18px; box-shadow: 0 6px 20px rgba(108,76,241,0.06); overflow: hidden">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; padding: 16px 18px; border-bottom: 1px solid #EEEAFB">
+<h2 style="margin: 0; font-size: 17px; font-weight: 800">Historique des transactions</h2>
+<div role="group" aria-label="Filtrer" style="display: flex; flex-wrap: wrap; gap: 6px"><sc-for list="{{chips}}" as="c" hint-placeholder-count="4"><button onClick="{{c.pick}}" aria-pressed="{{c.pressed}}" style="{{c.style}}">{{c.label}}</button></sc-for></div>
+</div>
+<div style="overflow-x: auto">
+<table style="width: 100%; border-collapse: collapse; font-size: 14px; min-width: 760px">
+<thead>
+<tr style="text-align: left; color: #5E5A70; font-size: 12px; background: #FAF9FE">
+<th style="padding: 12px 8px 12px 18px; font-weight: 700">Date</th>
+<th style="padding: 12px 8px; font-weight: 700">Commande associée</th>
+<th style="padding: 12px 8px; font-weight: 700">Mode de paiement</th>
+<th style="padding: 12px 8px; font-weight: 700">Statut</th>
+<th style="padding: 12px 18px 12px 8px; font-weight: 700; text-align: right">Montant</th>
+</tr>
+</thead>
+<tbody>
+<sc-for list="{{tx}}" as="t" hint-placeholder-count="10">
+<tr style="border-top: 1px solid #F0EDFB">
+<td style="padding: 12px 8px 12px 18px; color: #3A3647; white-space: nowrap">{{t.date}}</td>
+<td style="padding: 12px 8px"><div style="font-weight: 700">{{t.ref}}</div><div style="font-size: 12px; color: #5E5A70">{{t.who}}</div></td>
+<td style="padding: 12px 8px"><span style="display: flex; align-items: center; gap: 8px"><span style="{{t.opDot}}">{{t.opInitial}}</span>{{t.mode}}</span></td>
+<td style="padding: 12px 8px"><span style="{{t.statusStyle}}">{{t.status}}</span></td>
+<td style="padding: 12px 18px 12px 8px; text-align: right; white-space: nowrap"><span style="{{t.amountStyle}}">{{t.amount}}</span></td>
+</tr>
+</sc-for>
+</tbody>
+</table>
+</div>
+<div style="padding: 12px 18px; border-top: 1px solid #EEEAFB; font-size: 12px; color: #5E5A70">Les ventes en espèces sont listées pour information : elles ne modifient pas le solde du portefeuille.</div>
+</section>
+
+<div style="flex: 1 1 300px; display: flex; flex-direction: column; gap: 16px">
+<section style="background: #FFFFFF; border-radius: 18px; padding: 18px 20px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 6px 20px rgba(108,76,241,0.06)">
+<div style="display: flex; justify-content: space-between; align-items: baseline"><h2 style="margin: 0; font-size: 17px; font-weight: 800">Comptes de retrait</h2><button style="font: inherit; font-size: 13px; font-weight: 800; background: transparent; border: 0; color: #3F25A8; cursor: pointer; min-height: 40px">+ Ajouter</button></div>
+<sc-for list="{{accounts}}" as="a" hint-placeholder-count="4">
+<div style="display: flex; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid #F0EDFB">
+<span style="{{a.logo}}">{{a.initial}}</span>
+<span style="flex: 1; display: flex; flex-direction: column"><span style="font-size: 14px; font-weight: 700">{{a.name}}</span><span style="font-size: 12px; color: #5E5A70">{{a.num}}</span></span>
+<sc-if value="{{a.isDefault}}" hint-placeholder-val="{{ false }}"><span style="font-size: 11px; font-weight: 800; background: #EEE9FF; color: #3F25A8; border-radius: 20px; padding: 3px 9px">Par défaut</span></sc-if>
+</div>
+</sc-for>
+</section>
+
+<section style="background: #EEE9FF; border-radius: 18px; padding: 18px 20px; display: flex; flex-direction: column; gap: 10px">
+<h2 style="margin: 0; font-size: 16px; font-weight: 800; color: #2E1F86">Comment le solde est alimenté</h2>
+<sc-for list="{{flow}}" as="f" hint-placeholder-count="3">
+<div style="display: flex; gap: 10px; align-items: flex-start; font-size: 13px; color: #2E1F86; line-height: 1.45"><span style="width: 24px; height: 24px; flex: none; border-radius: 12px; background: #FFFFFF; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center">{{f.n}}</span><span>{{f.text}}</span></div>
+</sc-for>
+</section>
+
+<section style="background: #FFFFFF; border-radius: 18px; padding: 18px 20px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 6px 20px rgba(108,76,241,0.06)">
+<h2 style="margin: 0; font-size: 16px; font-weight: 800">Conditions de retrait</h2>
+<div style="display: flex; justify-content: space-between; font-size: 13px; padding: 6px 0; border-top: 1px solid #F0EDFB"><span style="color: #5E5A70">Délai de traitement</span><strong>[à définir]</strong></div>
+<div style="display: flex; justify-content: space-between; font-size: 13px; padding: 6px 0; border-top: 1px solid #F0EDFB"><span style="color: #5E5A70">Montant minimum</span><strong>[à définir]</strong></div>
+<div style="display: flex; justify-content: space-between; font-size: 13px; padding: 6px 0; border-top: 1px solid #F0EDFB"><span style="color: #5E5A70">Frais de retrait</span><strong>[à définir]</strong></div>
+</section>
+</div>
+</div>
+
+</main>
+</div>
+
+<sc-if value="{{modalOpen}}" hint-placeholder-val="{{ false }}">
+<div style="position: fixed; inset: 0; z-index: 20; background: rgba(22,19,31,0.55); display: flex; align-items: center; justify-content: center; padding: 24px">
+<div role="dialog" aria-modal="true" aria-label="Retirer mes fonds" style="background: #FFFFFF; border-radius: 24px; width: 500px; max-width: 100%; padding: 26px; display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; justify-content: space-between; align-items: center"><h2 style="margin: 0; font-size: 22px; font-weight: 800">Retirer mes fonds</h2><button onClick="{{closeModal}}" aria-label="Fermer" style="width: 44px; height: 44px; border-radius: 22px; border: 0; background: #F4F1FE; cursor: pointer; font-size: 18px">✕</button></div>
+<span style="font-size: 14px; color: #5E5A70">Solde disponible : <strong style="color: #16131F">{{balanceLabel}}</strong></span>
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; font-weight: 700; color: #5E5A70">Montant à retirer (FCFA)
+<div style="display: flex; gap: 8px">
+<input type="number" value="{{amount}}" onChange="{{setAmount}}" style="flex: 1; font: inherit; font-size: 18px; font-weight: 800; border: 1px solid #E2DCF8; border-radius: 12px; padding: 0 14px; min-height: 52px; color: #16131F">
+<button onClick="{{setMax}}" style="font: inherit; font-size: 13px; font-weight: 800; background: #F4F1FE; color: #3F25A8; border: 0; border-radius: 12px; padding: 0 14px; min-height: 52px; cursor: pointer">Tout retirer</button>
+</div></label>
+<div role="radiogroup" aria-label="Compte de destination" style="display: flex; flex-direction: column; gap: 8px"><span style="font-size: 12px; font-weight: 700; color: #5E5A70">Vers</span>
+<sc-for list="{{destinations}}" as="d" hint-placeholder-count="4">
+<button role="radio" aria-checked="{{d.checked}}" onClick="{{d.pick}}" style="{{d.style}}"><span style="{{d.logo}}">{{d.initial}}</span><span style="flex: 1; display: flex; flex-direction: column; text-align: left"><span style="font-size: 14px; font-weight: 700">{{d.name}}</span><span style="font-size: 12px; color: #5E5A70">{{d.num}}</span></span><span style="{{d.radio}}"></span></button>
+</sc-for>
+</div>
+<sc-if value="{{tooMuch}}" hint-placeholder-val="{{ false }}"><span style="font-size: 13px; font-weight: 700; color: #A3202F">Le montant dépasse votre solde disponible.</span></sc-if>
+<button onClick="{{confirm}}" disabled="{{cannot}}" style="{{confirmStyle}}">Confirmer le retrait</button>
+<span style="font-size: 12px; color: #5E5A70; text-align: center">Délai et frais selon les conditions de retrait Kolix.</span>
+</div>
+</div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#6C4CF1","options":["#6C4CF1","#7C5CFA","#5A3BD8"]},"side":{"editor":"color","default":"#5B3FD6","options":["#5B3FD6","#6C4CF1","#241D5E"]},"$preview":{"width":1440,"height":1600}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {
+      balance: 842300, pending: 0, chip: 'all', modal: false, amount: 200000, dest: 0,
+      tx: [
+        { date: '19 oct. · 10:58', ref: '#KX-1048', who: 'Aya Kouassi', mode: 'Wave · QR code', op: 'Wave', status: 'Crédité', amount: 18500 },
+        { date: '18 oct. · 16:20', ref: 'Retrait', who: 'Vers Wave 07 •• •• 12 48', mode: 'Retrait', op: 'Wave', status: 'Retiré', amount: -200000 },
+        { date: '18 oct. · 09:41', ref: '#KX-1047', who: 'Moussa Diarra', mode: 'Orange Money · QR code', op: 'Orange Money', status: 'Crédité', amount: 24000 },
+        { date: '17 oct. · 14:52', ref: '#KX-1045', who: 'Konan Yao', mode: 'Espèces', op: 'Espèces', status: 'Hors portefeuille', amount: 22000 },
+        { date: '17 oct. · 11:30', ref: '#KX-1040', who: 'Fanta Cissé', mode: 'MTN MoMo · QR code', op: 'MTN MoMo', status: 'Crédité', amount: 15000 },
+        { date: '16 oct. · 18:05', ref: '#KX-1038', who: 'Kader Traoré', mode: 'Moov Money · QR code', op: 'Moov Money', status: 'Crédité', amount: 12000 },
+        { date: '15 oct. · 09:12', ref: 'Abonnement', who: 'Kolix Grow · octobre', mode: 'Prélèvement', op: 'Kolix', status: 'Débité', amount: -10000 },
+        { date: '15 oct. · 08:47', ref: '#KX-1039', who: 'Awa Coulibaly', mode: 'Espèces', op: 'Espèces', status: 'Hors portefeuille', amount: 22000 },
+        { date: '14 oct. · 17:33', ref: '#KX-1031', who: 'Salif Ouattara', mode: 'Wave · QR code', op: 'Wave', status: 'Crédité', amount: 18500 }
+      ]
+    };
+  }
+  renderVals() {
+    const accent = this.props.accent ?? '#6C4CF1';
+    const side = this.props.side ?? '#5B3FD6';
+    const fmt = n => String(Math.round(Math.abs(n))).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    const ops = { 'Orange Money': ['O', '#E8740C'], 'Wave': ['W', '#1D9BE0'], 'MTN MoMo': ['M', '#E5B800'], 'Moov Money': ['M', '#1F5CB8'], 'Banque': ['B', '#241D5E'], 'Espèces': ['F', '#8B869C'], 'Kolix': ['K', '#5B3FD6'] };
+    const opBadge = (name, size) => {
+      const o = ops[name] || ['?', '#8B869C'];
+      const dark = name === 'MTN MoMo';
+      return 'width: ' + size + 'px; height: ' + size + 'px; border-radius: ' + Math.round(size / 3) + 'px; flex: none; display: inline-flex; align-items: center; justify-content: center; font-size: ' + Math.round(size * 0.42) + 'px; font-weight: 800; background: ' + o[1] + '; color: ' + (dark ? '#16131F' : '#FFFFFF');
+    };
+
+    const chipDefs = [['all', 'Tout'], ['momo', 'Mobile Money'], ['cash', 'Espèces'], ['out', 'Retraits et débits']];
+    const test = { all: () => true, momo: t => t.status === 'Crédité', cash: t => t.op === 'Espèces', out: t => t.amount < 0 };
+    const chips = chipDefs.map(([id, label]) => {
+      const on = this.state.chip === id;
+      return { label, pressed: on ? 'true' : 'false', pick: () => this.setState({ chip: id }), style: 'font: inherit; font-size: 13px; border-radius: 20px; padding: 0 14px; min-height: 40px; cursor: pointer; ' + (on ? 'background: #EEE9FF; color: #3F25A8; font-weight: 800; border: 1.5px solid #B9AAFF' : 'background: #FFFFFF; color: #3A3647; font-weight: 600; border: 1px solid #E2DCF8') };
+    });
+    const statusStyles = { 'Crédité': 'background: #E3F4EC; color: #1E5E3F', 'Retiré': 'background: #EEE9FF; color: #3F25A8', 'En cours': 'background: #FFF0D6; color: #6B4100', 'Débité': 'background: #ECEAF3; color: #3A3647', 'Hors portefeuille': 'background: #FFFFFF; color: #3A3647; box-shadow: inset 0 0 0 1px #B4AFC4' };
+    const tx = this.state.tx.filter(test[this.state.chip]).map(t => ({
+      ...t,
+      opInitial: (ops[t.op] || ['?'])[0],
+      opDot: opBadge(t.op, 26),
+      statusStyle: 'display: inline-block; font-size: 12px; font-weight: 800; border-radius: 8px; padding: 4px 9px; white-space: nowrap; ' + statusStyles[t.status],
+      amount: (t.amount >= 0 ? '+ ' : '− ') + fmt(t.amount) + ' FCFA',
+      amountStyle: 'font-weight: 800; color: ' + (t.status === 'Hors portefeuille' ? '#5E5A70' : t.amount >= 0 ? '#1E5E3F' : '#16131F')
+    }));
+
+    const accountsRaw = [['Wave', '07 •• •• 12 48', true], ['Orange Money', '07 •• •• 90 31', false], ['MTN MoMo', '05 •• •• 33 10', false], ['Banque', 'Banque [nom] · •••• 4417', false]];
+    const accounts = accountsRaw.map(([name, num, def]) => ({ name: name === 'Banque' ? 'Compte bancaire' : name, num, isDefault: def, initial: ops[name][0], logo: opBadge(name, 38) }));
+    const destinations = accountsRaw.map(([name, num], i) => {
+      const on = this.state.dest === i;
+      return {
+        name: name === 'Banque' ? 'Compte bancaire' : name, num, initial: ops[name][0], logo: opBadge(name, 36),
+        checked: on ? 'true' : 'false', pick: () => this.setState({ dest: i }),
+        radio: 'width: 20px; height: 20px; border-radius: 10px; box-sizing: border-box; flex: none; ' + (on ? 'border: 6px solid ' + accent : 'border: 2px solid #CFC7F2'),
+        style: 'font: inherit; display: flex; align-items: center; gap: 12px; border-radius: 14px; padding: 10px 14px; min-height: 58px; cursor: pointer; color: #16131F; ' + (on ? 'background: #F4F1FE; border: 2px solid ' + accent : 'background: #FFFFFF; border: 1px solid #E2DCF8')
+      };
+    });
+
+    const amt = Math.max(0, Number(this.state.amount) || 0);
+    const tooMuch = amt > this.state.balance;
+    const cannot = tooMuch || amt <= 0;
+    const destName = destinations[this.state.dest].name;
+
+    const navItems = [
+      ['Accueil', 'Accueil.dc.html', 'M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z'],
+      ['Boutique', 'Boutique.dc.html', 'M3 9l1.5-5h15L21 9M3 9h18v11H3zM9 20v-6h6v6'],
+      ['Produits', 'Produits.dc.html', 'M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L2 12V2h10l8.6 8.6a2 2 0 0 1 0 2.8zM7 7h.01'],
+      ['Commandes', 'Commandes.dc.html', 'M3 4h2l2.5 11h11L21 7H6.5M9 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2zM18 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2z', '12'],
+      ['Stock', 'Stock.dc.html', 'M21 8l-9-5-9 5 9 5 9-5zM3 8v8l9 5 9-5V8M12 13v8', '4', true],
+      ['Comptabilité', 'Comptabilite.dc.html', 'M6 2h9l5 5v15H6zM14 2v6h6M9 13h6M9 17h6'],
+      ['Portefeuille', 'Portefeuille.dc.html', 'M3 6h18v13H3zM3 10h18M16 14.5h2'],
+      ['Client', '#', 'M16 21v-2a4 4 0 0 0-8 0v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z'],
+      ['WhatsApp Marketing', '#', 'M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 21l2.1-5.6A8.4 8.4 0 1 1 21 11.5z'],
+      ['Analytics', '#', 'M4 20V10M10 20V4M16 20v-7M22 20H2'],
+      ['Utilisateurs', '#', 'M17 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9.5 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8'],
+      ['Kolix AI', '#', 'M12 3l2.2 5.8L20 11l-5.8 2.2L12 19l-2.2-5.8L4 11l5.8-2.2z'],
+      ['Paramètres', '#', 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1']
+    ];
+    const nav = navItems.map(([label, href, icon, badge, warn], i) => ({
+      label, href, icon, badge: badge || '', hasBadge: !!badge,
+      badgeStyle: 'font-size: 11px; font-weight: 800; border-radius: 20px; padding: 2px 8px; ' + (warn ? 'background: #FFE7B8; color: #6B4100' : 'background: rgba(255,255,255,0.22); color: #FFFFFF'),
+      style: 'display: flex; align-items: center; gap: 14px; padding: 11px 14px; border-radius: 12px; text-decoration: none; color: #FFFFFF; ' + (i === 6 ? 'background: rgba(255,255,255,0.20); font-weight: 800' : 'font-weight: 600')
+    }));
+
+    return {
+      accent, side, nav, chips, tx, accounts, destinations, amount: String(this.state.amount),
+      balanceLabel: fmt(this.state.balance) + ' FCFA',
+      pendingLabel: this.state.pending > 0 ? fmt(this.state.pending) + ' FCFA en cours de retrait' : 'Aucun retrait en cours · dernier crédit il y a 2 min',
+      stats: [
+        { label: 'Encaissé via QR · octobre', value: '1 940 000 FCFA', note: '86 paiements Mobile Money' },
+        { label: 'Retiré · octobre', value: fmt(1087700 + this.state.pending) + ' FCFA', note: 'Vers vos comptes' },
+        { label: 'Part payée en Mobile Money', value: '59 %', note: 'Le reste en espèces' },
+        { label: 'Opérateur le plus utilisé', value: 'Wave', note: '41 % des paiements QR' }
+      ],
+      flow: [
+        { n: '1', text: 'Chaque commande a son QR code unique, présenté par le livreur.' },
+        { n: '2', text: 'Le client le scanne avec Orange Money, Wave, MTN MoMo ou Moov Money.' },
+        { n: '3', text: 'Le montant est crédité ici instantanément et la commande passe à « Livrée ».' }
+      ],
+      showMomo: () => this.setState({ chip: 'momo' }),
+      showCash: () => this.setState({ chip: 'cash' }),
+      modalOpen: this.state.modal,
+      openModal: () => this.setState({ modal: true }),
+      closeModal: () => this.setState({ modal: false }),
+      setAmount: e => this.setState({ amount: e.target.value }),
+      setMax: () => this.setState({ amount: this.state.balance }),
+      tooMuch, cannot,
+      confirmStyle: 'font: inherit; font-size: 15px; font-weight: 800; border: 0; border-radius: 12px; min-height: 52px; ' + (cannot ? 'background: #CFC7F2; color: #FFFFFF; cursor: not-allowed' : 'background: ' + accent + '; color: #FFFFFF; cursor: pointer'),
+      confirm: () => {
+        if (cannot) return;
+        const t = { date: '19 oct. · à l’instant', ref: 'Retrait', who: 'Vers ' + destName, mode: 'Retrait', op: accountsRaw[this.state.dest][0], status: 'En cours', amount: -amt };
+        this.setState({ balance: this.state.balance - amt, pending: this.state.pending + amt, modal: false, tx: [t].concat(this.state.tx), chip: 'all' });
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

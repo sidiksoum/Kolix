@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Kolix — Stock</title>
+<script src="./vendor/react.js"></script>
+<script src="./vendor/react-dom.js"></script>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#5A3BD8}a:hover{color:#3F25A8}
+</style>
+</helmet>
+<div style="font-family: 'Plus Jakarta Sans', 'Helvetica Neue', sans-serif; color: #16131F; background: #F7F5FE; min-height: 100vh; display: flex; flex-wrap: wrap; position: relative">
+
+<nav aria-label="Navigation principale" style="flex: 1 1 240px; max-width: 100%; background: {{side}}; color: #FFFFFF; padding: 26px 16px; box-sizing: border-box; display: flex; flex-direction: column; gap: 22px">
+<div style="display: flex; align-items: center; gap: 10px; padding-left: 8px">
+<span style="width: 40px; height: 40px; border-radius: 12px; background: #FFFFFF; color: {{side}}; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 800">K</span>
+<span style="display: flex; flex-direction: column"><span style="font-size: 26px; font-weight: 800; letter-spacing: -0.03em; line-height: 1">Kolix</span><span style="font-size: 11px; color: #E2DCFF; font-weight: 600">Votre succès, notre mission</span></span>
+</div>
+<button aria-label="Changer de boutique" style="font: inherit; width: 100%; display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.14); color: #FFFFFF; border: 0; border-radius: 14px; padding: 10px 12px; min-height: 56px; cursor: pointer; text-align: left">
+<span style="width: 36px; height: 36px; border-radius: 10px; flex: none; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #FFFFFF; background: #C93C72">S</span>
+<span style="flex: 1; display: flex; flex-direction: column; min-width: 0"><span style="font-size: 11px; color: #E2DCFF; font-weight: 700">Boutique active</span><span style="font-size: 14px; font-weight: 800">Style &amp; Élégance</span></span>
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 9l4-4 4 4M8 15l4 4 4-4"></path></svg>
+</button>
+<div style="display: flex; flex-direction: column; gap: 2px; font-size: 15px">
+<sc-for list="{{nav}}" as="n" hint-placeholder-count="13">
+<a href="{{n.href}}" style="{{n.style}}">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{n.icon}}"></path></svg>
+<span style="flex: 1">{{n.label}}</span>
+<sc-if value="{{n.hasBadge}}" hint-placeholder-val="{{ false }}"><span style="{{n.badgeStyle}}">{{n.badge}}</span></sc-if>
+</a>
+</sc-for>
+</div>
+</nav>
+
+<div style="flex: 999 1 600px; min-width: 0; display: flex; flex-direction: column">
+
+<header style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; padding: 16px 32px; background: #FFFFFF; border-bottom: 1px solid #EEEAFB">
+<label style="flex: 0 1 520px; display: flex; align-items: center; gap: 10px; background: #F4F1FE; border-radius: 24px; padding: 0 18px; min-height: 46px">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5E5A70" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Rechercher</span>
+<input type="search" placeholder="Rechercher une commande, un produit, un client…" style="flex: 1; font: inherit; font-size: 14px; border: 0; background: transparent; color: #16131F; min-height: 44px">
+</label>
+<div style="display: flex; align-items: center; gap: 14px">
+<sc-if value="{{hasAlerts}}" hint-placeholder-val="{{ true }}">
+<button onClick="{{filterAlerts}}" style="font: inherit; display: flex; align-items: center; gap: 8px; background: #FCE3E0; color: #8A2414; border: 0; border-radius: 24px; padding: 0 16px; min-height: 44px; font-size: 13px; font-weight: 800; cursor: pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v4M12 17h.01M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"></path></svg>{{alertPill}}</button>
+</sc-if>
+<button aria-label="Notifications" style="position: relative; background: transparent; border: 0; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#16131F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.7 21a2 2 0 0 1-3.4 0"></path></svg><span style="position: absolute; top: 4px; right: 4px; min-width: 18px; height: 18px; border-radius: 9px; background: #D6304A; color: #FFFFFF; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center">{{alertCount}}</span></button>
+<div style="display: flex; align-items: center; gap: 12px">
+<span style="width: 42px; height: 42px; border-radius: 21px; background: #EEE9FF; color: #4B2FC9; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800">SS</span>
+<span style="display: flex; flex-direction: column"><span style="font-size: 14px; font-weight: 800">Souleymane Sanogo</span><span style="font-size: 12px; color: #5E5A70">Propriétaire</span></span>
+</div>
+</div>
+</header>
+
+<main style="padding: 24px 32px 40px; display: flex; flex-direction: column; gap: 18px">
+
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 14px">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h1 style="margin: 0; font-size: 30px; font-weight: 800; letter-spacing: -0.03em">Stock</h1>
+<span style="font-size: 14px; color: #5E5A70">Suivez votre stock en temps réel et anticipez les ruptures.</span>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<button style="font: inherit; font-size: 14px; font-weight: 700; background: #FFFFFF; color: #16131F; border: 1px solid #E2DCF8; border-radius: 12px; padding: 0 16px; min-height: 46px; cursor: pointer">Exporter</button>
+<button onClick="{{openUpdate}}" style="font: inherit; font-size: 14px; font-weight: 800; background: {{accent}}; color: #FFFFFF; border: 0; border-radius: 12px; padding: 0 20px; min-height: 46px; cursor: pointer; box-shadow: 0 8px 20px rgba(108,76,241,0.30)">Mettre à jour un stock</button>
+</div>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px">
+<sc-for list="{{kpis}}" as="k" hint-placeholder-count="5">
+<div style="background: #FFFFFF; border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 6px 20px rgba(108,76,241,0.06)">
+<span style="{{k.iconBox}}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{k.icon}}"></path></svg></span>
+<span style="font-size: 24px; font-weight: 800; letter-spacing: -0.02em; white-space: nowrap">{{k.value}}</span>
+<span style="font-size: 13px; color: #5E5A70; font-weight: 600">{{k.label}}</span>
+</div>
+</sc-for>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; gap: 16px">
+<section style="flex: 2 1 460px; background: #FFFFFF; border-radius: 18px; padding: 18px 20px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 6px 20px rgba(108,76,241,0.06); border-top: 4px solid #D6304A">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 10px">
+<h2 style="margin: 0; font-size: 17px; font-weight: 800">Alertes stock faible</h2>
+<span style="font-size: 12px; color: #5E5A70; font-weight: 600">Aussi visibles dans le header et l’Accueil</span>
+</div>
+<sc-for list="{{alerts}}" as="a" hint-placeholder-count="4">
+<div style="display: flex; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid #F0EDFB">
+<span style="{{a.badge}}">{{a.status}}</span>
+<span style="flex: 1; font-size: 14px; font-weight: 700">{{a.name}}</span>
+<span style="font-size: 13px; color: #3A3647">QR : <strong>{{a.qr}}</strong> / seuil {{a.seuil}}</span>
+<button onClick="{{a.restock}}" style="font: inherit; font-size: 13px; font-weight: 800; background: #F4F1FE; color: #3F25A8; border: 0; border-radius: 10px; padding: 0 12px; min-height: 40px; cursor: pointer">Réapprovisionner</button>
+</div>
+</sc-for>
+<sc-if value="{{noAlerts}}" hint-placeholder-val="{{ false }}"><span style="font-size: 14px; color: #1E5E3F; font-weight: 700">Aucun produit sous le seuil. Tout va bien.</span></sc-if>
+</section>
+
+<section style="flex: 1 1 280px; background: #FFFFFF; border-radius: 18px; padding: 18px 20px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 6px 20px rgba(108,76,241,0.06)">
+<h2 style="margin: 0; font-size: 17px; font-weight: 800">Seuil d’alerte</h2>
+<span style="font-size: 13px; color: #3A3647; line-height: 1.5">L’alerte « Stock faible » se déclenche quand la quantité restante (QR) atteint ce seuil.</span>
+<div style="display: flex; align-items: center; gap: 12px">
+<button onClick="{{seuilDown}}" aria-label="Diminuer le seuil" style="width: 48px; height: 48px; border-radius: 14px; border: 1px solid #E2DCF8; background: #FFFFFF; font-size: 22px; font-weight: 700; cursor: pointer">−</button>
+<span style="flex: 1; text-align: center; display: flex; flex-direction: column"><span style="font-size: 30px; font-weight: 800; color: #3F25A8">{{seuil}}</span><span style="font-size: 12px; color: #5E5A70">unités</span></span>
+<button onClick="{{seuilUp}}" aria-label="Augmenter le seuil" style="width: 48px; height: 48px; border-radius: 14px; border: 1px solid #E2DCF8; background: #FFFFFF; font-size: 22px; font-weight: 700; cursor: pointer">+</button>
+</div>
+<span style="font-size: 12px; color: #5E5A70">Seuil par défaut, modifiable produit par produit.</span>
+</section>
+</div>
+
+<section style="background: #FFFFFF; border-radius: 18px; box-shadow: 0 6px 20px rgba(108,76,241,0.06); overflow: hidden">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 12px; padding: 16px 18px; border-bottom: 1px solid #EEEAFB">
+<div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end">
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; font-weight: 700; color: #5E5A70">Produit
+<input type="search" placeholder="Nom du produit" style="font: inherit; font-size: 14px; border: 1px solid #E2DCF8; border-radius: 12px; padding: 0 12px; min-height: 44px; width: 200px; background: #FFFFFF; color: #16131F"></label>
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; font-weight: 700; color: #5E5A70">Date
+<select style="font: inherit; font-size: 14px; border: 1px solid #E2DCF8; border-radius: 12px; padding: 0 10px; min-height: 44px; background: #FFFFFF; color: #16131F"><option>Ce mois</option><option>7 derniers jours</option><option>Depuis toujours</option></select></label>
+</div>
+<div role="group" aria-label="Filtrer par statut" style="display: flex; flex-wrap: wrap; gap: 6px">
+<sc-for list="{{chips}}" as="c" hint-placeholder-count="4"><button onClick="{{c.pick}}" aria-pressed="{{c.pressed}}" style="{{c.style}}">{{c.label}}</button></sc-for>
+</div>
+</div>
+<div style="overflow-x: auto">
+<table style="width: 100%; border-collapse: collapse; font-size: 14px; min-width: 960px">
+<thead>
+<tr style="text-align: left; color: #5E5A70; font-size: 12px; background: #FAF9FE">
+<th style="padding: 12px 8px 12px 18px; font-weight: 700">N°</th>
+<th style="padding: 12px 8px; font-weight: 700">Nom du produit</th>
+<th style="padding: 12px 8px; font-weight: 700; text-align: right" title="Quantité initiale">Q</th>
+<th style="padding: 12px 8px; font-weight: 700; text-align: right" title="Quantité vendue">QV</th>
+<th style="padding: 12px 8px; font-weight: 700" title="Quantité restante">QR</th>
+<th style="padding: 12px 8px; font-weight: 700">Statut</th>
+<th style="padding: 12px 8px; font-weight: 700; text-align: right">Prix unitaire</th>
+<th style="padding: 12px 8px; font-weight: 700; text-align: right">Coût total</th>
+<th style="padding: 12px 18px 12px 8px; font-weight: 700; text-align: right">Action</th>
+</tr>
+</thead>
+<tbody>
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="11">
+<tr style="border-top: 1px solid #F0EDFB">
+<td style="padding: 12px 8px 12px 18px; color: #5E5A70; font-weight: 700">{{r.num}}</td>
+<td style="padding: 12px 8px; font-weight: 700">{{r.name}}</td>
+<td style="padding: 12px 8px; text-align: right">{{r.q}}</td>
+<td style="padding: 12px 8px; text-align: right">{{r.qv}}</td>
+<td style="padding: 12px 8px; min-width: 140px"><div style="display: flex; align-items: center; gap: 10px"><span style="{{r.qrStyle}}">{{r.qr}}</span><span style="flex: 1; height: 6px; border-radius: 3px; background: #F0EDFB; overflow: hidden"><span style="{{r.bar}}"></span></span></div></td>
+<td style="padding: 12px 8px"><span style="{{r.badge}}">{{r.status}}</span></td>
+<td style="padding: 12px 8px; text-align: right; white-space: nowrap">{{r.pu}}</td>
+<td style="padding: 12px 8px; text-align: right; font-weight: 800; white-space: nowrap">{{r.total}}</td>
+<td style="padding: 12px 18px 12px 8px; text-align: right"><button onClick="{{r.edit}}" style="font: inherit; font-size: 13px; font-weight: 800; background: #F4F1FE; color: #3F25A8; border: 0; border-radius: 10px; padding: 0 12px; min-height: 38px; cursor: pointer">Mettre à jour</button></td>
+</tr>
+</sc-for>
+</tbody>
+<tfoot>
+<tr style="border-top: 2px solid #E2DCF8; background: #FAF9FE">
+<td colspan="2" style="padding: 12px 8px 12px 18px; font-weight: 800">Total</td>
+<td style="padding: 12px 8px; text-align: right; font-weight: 800">{{totQ}}</td>
+<td style="padding: 12px 8px; text-align: right; font-weight: 800">{{totQV}}</td>
+<td style="padding: 12px 8px; font-weight: 800">{{totQR}}</td>
+<td colspan="2"></td>
+<td style="padding: 12px 8px; text-align: right; font-weight: 800; white-space: nowrap">{{totCost}}</td>
+<td></td>
+</tr>
+</tfoot>
+</table>
+</div>
+<div style="padding: 12px 18px; border-top: 1px solid #EEEAFB; font-size: 12px; color: #5E5A70">Q = quantité initiale · QV = quantité vendue (commandes livrées) · QR = quantité restante · Coût total = Q × prix unitaire</div>
+</section>
+
+<section style="background: #FFFFFF; border-radius: 18px; padding: 18px 20px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 6px 20px rgba(108,76,241,0.06)">
+<h2 style="margin: 0 0 4px; font-size: 17px; font-weight: 800">Derniers mouvements</h2>
+<sc-for list="{{moves}}" as="m" hint-placeholder-count="4">
+<div style="display: flex; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid #F0EDFB; font-size: 14px">
+<span style="{{m.signStyle}}">{{m.sign}}</span>
+<span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 700">{{m.label}}</span><span style="font-size: 12px; color: #5E5A70">{{m.meta}}</span></span>
+<span style="font-weight: 800">{{m.qty}}</span>
+</div>
+</sc-for>
+</section>
+
+</main>
+</div>
+
+<sc-if value="{{modalOpen}}" hint-placeholder-val="{{ false }}">
+<div style="position: fixed; inset: 0; z-index: 20; background: rgba(22,19,31,0.55); display: flex; align-items: center; justify-content: center; padding: 24px">
+<div role="dialog" aria-modal="true" aria-label="Mettre à jour un stock" style="background: #FFFFFF; border-radius: 24px; width: 480px; max-width: 100%; padding: 26px; display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; justify-content: space-between; align-items: center"><h2 style="margin: 0; font-size: 22px; font-weight: 800">Mettre à jour un stock</h2><button onClick="{{closeUpdate}}" aria-label="Fermer" style="width: 44px; height: 44px; border-radius: 22px; border: 0; background: #F4F1FE; cursor: pointer; font-size: 18px">✕</button></div>
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; font-weight: 700; color: #5E5A70">Produit
+<select value="{{form.idx}}" onChange="{{setProd}}" style="font: inherit; font-size: 14px; border: 1px solid #E2DCF8; border-radius: 12px; padding: 0 12px; min-height: 46px; background: #FFFFFF; color: #16131F">
+<sc-for list="{{prodOptions}}" as="o" hint-placeholder-count="11"><option value="{{o.value}}">{{o.label}}</option></sc-for>
+</select></label>
+<div role="group" aria-label="Type de mouvement" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+<sc-for list="{{moveTypes}}" as="t" hint-placeholder-count="2"><button onClick="{{t.pick}}" aria-pressed="{{t.pressed}}" style="{{t.style}}"><span style="font-weight: 800">{{t.label}}</span><span style="font-size: 12px; opacity: 0.85">{{t.sub}}</span></button></sc-for>
+</div>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; font-weight: 700; color: #5E5A70">Quantité
+<input type="number" min="1" value="{{form.qty}}" onChange="{{setQty}}" style="font: inherit; font-size: 14px; border: 1px solid #E2DCF8; border-radius: 12px; padding: 0 12px; min-height: 46px; color: #16131F"></label>
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; font-weight: 700; color: #5E5A70">Date
+<input type="text" value="19/10/2026" style="font: inherit; font-size: 14px; border: 1px solid #E2DCF8; border-radius: 12px; padding: 0 12px; min-height: 46px; color: #16131F"></label>
+</div>
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; font-weight: 700; color: #5E5A70">Note (facultatif)
+<input type="text" placeholder="Ex. arrivage fournisseur Adjamé" style="font: inherit; font-size: 14px; border: 1px solid #E2DCF8; border-radius: 12px; padding: 0 12px; min-height: 46px; color: #16131F"></label>
+<div style="background: #F8F6FF; border-radius: 14px; padding: 12px 14px; font-size: 14px; display: flex; justify-content: space-between"><span style="color: #5E5A70">Nouvelle quantité restante</span><strong>{{previewQR}}</strong></div>
+<button onClick="{{submit}}" style="font: inherit; font-size: 15px; font-weight: 800; background: {{accent}}; color: #FFFFFF; border: 0; border-radius: 12px; min-height: 50px; cursor: pointer">Enregistrer</button>
+</div>
+</div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#6C4CF1","options":["#6C4CF1","#7C5CFA","#5A3BD8"]},"side":{"editor":"color","default":"#5B3FD6","options":["#5B3FD6","#6C4CF1","#241D5E"]},"$preview":{"width":1440,"height":1560}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {
+      seuil: 10, chip: 'all', modal: false,
+      form: { idx: '0', type: 'in', qty: 10 },
+      items: [
+        ['Sac à main chic', 40, 22, 8500], ['Baskets tendance', 50, 25, 6000], ['Montre élégante', 30, 21, 9000],
+        ['Kit beauté visage', 20, 6, 9500], ['Chemise homme', 45, 15, 4500], ['Robe élégante', 25, 18, 11000],
+        ['Baskets sport', 30, 30, 7000], ['Lampe déco', 15, 3, 4000], ['Sérum éclat 30 ml', 40, 18, 4000],
+        ['Pagne wax 6 yards', 60, 20, 3500], ['Foulard soie', 20, 17, 2500]
+      ].map(([name, q, qv, pu]) => ({ name, q, qv, pu })),
+      moves: [
+        { sign: '−', label: 'Vente livrée · #KX-1045', meta: 'Montre élégante · Aujourd’hui 14:30', qty: '−1' },
+        { sign: '+', label: 'Réapprovisionnement', meta: 'Pagne wax 6 yards · Hier · arrivage Adjamé', qty: '+20' },
+        { sign: '−', label: 'Vente livrée · #KX-1039', meta: 'Robe élégante · Hier 11:05', qty: '−1' },
+        { sign: '−', label: 'Retrait (article abîmé)', meta: 'Baskets sport · 16 oct.', qty: '−2' }
+      ]
+    };
+  }
+  renderVals() {
+    const accent = this.props.accent ?? '#6C4CF1';
+    const side = this.props.side ?? '#5B3FD6';
+    const fmt = n => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    const seuil = this.state.seuil;
+    const items = this.state.items.map((it, i) => {
+      const qr = Math.max(0, it.q - it.qv);
+      const status = qr === 0 ? 'Rupture' : qr <= seuil ? 'Stock faible' : 'En stock';
+      return { ...it, i, qr, status };
+    });
+    const badgeFor = s => 'display: inline-block; font-size: 12px; font-weight: 800; border-radius: 8px; padding: 4px 9px; white-space: nowrap; ' + (s === 'Rupture' ? 'background: #D6304A; color: #FFFFFF' : s === 'Stock faible' ? 'background: #FFE7B8; color: #6B4100' : 'background: #E3F4EC; color: #1E5E3F');
+    const openFor = i => this.setState({ modal: true, form: { idx: String(i), type: 'in', qty: 10 } });
+
+    const chipDefs = [['all', 'Tous'], ['En stock', 'En stock'], ['Stock faible', 'Stock faible'], ['Rupture', 'Rupture']];
+    const chips = chipDefs.map(([id, label]) => {
+      const on = this.state.chip === id;
+      const n = id === 'all' ? items.length : items.filter(x => x.status === id).length;
+      return { label: label + ' (' + n + ')', pressed: on ? 'true' : 'false', pick: () => this.setState({ chip: id }), style: 'font: inherit; font-size: 13px; border-radius: 20px; padding: 0 14px; min-height: 40px; cursor: pointer; ' + (on ? 'background: #EEE9FF; color: #3F25A8; font-weight: 800; border: 1.5px solid #B9AAFF' : 'background: #FFFFFF; color: #3A3647; font-weight: 600; border: 1px solid #E2DCF8') };
+    });
+    const visible = this.state.chip === 'all' ? items : items.filter(x => x.status === this.state.chip);
+    const rows = visible.map(x => {
+      const pct = x.q ? Math.round(x.qr / x.q * 100) : 0;
+      const col = x.status === 'Rupture' ? '#D6304A' : x.status === 'Stock faible' ? '#D98A1A' : accent;
+      return {
+        num: String(x.i + 1).padStart(2, '0'), name: x.name, q: String(x.q), qv: String(x.qv), qr: String(x.qr), status: x.status,
+        badge: badgeFor(x.status),
+        qrStyle: 'min-width: 26px; font-weight: 800; color: ' + (x.status === 'Rupture' ? '#A3202F' : x.status === 'Stock faible' ? '#8A4B00' : '#16131F'),
+        bar: 'display: block; height: 100%; border-radius: 3px; width: ' + pct + '%; background: ' + col,
+        pu: fmt(x.pu) + ' FCFA', total: fmt(x.q * x.pu) + ' FCFA',
+        edit: () => openFor(x.i)
+      };
+    });
+
+    const low = items.filter(x => x.status !== 'En stock').sort((a, b) => a.qr - b.qr);
+    const alerts = low.map(x => ({ name: x.name, qr: String(x.qr), seuil: String(seuil), status: x.status, badge: badgeFor(x.status), restock: () => openFor(x.i) }));
+    const totQ = items.reduce((a, x) => a + x.q, 0), totQV = items.reduce((a, x) => a + x.qv, 0), totQR = items.reduce((a, x) => a + x.qr, 0);
+    const valueLeft = items.reduce((a, x) => a + x.qr * x.pu, 0);
+    const kb = (bg, fg) => 'width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: ' + bg + '; color: ' + fg;
+    const kpis = [
+      { label: 'Produits suivis', value: String(items.length), icon: 'M21 8l-9-5-9 5 9 5 9-5zM3 8v8l9 5 9-5V8M12 13v8', iconBox: kb('#EEE9FF', '#4B2FC9') },
+      { label: 'Unités restantes (QR)', value: fmt(totQR), icon: 'M4 6h16M4 12h16M4 18h10', iconBox: kb('#E8EEFB', '#1F3F8A') },
+      { label: 'Valeur du stock restant', value: fmt(valueLeft) + ' FCFA', icon: 'M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6', iconBox: kb('#E3F4EC', '#1E5E3F') },
+      { label: 'Produits en stock faible', value: String(items.filter(x => x.status === 'Stock faible').length), icon: 'M12 9v4M12 17h.01M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z', iconBox: kb('#FFF0D6', '#8A4B00') },
+      { label: 'Produits en rupture', value: String(items.filter(x => x.status === 'Rupture').length), icon: 'M18 6L6 18M6 6l12 12', iconBox: kb('#FCE3E0', '#A3202F') }
+    ];
+
+    const f = this.state.form;
+    const cur = items[Number(f.idx)];
+    const qty = Math.max(0, Number(f.qty) || 0);
+    const previewQR = f.type === 'in' ? cur.qr + qty : Math.max(0, cur.qr - qty);
+    const moveTypes = [['in', 'Entrée de stock', 'Réapprovisionnement'], ['out', 'Retrait', 'Perte, casse, correction']].map(([id, label, sub]) => {
+      const on = f.type === id;
+      return { label, sub, pressed: on ? 'true' : 'false', pick: () => this.setState({ form: { ...this.state.form, type: id } }), style: 'font: inherit; display: flex; flex-direction: column; gap: 2px; text-align: left; border-radius: 14px; padding: 12px 14px; min-height: 60px; cursor: pointer; font-size: 14px; ' + (on ? 'background: #EEE9FF; color: #2E1F86; border: 2px solid ' + accent : 'background: #FFFFFF; color: #3A3647; border: 1px solid #E2DCF8') };
+    });
+
+    const navItems = [
+      ['Accueil', 'Accueil.dc.html', 'M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z'],
+      ['Boutique', 'Boutique.dc.html', 'M3 9l1.5-5h15L21 9M3 9h18v11H3zM9 20v-6h6v6'],
+      ['Produits', 'Produits.dc.html', 'M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L2 12V2h10l8.6 8.6a2 2 0 0 1 0 2.8zM7 7h.01'],
+      ['Commandes', 'Commandes.dc.html', 'M3 4h2l2.5 11h11L21 7H6.5M9 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2zM18 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2z', '12'],
+      ['Stock', 'Stock.dc.html', 'M21 8l-9-5-9 5 9 5 9-5zM3 8v8l9 5 9-5V8M12 13v8', low.length ? String(low.length) : ''],
+      ['Comptabilité', '#', 'M6 2h9l5 5v15H6zM14 2v6h6M9 13h6M9 17h6'],
+      ['Portefeuille', 'Portefeuille.dc.html', 'M3 6h18v13H3zM3 10h18M16 14.5h2'],
+      ['Client', '#', 'M16 21v-2a4 4 0 0 0-8 0v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z'],
+      ['WhatsApp Marketing', '#', 'M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 21l2.1-5.6A8.4 8.4 0 1 1 21 11.5z'],
+      ['Analytics', '#', 'M4 20V10M10 20V4M16 20v-7M22 20H2'],
+      ['Utilisateurs', '#', 'M17 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9.5 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8'],
+      ['Kolix AI', '#', 'M12 3l2.2 5.8L20 11l-5.8 2.2L12 19l-2.2-5.8L4 11l5.8-2.2z'],
+      ['Paramètres', '#', 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1']
+    ];
+    const nav = navItems.map(([label, href, icon, badge], i) => ({
+      label, href, icon, badge: badge || '', hasBadge: !!badge,
+      badgeStyle: 'font-size: 11px; font-weight: 800; border-radius: 20px; padding: 2px 8px; ' + (i === 4 ? 'background: #FFE7B8; color: #6B4100' : 'background: rgba(255,255,255,0.22); color: #FFFFFF'),
+      style: 'display: flex; align-items: center; gap: 14px; padding: 11px 14px; border-radius: 12px; text-decoration: none; color: #FFFFFF; ' + (i === 4 ? 'background: rgba(255,255,255,0.20); font-weight: 800' : 'font-weight: 600')
+    }));
+
+    return {
+      accent, side, nav, kpis, chips, rows, alerts, moveTypes, seuil: String(seuil),
+      moves: this.state.moves.map(m => ({ ...m, signStyle: 'width: 34px; height: 34px; border-radius: 10px; flex: none; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 800; ' + (m.sign === '+' ? 'background: #E3F4EC; color: #1E5E3F' : 'background: #F4F1FE; color: #3F25A8') })),
+      hasAlerts: low.length > 0, noAlerts: low.length === 0,
+      alertCount: String(low.length),
+      alertPill: 'Stock faible : ' + low.length + (low.length > 1 ? ' produits' : ' produit'),
+      filterAlerts: () => this.setState({ chip: 'Stock faible' }),
+      totQ: fmt(totQ), totQV: fmt(totQV), totQR: fmt(totQR), totCost: fmt(items.reduce((a, x) => a + x.q * x.pu, 0)) + ' FCFA',
+      seuilUp: () => this.setState({ seuil: Math.min(99, seuil + 1) }),
+      seuilDown: () => this.setState({ seuil: Math.max(1, seuil - 1) }),
+      modalOpen: this.state.modal,
+      openUpdate: () => openFor(0),
+      closeUpdate: () => this.setState({ modal: false }),
+      form: f,
+      prodOptions: items.map(x => ({ value: String(x.i), label: x.name + ' (QR : ' + x.qr + ')' })),
+      setProd: e => this.setState({ form: { ...this.state.form, idx: e.target.value } }),
+      setQty: e => this.setState({ form: { ...this.state.form, qty: e.target.value } }),
+      previewQR: String(previewQR),
+      submit: () => {
+        const idx = Number(f.idx);
+        const its = this.state.items.map((it, i) => {
+          if (i !== idx) return it;
+          if (f.type === 'in') return { ...it, q: it.q + qty };
+          const qr = Math.max(0, it.q - it.qv);
+          return { ...it, q: it.q - Math.min(qty, qr) };
+        });
+        const mv = { sign: f.type === 'in' ? '+' : '−', label: f.type === 'in' ? 'Réapprovisionnement' : 'Retrait', meta: cur.name + ' · À l’instant', qty: (f.type === 'in' ? '+' : '−') + qty };
+        this.setState({ items: its, modal: false, moves: [mv].concat(this.state.moves).slice(0, 6) });
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>
