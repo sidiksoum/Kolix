@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Kolix — Analytics</title>
+<script src="./vendor/react.js"></script>
+<script src="./vendor/react-dom.js"></script>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#5A3BD8}a:hover{color:#3F25A8}
+</style>
+</helmet>
+<div style="font-family: 'Plus Jakarta Sans', 'Helvetica Neue', sans-serif; color: #16131F; background: #F7F5FE; min-height: 100vh; display: flex; flex-wrap: wrap; position: relative">
+
+<nav aria-label="Navigation principale" style="flex: 1 1 240px; max-width: 100%; background: {{side}}; color: #FFFFFF; padding: 26px 16px; box-sizing: border-box; display: flex; flex-direction: column; gap: 22px">
+<div style="display: flex; align-items: center; gap: 10px; padding-left: 8px">
+<span style="width: 40px; height: 40px; border-radius: 12px; background: #FFFFFF; color: {{side}}; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 800">K</span>
+<span style="display: flex; flex-direction: column"><span style="font-size: 26px; font-weight: 800; letter-spacing: -0.03em; line-height: 1">Kolix</span><span style="font-size: 11px; color: #E2DCFF; font-weight: 600">Votre succès, notre mission</span></span>
+</div>
+<button aria-label="Changer de boutique" style="font: inherit; width: 100%; display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.14); color: #FFFFFF; border: 0; border-radius: 14px; padding: 10px 12px; min-height: 56px; cursor: pointer; text-align: left">
+<span style="width: 36px; height: 36px; border-radius: 10px; flex: none; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #FFFFFF; background: #C93C72">S</span>
+<span style="flex: 1; display: flex; flex-direction: column; min-width: 0"><span style="font-size: 11px; color: #E2DCFF; font-weight: 700">Boutique active</span><span style="font-size: 14px; font-weight: 800">Style &amp; Élégance</span></span>
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 9l4-4 4 4M8 15l4 4 4-4"></path></svg>
+</button>
+<div style="display: flex; flex-direction: column; gap: 2px; font-size: 15px">
+<sc-for list="{{nav}}" as="n" hint-placeholder-count="13">
+<a href="{{n.href}}" style="{{n.style}}">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{n.icon}}"></path></svg>
+<span style="flex: 1">{{n.label}}</span>
+<sc-if value="{{n.hasBadge}}" hint-placeholder-val="{{ false }}"><span style="{{n.badgeStyle}}">{{n.badge}}</span></sc-if>
+</a>
+</sc-for>
+</div>
+</nav>
+
+<div style="flex: 999 1 600px; min-width: 0; display: flex; flex-direction: column">
+
+<header style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; padding: 16px 32px; background: #FFFFFF; border-bottom: 1px solid #EEEAFB">
+<label style="flex: 0 1 520px; display: flex; align-items: center; gap: 10px; background: #F4F1FE; border-radius: 24px; padding: 0 18px; min-height: 46px">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5E5A70" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Rechercher</span>
+<input type="search" placeholder="Rechercher une commande, un produit, un client…" style="flex: 1; font: inherit; font-size: 14px; border: 0; background: transparent; color: #16131F; min-height: 44px">
+</label>
+<div style="display: flex; align-items: center; gap: 14px">
+<a href="Stock.dc.html" style="display: flex; align-items: center; gap: 8px; background: #FCE3E0; color: #8A2414; border-radius: 24px; padding: 0 16px; min-height: 44px; font-size: 13px; font-weight: 800; text-decoration: none">Stock faible : 4 produits</a>
+<div style="display: flex; align-items: center; gap: 12px">
+<span style="width: 42px; height: 42px; border-radius: 21px; background: #EEE9FF; color: #4B2FC9; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800">SS</span>
+<span style="display: flex; flex-direction: column"><span style="font-size: 14px; font-weight: 800">Souleymane Sanogo</span><span style="font-size: 12px; color: #5E5A70">Propriétaire</span></span>
+</div>
+</div>
+</header>
+
+<main style="padding: 24px 32px 40px; display: flex; flex-direction: column; gap: 18px">
+
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 14px">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h1 style="margin: 0; font-size: 30px; font-weight: 800; letter-spacing: -0.03em">Analytics</h1>
+<span style="font-size: 14px; color: #5E5A70">Rapports approfondis sur les performances de votre boutique.</span>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center">
+<div role="group" aria-label="Période" style="display: flex; background: #FFFFFF; border: 1px solid #E2DCF8; border-radius: 12px; padding: 3px; gap: 3px">
+<sc-for list="{{periods}}" as="p" hint-placeholder-count="4"><button onClick="{{p.pick}}" aria-pressed="{{p.pressed}}" style="{{p.style}}">{{p.label}}</button></sc-for>
+</div>
+<button onClick="{{exportPdf}}" style="font: inherit; font-size: 14px; font-weight: 800; background: #FFFFFF; color: #16131F; border: 1px solid #E2DCF8; border-radius: 12px; padding: 0 16px; min-height: 46px; cursor: pointer">Exporter en PDF</button>
+<button onClick="{{exportXls}}" style="font: inherit; font-size: 14px; font-weight: 800; background: {{accent}}; color: #FFFFFF; border: 0; border-radius: 12px; padding: 0 18px; min-height: 46px; cursor: pointer; box-shadow: 0 8px 20px rgba(108,76,241,0.30)">Exporter en Excel</button>
+</div>
+</div>
+
+<sc-if value="{{hasToast}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; align-items: center; gap: 10px; background: #241D5E; color: #FFFFFF; border-radius: 14px; padding: 12px 16px; font-size: 14px; font-weight: 700"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7CE0AE" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg><span style="flex: 1">{{toast}}</span><button onClick="{{closeToast}}" style="font: inherit; background: transparent; border: 0; color: #FFFFFF; font-weight: 800; cursor: pointer; min-height: 36px">Fermer</button></div>
+</sc-if>
+
+<section style="background: #FFFFFF; border-radius: 18px; padding: 20px 22px; display: flex; flex-direction: column; gap: 16px; box-shadow: 0 6px 20px rgba(108,76,241,0.06)">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 4px"><h2 style="margin: 0; font-size: 18px; font-weight: 800">Conversion du formulaire boutique</h2><span style="font-size: 13px; color: #5E5A70">De la visite à la commande livrée, {{periodLabel}}</span></div>
+<div style="display: flex; gap: 22px">
+<div style="display: flex; flex-direction: column; align-items: flex-end"><span style="font-size: 28px; font-weight: 800; color: #3F25A8">{{formConv}}</span><span style="font-size: 12px; color: #5E5A70; font-weight: 700">Formulaire ouvert → commande</span></div>
+<div style="display: flex; flex-direction: column; align-items: flex-end"><span style="font-size: 28px; font-weight: 800">{{globalConv}}</span><span style="font-size: 12px; color: #5E5A70; font-weight: 700">Visite → commande</span></div>
+</div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; align-items: end">
+<sc-for list="{{funnel}}" as="f" hint-placeholder-count="5">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 12px; font-weight: 800; color: #1E5E3F; min-height: 16px">{{f.step}}</span>
+<div style="height: 150px; display: flex; align-items: flex-end"><div style="{{f.bar}}"></div></div>
+<span style="font-size: 20px; font-weight: 800">{{f.value}}</span>
+<span style="font-size: 12px; color: #5E5A70; font-weight: 700">{{f.label}}</span>
+</div>
+</sc-for>
+</div>
+</section>
+
+<div style="display: flex; flex-wrap: wrap; gap: 16px">
+<section style="flex: 3 1 520px; min-width: 0; background: #FFFFFF; border-radius: 18px; padding: 20px 22px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 6px 20px rgba(108,76,241,0.06)">
+<h2 style="margin: 0; font-size: 18px; font-weight: 800">Analyse des statuts de commande</h2>
+<div style="display: flex; height: 18px; border-radius: 9px; overflow: hidden" role="img" aria-label="{{statusAria}}">
+<sc-for list="{{statuses}}" as="s" hint-placeholder-count="6"><span style="{{s.seg}}"></span></sc-for>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px">
+<sc-for list="{{statuses}}" as="s" hint-placeholder-count="6">
+<div style="border: 1px solid #EEEAFB; border-radius: 14px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px">
+<span style="display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; color: #3A3647"><span style="{{s.dot}}"></span>{{s.rateLabel}}</span>
+<span style="font-size: 22px; font-weight: 800">{{s.pct}}</span>
+<span style="font-size: 12px; color: #5E5A70">{{s.count}} commandes</span>
+</div>
+</sc-for>
+</div>
+</section>
+<section style="flex: 1 1 280px; background: #241D5E; color: #FFFFFF; border-radius: 18px; padding: 20px 22px; display: flex; flex-direction: column; gap: 12px">
+<span style="display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: #B9AAFF"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.2 5.8L20 11l-5.8 2.2L12 19l-2.2-5.8L4 11l5.8-2.2z"></path></svg>Lecture Kolix AI</span>
+<p style="margin: 0; font-size: 15px; font-weight: 600; line-height: 1.55">Korhogo et Daloa livrent à peine plus d’une commande sur deux. Un appel de confirmation avant expédition ou un acompte Mobile Money pourrait réduire les retours.</p>
+<p style="margin: 0; font-size: 14px; color: #D9D3F5; line-height: 1.55">Votre formulaire convertit bien : près d’un formulaire ouvert sur trois devient une commande.</p>
+</section>
+</div>
+
+<section style="background: #FFFFFF; border-radius: 18px; padding: 20px 22px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 6px 20px rgba(108,76,241,0.06)">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px">
+<h2 style="margin: 0; font-size: 18px; font-weight: 800">Ventes par période</h2>
+<div role="group" aria-label="Granularité" style="display: flex; background: #F4F1FE; border-radius: 12px; padding: 3px; gap: 3px"><sc-for list="{{grains}}" as="g" hint-placeholder-count="3"><button onClick="{{g.pick}}" aria-pressed="{{g.pressed}}" style="{{g.style}}">{{g.label}}</button></sc-for></div>
+</div>
+<div style="{{barGrid}}">
+<sc-for list="{{timeBars}}" as="b" hint-placeholder-count="8">
+<div style="display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end">
+<span style="font-size: 11px; font-weight: 800; color: #3A3647">{{b.n}}</span>
+<span style="{{b.bar}}"></span>
+<span style="font-size: 12px; font-weight: 600; color: #5E5A70">{{b.label}}</span>
+</div>
+</sc-for>
+</div>
+<span style="font-size: 12px; color: #5E5A70">Nombre de ventes livrées par période.</span>
+</section>
+
+<div style="display: flex; flex-wrap: wrap; gap: 16px">
+<section style="flex: 1 1 520px; min-width: 0; background: #FFFFFF; border-radius: 18px; box-shadow: 0 6px 20px rgba(108,76,241,0.06); overflow: hidden">
+<h2 style="margin: 0; padding: 18px 20px 12px; font-size: 18px; font-weight: 800">Ventes par produit</h2>
+<div style="overflow-x: auto">
+<table style="width: 100%; border-collapse: collapse; font-size: 14px; min-width: 520px">
+<thead><tr style="text-align: left; color: #5E5A70; font-size: 12px; background: #FAF9FE"><th style="padding: 10px 8px 10px 20px; font-weight: 700">Produit</th><th style="padding: 10px 8px; font-weight: 700; text-align: right">Unités</th><th style="padding: 10px 8px; font-weight: 700">Part du CA</th><th style="padding: 10px 8px; font-weight: 700; text-align: right">CA</th><th style="padding: 10px 20px 10px 8px; font-weight: 700; text-align: right">Livraison</th></tr></thead>
+<tbody>
+<sc-for list="{{products}}" as="p" hint-placeholder-count="8">
+<tr style="border-top: 1px solid #F0EDFB">
+<td style="padding: 11px 8px 11px 20px; font-weight: 700">{{p.name}}</td>
+<td style="padding: 11px 8px; text-align: right">{{p.units}}</td>
+<td style="padding: 11px 8px; min-width: 120px"><div style="display: flex; align-items: center; gap: 8px"><span style="flex: 1; height: 8px; background: #F0EDFB; border-radius: 4px; overflow: hidden"><span style="{{p.bar}}"></span></span><span style="font-size: 12px; font-weight: 700; min-width: 34px">{{p.share}}</span></div></td>
+<td style="padding: 11px 8px; text-align: right; font-weight: 800; white-space: nowrap">{{p.ca}}</td>
+<td style="padding: 11px 20px 11px 8px; text-align: right"><span style="{{p.rateStyle}}">{{p.rate}}</span></td>
+</tr>
+</sc-for>
+</tbody>
+</table>
+</div>
+</section>
+
+<section style="flex: 1 1 420px; min-width: 0; background: #FFFFFF; border-radius: 18px; box-shadow: 0 6px 20px rgba(108,76,241,0.06); overflow: hidden">
+<h2 style="margin: 0; padding: 18px 20px 12px; font-size: 18px; font-weight: 800">Ventes par zone géographique</h2>
+<div style="overflow-x: auto">
+<table style="width: 100%; border-collapse: collapse; font-size: 14px; min-width: 440px">
+<thead><tr style="text-align: left; color: #5E5A70; font-size: 12px; background: #FAF9FE"><th style="padding: 10px 8px 10px 20px; font-weight: 700">Zone</th><th style="padding: 10px 8px; font-weight: 700; text-align: right">Commandes</th><th style="padding: 10px 8px; font-weight: 700; text-align: right">Livrées</th><th style="padding: 10px 8px; font-weight: 700; text-align: right">CA</th><th style="padding: 10px 20px 10px 8px; font-weight: 700; text-align: right">Livraison</th></tr></thead>
+<tbody>
+<sc-for list="{{zones}}" as="z" hint-placeholder-count="6">
+<tr style="border-top: 1px solid #F0EDFB">
+<td style="padding: 11px 8px 11px 20px; font-weight: 700">{{z.name}}</td>
+<td style="padding: 11px 8px; text-align: right">{{z.orders}}</td>
+<td style="padding: 11px 8px; text-align: right">{{z.done}}</td>
+<td style="padding: 11px 8px; text-align: right; font-weight: 800; white-space: nowrap">{{z.ca}}</td>
+<td style="padding: 11px 20px 11px 8px; text-align: right"><span style="{{z.rateStyle}}">{{z.rate}}</span></td>
+</tr>
+</sc-for>
+</tbody>
+</table>
+</div>
+<div style="padding: 12px 20px; border-top: 1px solid #EEEAFB; font-size: 12px; color: #5E5A70">Taux de livraison = commandes livrées ÷ commandes reçues.</div>
+</section>
+</div>
+
+</main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#6C4CF1","options":["#6C4CF1","#7C5CFA","#5A3BD8"]},"side":{"editor":"color","default":"#5B3FD6","options":["#5B3FD6","#6C4CF1","#241D5E"]},"$preview":{"width":1440,"height":1760}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { period: '30', grain: 'semaine', toast: null };
+  }
+  renderVals() {
+    const accent = this.props.accent ?? '#6C4CF1';
+    const side = this.props.side ?? '#5B3FD6';
+    const fmt = n => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    const pc = (a, b) => (b ? (a / b * 100) : 0).toFixed(1).replace('.', ',').replace(',0', '') + ' %';
+    const factors = { '7': 0.24, '30': 1, '90': 3, '365': 11.5 };
+    const labels = { '7': 'sur les 7 derniers jours', '30': 'sur les 30 derniers jours', '90': 'sur les 90 derniers jours', '365': 'sur les 12 derniers mois' };
+    const k = factors[this.state.period];
+    const S = n => Math.round(n * k);
+
+    const periods = [['7', '7 j'], ['30', '30 j'], ['90', '90 j'], ['365', '12 mois']].map(([id, label]) => {
+      const on = this.state.period === id;
+      return { label, pressed: on ? 'true' : 'false', pick: () => this.setState({ period: id }), style: 'font: inherit; font-size: 13px; border: 0; border-radius: 9px; padding: 0 12px; min-height: 40px; cursor: pointer; ' + (on ? 'background: ' + accent + '; color: #FFFFFF; font-weight: 800' : 'background: transparent; color: #3A3647; font-weight: 600') };
+    });
+
+    const fRaw = [['Visites boutique', 29400], ['Vues fiche produit', 18200], ['Formulaires ouverts', 2450], ['Commandes reçues', 790], ['Commandes livrées', 505]];
+    const funnel = fRaw.map(([label, v], i) => ({
+      label, value: fmt(S(v)),
+      step: i === 0 ? '' : '→ ' + pc(v, fRaw[i - 1][1]),
+      bar: 'width: 100%; border-radius: 10px 10px 4px 4px; height: ' + Math.max(4, Math.sqrt(v / 29400) * 100).toFixed(1) + '%; background: ' + (i === 3 ? accent : i === 4 ? '#241D5E' : '#B9AAFF')
+    }));
+
+    const stRaw = [['Livrée', 'Taux de livraison', 505, '#241D5E'], ['En cours', 'En cours', 70, accent], ['Annulée', 'Taux d’annulation', 63, '#B4AFC4'], ['Reportée', 'Taux de report', 55, '#E0A33A'], ['Injoignable', 'Taux d’injoignables', 61, '#8B869C'], ['Contestée', 'Taux de contestation', 36, '#E3807A']];
+    const statuses = stRaw.map(([s, rateLabel, n, color]) => ({
+      rateLabel, pct: pc(n, 790), count: fmt(S(n)),
+      seg: 'height: 100%; width: ' + (n / 790 * 100).toFixed(2) + '%; background: ' + color,
+      dot: 'width: 10px; height: 10px; border-radius: 5px; flex: none; background: ' + color
+    }));
+
+    const series = {
+      jour: [['Lun', 8], ['Mar', 10], ['Mer', 7], ['Jeu', 11], ['Ven', 10], ['Sam', 13], ['Dim', 9]],
+      semaine: [['S35', 52], ['S36', 57], ['S37', 55], ['S38', 63], ['S39', 70], ['S40', 66], ['S41', 74], ['S42', 68]],
+      mois: [['Mai', 182], ['Juin', 197], ['Juil.', 214], ['Août', 240], ['Sept.', 281], ['Oct.', 205]]
+    };
+    const ser = series[this.state.grain];
+    const mx = Math.max(...ser.map(x => x[1]));
+    const timeBars = ser.map(([label, n]) => ({ label, n: String(n), bar: 'width: 70%; max-width: 54px; border-radius: 10px 10px 4px 4px; height: ' + Math.round(n / mx * 170) + 'px; background: ' + (n === mx ? accent : '#B9AAFF') }));
+    const grains = [['jour', 'Jour'], ['semaine', 'Semaine'], ['mois', 'Mois']].map(([id, label]) => {
+      const on = this.state.grain === id;
+      return { label, pressed: on ? 'true' : 'false', pick: () => this.setState({ grain: id }), style: 'font: inherit; font-size: 13px; border: 0; border-radius: 9px; padding: 0 12px; min-height: 36px; cursor: pointer; ' + (on ? 'background: #FFFFFF; color: #16131F; font-weight: 800; box-shadow: 0 2px 8px rgba(108,76,241,0.15)' : 'background: transparent; color: #5E5A70; font-weight: 600') };
+    });
+
+    const rateStyle = r => 'display: inline-block; font-size: 12px; font-weight: 800; border-radius: 8px; padding: 4px 9px; ' + (r >= 0.68 ? 'background: #E3F4EC; color: #1E5E3F' : r >= 0.6 ? 'background: #FFF0D6; color: #6B4100' : 'background: #FCE3E0; color: #8A2414');
+    const pRaw = [['Montre élégante', 120, 17500, 0.71], ['Sac à main chic', 88, 15000, 0.68], ['Robe élégante', 40, 19000, 0.58], ['Baskets tendance', 76, 12000, 0.62], ['Sérum éclat 30 ml', 70, 9500, 0.74], ['Chemise homme', 48, 10000, 0.66], ['Pagne wax 6 yards', 38, 7500, 0.7], ['Autres produits', 25, 8000, 0.6]];
+    const caTot = pRaw.reduce((a, p) => a + p[1] * p[2], 0);
+    const products = pRaw.map(([name, u, price, r]) => ({ name, units: fmt(S(u)), ca: fmt(S(u * price)) + ' FCFA', share: Math.round(u * price / caTot * 100) + ' %', bar: 'display: block; height: 100%; border-radius: 4px; width: ' + (u * price / (120 * 17500) * 100).toFixed(1) + '%; background: ' + accent, rate: Math.round(r * 100) + ' %', rateStyle: rateStyle(r) })).sort((a, b) => 0);
+
+    const zRaw = [['Abidjan', 470, 322], ['Bouaké', 95, 52], ['Yamoussoukro', 70, 45], ['San-Pédro', 58, 36], ['Korhogo', 52, 27], ['Daloa', 45, 23]];
+    const avg = caTot / 505;
+    const zones = zRaw.map(([name, o, d]) => ({ name, orders: fmt(S(o)), done: fmt(S(d)), ca: fmt(S(d * avg)) + ' FCFA', rate: Math.round(d / o * 100) + ' %', rateStyle: rateStyle(d / o) }));
+
+    const navItems = [
+      ['Accueil', 'Accueil.dc.html', 'M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z'],
+      ['Boutique', 'Boutique.dc.html', 'M3 9l1.5-5h15L21 9M3 9h18v11H3zM9 20v-6h6v6'],
+      ['Produits', 'Produits.dc.html', 'M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L2 12V2h10l8.6 8.6a2 2 0 0 1 0 2.8zM7 7h.01'],
+      ['Commandes', 'Commandes.dc.html', 'M3 4h2l2.5 11h11L21 7H6.5M9 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2zM18 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2z', '12'],
+      ['Stock', 'Stock.dc.html', 'M21 8l-9-5-9 5 9 5 9-5zM3 8v8l9 5 9-5V8M12 13v8', '4', true],
+      ['Comptabilité', 'Comptabilite.dc.html', 'M6 2h9l5 5v15H6zM14 2v6h6M9 13h6M9 17h6'],
+      ['Portefeuille', 'Portefeuille.dc.html', 'M3 6h18v13H3zM3 10h18M16 14.5h2'],
+      ['Client', 'Client.dc.html', 'M16 21v-2a4 4 0 0 0-8 0v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z'],
+      ['WhatsApp Marketing', '#', 'M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 21l2.1-5.6A8.4 8.4 0 1 1 21 11.5z', 'PRO'],
+      ['Analytics', 'Analytics.dc.html', 'M4 20V10M10 20V4M16 20v-7M22 20H2'],
+      ['Utilisateurs', '#', 'M17 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9.5 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8'],
+      ['Kolix AI', '#', 'M12 3l2.2 5.8L20 11l-5.8 2.2L12 19l-2.2-5.8L4 11l5.8-2.2z'],
+      ['Paramètres', '#', 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1']
+    ];
+    const nav = navItems.map(([label, href, icon, badge, warn], i) => ({
+      label, href, icon, badge: badge || '', hasBadge: !!badge,
+      badgeStyle: 'font-size: 11px; font-weight: 800; border-radius: 20px; padding: 2px 8px; ' + (warn ? 'background: #FFE7B8; color: #6B4100' : 'background: rgba(255,255,255,0.22); color: #FFFFFF'),
+      style: 'display: flex; align-items: center; gap: 14px; padding: 11px 14px; border-radius: 12px; text-decoration: none; color: #FFFFFF; ' + (i === 9 ? 'background: rgba(255,255,255,0.20); font-weight: 800' : 'font-weight: 600')
+    }));
+
+    return {
+      accent, side, nav, periods, funnel, statuses, timeBars, grains, products, zones,
+      periodLabel: labels[this.state.period],
+      formConv: pc(790, 2450), globalConv: pc(790, 29400),
+      statusAria: 'Répartition des statuts : ' + statuses.map(s => s.rateLabel + ' ' + s.pct).join(', '),
+      barGrid: 'display: grid; grid-template-columns: repeat(' + ser.length + ', minmax(0, 1fr)); gap: 10px; height: 220px; align-items: end; border-bottom: 1px solid #E2DCF8; padding-bottom: 4px',
+      hasToast: !!this.state.toast, toast: this.state.toast || '',
+      closeToast: () => this.setState({ toast: null }),
+      exportPdf: () => this.setState({ toast: 'Rapport PDF généré (' + labels[this.state.period] + '). Téléchargement prêt.' }),
+      exportXls: () => this.setState({ toast: 'Rapport Excel généré (' + labels[this.state.period] + '). Téléchargement prêt.' })
+    };
+  }
+}
+</script>
+</body>
+</html>

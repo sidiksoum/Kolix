@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Kolix — Paramètres</title>
+<script src="./vendor/react.js"></script>
+<script src="./vendor/react-dom.js"></script>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#5A3BD8}a:hover{color:#3F25A8}
+</style>
+</helmet>
+<div style="font-family: 'Plus Jakarta Sans', 'Helvetica Neue', sans-serif; color: #16131F; background: #F7F5FE; min-height: 100vh; display: flex; flex-wrap: wrap; position: relative">
+
+<nav aria-label="Navigation principale" style="flex: 1 1 240px; max-width: 100%; background: {{side}}; color: #FFFFFF; padding: 26px 16px; box-sizing: border-box; display: flex; flex-direction: column; gap: 22px">
+<div style="display: flex; align-items: center; gap: 10px; padding-left: 8px">
+<span style="width: 40px; height: 40px; border-radius: 12px; background: #FFFFFF; color: {{side}}; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 800">K</span>
+<span style="display: flex; flex-direction: column"><span style="font-size: 26px; font-weight: 800; letter-spacing: -0.03em; line-height: 1">Kolix</span><span style="font-size: 11px; color: #E2DCFF; font-weight: 600">Votre succès, notre mission</span></span>
+</div>
+<button aria-label="Changer de boutique" style="font: inherit; width: 100%; display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.14); color: #FFFFFF; border: 0; border-radius: 14px; padding: 10px 12px; min-height: 56px; cursor: pointer; text-align: left">
+<span style="width: 36px; height: 36px; border-radius: 10px; flex: none; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #FFFFFF; background: #C93C72">S</span>
+<span style="flex: 1; display: flex; flex-direction: column; min-width: 0"><span style="font-size: 11px; color: #E2DCFF; font-weight: 700">Boutique active</span><span style="font-size: 14px; font-weight: 800">Style &amp; Élégance</span></span>
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 9l4-4 4 4M8 15l4 4 4-4"></path></svg>
+</button>
+<div style="display: flex; flex-direction: column; gap: 2px; font-size: 15px">
+<sc-for list="{{nav}}" as="n" hint-placeholder-count="13">
+<a href="{{n.href}}" style="{{n.style}}">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{n.icon}}"></path></svg>
+<span style="flex: 1">{{n.label}}</span>
+</a>
+</sc-for>
+</div>
+</nav>
+
+<div style="flex: 999 1 600px; min-width: 0; display: flex; flex-direction: column">
+
+<header style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; padding: 16px 32px; background: #FFFFFF; border-bottom: 1px solid #EEEAFB">
+<label style="flex: 0 1 520px; display: flex; align-items: center; gap: 10px; background: #F4F1FE; border-radius: 24px; padding: 0 18px; min-height: 46px">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5E5A70" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Rechercher</span>
+<input type="search" placeholder="Rechercher un réglage…" style="flex: 1; font: inherit; font-size: 14px; border: 0; background: transparent; color: #16131F; min-height: 44px">
+</label>
+<div style="display: flex; align-items: center; gap: 12px">
+<span style="width: 42px; height: 42px; border-radius: 21px; background: #EEE9FF; color: #4B2FC9; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800">SS</span>
+<span style="display: flex; flex-direction: column"><span style="font-size: 14px; font-weight: 800">Souleymane Sanogo</span><span style="font-size: 12px; color: #5E5A70">Propriétaire</span></span>
+</div>
+</header>
+
+<main style="padding: 24px 32px 40px; display: flex; flex-direction: column; gap: 18px">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h1 style="margin: 0; font-size: 30px; font-weight: 800; letter-spacing: -0.03em">Paramètres</h1>
+<span style="font-size: 14px; color: #5E5A70">Toute la configuration de votre boutique et de votre compte, au même endroit.</span>
+</div>
+
+<sc-if value="{{hasToast}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; align-items: center; gap: 10px; background: #241D5E; color: #FFFFFF; border-radius: 14px; padding: 12px 16px; font-size: 14px; font-weight: 700"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7CE0AE" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg><span style="flex: 1">{{toast}}</span><button onClick="{{closeToast}}" style="font: inherit; background: transparent; border: 0; color: #FFFFFF; font-weight: 800; cursor: pointer; min-height: 36px">Fermer</button></div>
+</sc-if>
+
+<div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start">
+
+<aside aria-label="Sections des paramètres" style="flex: 0 1 250px; background: #FFFFFF; border-radius: 18px; padding: 10px; display: flex; flex-direction: column; gap: 2px; box-shadow: 0 6px 20px rgba(108,76,241,0.06)">
+<sc-for list="{{sections}}" as="s" hint-placeholder-count="7">
+<button onClick="{{s.pick}}" aria-current="{{s.current}}" style="{{s.style}}">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{s.icon}}"></path></svg>
+<span style="flex: 1; display: flex; flex-direction: column; text-align: left"><span style="font-size: 14px; font-weight: 800">{{s.label}}</span><span style="font-size: 11px; color: #5E5A70; font-weight: 600">{{s.sub}}</span></span>
+</button>
+</sc-for>
+</aside>
+
+<div style="flex: 1 1 600px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+
+<sc-if value="{{secGeneral}}" hint-placeholder-val="{{ false }}">
+<section style="background: #FFFFFF; border-radius: 18px; padding: 22px 24px; display: flex; flex-direction: column; gap: 16px; box-shadow: 0 6px 20px rgba(108,76,241,0.06)">
+<h2 style="margin: 0; font-size: 19px; font-weight: 800">Informations de la boutique</h2>
+<div style="display: flex; gap: 16px; align-items: center"><span style="width: 72px; height: 72px; border-radius: 20px; background: #C93C72; color: #FFFFFF; font-size: 28px; font-weight: 800; display: flex; align-items: center; justify-content: center">S</span><div style="display: flex; flex-direction: column; gap: 6px"><button style="font: inherit; align-self: flex-start; font-size: 13px; font-weight: 800; background: #F4F1FE; color: #3F25A8; border: 0; border-radius: 10px; padding: 0 14px; min-height: 40px; cursor: pointer">Changer le logo</button><span style="font-size: 12px; color: #5E5A70">PNG ou JPG, 512 × 512 conseillé</span></div></div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px">
+<sc-for list="{{generalFields}}" as="g" hint-placeholder-count="8">
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; font-weight: 700; color: #5E5A70">{{g.label}}<input type="text" value="{{g.value}}" style="font: inherit; font-size: 14px; border: 1px solid #E2DCF8; border-radius: 12px; padding: 0 12px; min-height: 46px; color: #16131F"></label>
+</sc-for>
+</div>
+<button onClick="{{saveGeneral}}" style="align-self: flex-start; font: inherit; font-size: 14px; font-weight: 800; background: {{accent}}; color: #FFFFFF; border: 0; border-radius: 12px; padding: 0 22px; min-height: 48px; cursor: pointer">Enregistrer</button>
+</section>
+</sc-if>
+
+<sc-if value="{{secDomain}}" hint-placeholder-val="{{ false }}">
+<section style="background: #FFFFFF; border-radius: 18px; padding: 22px 24px; display: flex; flex-direction: column; gap: 16px; box-shadow: 0 6px 20px rgba(108,76,241,0.06)">
+<h2 style="margin: 0; font-size: 19px; font-weight: 800">Nom de domaine</h2>
+<sc-for list="{{domains}}" as="d" hint-placeholder-count="2">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px; border: 1px solid #EEEAFB; border-radius: 14px; padding: 14px 16px">
+<span style="flex: 1 1 200px; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 16px; font-weight: 800">{{d.name}}</span><span style="font-size: 12px; color: #5E5A70">{{d.sub}}</span></span>
+<span style="{{d.badgeStyle}}">{{d.badge}}</span>
+<sc-if value="{{d.isPrimary}}" hint-placeholder-val="{{ false }}"><span style="font-size: 12px; font-weight: 800; background: #EEE9FF; color: #3F25A8; border-radius: 20px; padding: 4px 10px">Principal</span></sc-if>
+</div>
+</sc-for>
+<div style="background: #FAF8FF; border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+<span style="font-size: 14px; font-weight: 800">Acheter un domaine personnalisé</span>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<label style="flex: 1 1 220px; display: flex"><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Nom souhaité</span><input type="text" value="{{domQuery}}" onChange="{{setDomQuery}}" style="flex: 1; font: inherit; font-size: 15px; font-weight: 700; border: 1px solid #E2DCF8; border-radius: 12px; padding: 0 14px; min-height: 48px; color: #16131F; background: #FFFFFF"></label>
+<sc-for list="{{exts}}" as="x" hint-placeholder-count="3"><button onClick="{{x.pick}}" aria-pressed="{{x.pressed}}" style="{{x.style}}">{{x.label}}</button></sc-for>
+</div>
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; background: #FFFFFF; border-radius: 12px; padding: 12px 14px">
+<span style="font-size: 14px"><strong>{{domFull}}</strong> · <span style="color: #1E5E3F; font-weight: 800">Disponible</span> · [prix à définir] / an</span>
+<button onClick="{{buyDomain}}" style="font: inherit; font-size: 14px; font-weight: 800; background: {{accent}}; color: #FFFFFF; border: 0; border-radius: 10px; padding: 0 18px; min-height: 44px; cursor: pointer">Acheter et connecter</button>
+</div>
+<span style="font-size: 12px; color: #5E5A70">Kolix configure automatiquement le DNS et le certificat SSL.</span>
+</div>
+</section>
+</sc-if>
+
+<sc-if value="{{secCod}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start">
+<section style="flex: 1 1 380px; min-width: 0; background: #FFFFFF; border-radius: 18px; padding: 22px 24px; display: flex; flex-direction: column; gap: 18px; box-shadow: 0 6px 20px rgba(108,76,241,0.06)">
+<h2 style="margin: 0; font-size: 19px; font-weight: 800">Formulaire de commande COD</h2>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 13px; font-weight: 800">Champs</span>
+<sc-for list="{{codFields}}" as="f" hint-placeholder-count="6">
+<button onClick="{{f.toggle}}" aria-pressed="{{f.pressed}}" disabled="{{f.locked}}" style="{{f.rowStyle}}">
+<span style="flex: 1; display: flex; flex-direction: column; text-align: left"><span style="font-size: 14px; font-weight: 700">{{f.label}}</span><span style="font-size: 11px; color: #5E5A70">{{f.sub}}</span></span>
+<span style="{{f.track}}"><span style="width: 18px; height: 18px; border-radius: 9px; background: #FFFFFF"></span></span>
+</button>
+</sc-for>
+</div>
+<div style="display: flex; flex-direction: column; gap: 10px">
+<span style="font-size: 13px; font-weight: 800">Design</span>
+<div style="display: flex; gap: 10px; flex-wrap: wrap"><sc-for list="{{btnColors}}" as="c" hint-placeholder-count="5"><button onClick="{{c.pick}}" aria-label="{{c.name}}" aria-pressed="{{c.pressed}}" style="{{c.style}}"></button></sc-for></div>
+<div style="display: flex; gap: 8px"><sc-for list="{{shapes}}" as="s" hint-placeholder-count="2"><button onClick="{{s.pick}}" aria-pressed="{{s.pressed}}" style="{{s.style}}">{{s.label}}</button></sc-for></div>
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; font-weight: 700; color: #5E5A70">Texte du bouton<input type="text" value="{{btnText}}" onChange="{{setBtnText}}" style="font: inherit; font-size: 14px; border: 1px solid #E2DCF8; border-radius: 12px; padding: 0 12px; min-height: 46px; color: #16131F"></label>
+</div>
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 800">Message de confirmation
+<textarea rows="3" value="{{confirmMsg}}" onChange="{{setConfirm}}" style="font: inherit; font-size: 14px; font-weight: 500; line-height: 1.5; border: 1px solid #E2DCF8; border-radius: 12px; padding: 10px 12px; color: #16131F; resize: vertical"></textarea></label>
+<button onClick="{{saveCod}}" style="align-self: flex-start; font: inherit; font-size: 14px; font-weight: 800; background: {{accent}}; color: #FFFFFF; border: 0; border-radius: 12px; padding: 0 22px; min-height: 48px; cursor: pointer">Publier le formulaire</button>
+</section>
+<section aria-label="Aperçu du formulaire" style="flex: 0 1 320px; display: flex; flex-direction: column; align-items: center; gap: 10px">
+<span style="font-size: 12px; font-weight: 800; color: #5E5A70; text-transform: uppercase; letter-spacing: 0.08em">Aperçu mobile</span>
+<div style="width: 300px; max-width: 100%; background: #16131F; border-radius: 34px; padding: 9px; box-sizing: border-box"><div style="background: #FFFFFF; border-radius: 26px; padding: 18px 16px; display: flex; flex-direction: column; gap: 10px">
+<span style="font-size: 15px; font-weight: 800; text-align: center">Commandez, payez à la livraison</span>
+<sc-for list="{{pvFields}}" as="p" hint-placeholder-count="5"><div style="{{p.style}}">{{p.label}}</div></sc-for>
+<sc-if value="{{showConsent}}" hint-placeholder-val="{{ true }}"><div style="display: flex; gap: 8px; align-items: flex-start; font-size: 11px; color: #3A3647; line-height: 1.4"><span style="width: 14px; height: 14px; flex: none; border-radius: 4px; border: 1.5px solid #8B869C; margin-top: 1px"></span>J’accepte de recevoir les offres de la boutique sur WhatsApp</div></sc-if>
+<div style="{{pvBtn}}">{{btnText}}</div>
+</div></div>
+<div style="width: 300px; max-width: 100%; background: #ECE5DD; border-radius: 16px; padding: 12px; box-sizing: border-box"><div style="background: #FFFFFF; border-radius: 4px 12px 12px 12px; padding: 10px 12px; font-size: 12px; line-height: 1.5; white-space: pre-wrap">{{confirmPreview}}</div><span style="display: block; font-size: 10px; color: #5E5A70; margin-top: 6px">Envoyé au client après sa commande</span></div>
+</section>
+</div>
+</sc-if>
+
+<sc-if value="{{secMarketing}}" hint-placeholder-val="{{ false }}">
+<section style="background: #FFFFFF; border-radius: 18px; padding: 22px 24px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 6px 20px rgba(108,76,241,0.06)">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 10px"><h2 style="margin: 0; font-size: 19px; font-weight: 800">Pixel Facebook</h2><span style="{{pixelBadge}}">{{pixelStatus}}</span></div>
+<span style="font-size: 14px; color: #3A3647; line-height: 1.5">Mesurez vos publicités Facebook et Instagram : vues de produit, ouvertures du formulaire et commandes sont envoyées automatiquement.</span>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<label style="flex: 1 1 240px; display: flex"><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Identifiant du Pixel</span><input type="text" value="{{pixelId}}" onChange="{{setPixel}}" placeholder="Identifiant du Pixel (15 à 16 chiffres)" style="flex: 1; font: inherit; font-size: 14px; border: 1px solid #E2DCF8; border-radius: 12px; padding: 0 14px; min-height: 48px; color: #16131F"></label>
+<button onClick="{{connectPixel}}" style="{{pixelBtnStyle}}">{{pixelBtn}}</button>
+</div>
+</section>
+<section style="background: #FFFFFF; border-radius: 18px; padding: 22px 24px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 6px 20px rgba(108,76,241,0.06); position: relative">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 10px"><h2 style="margin: 0; font-size: 19px; font-weight: 800">API Conversion Meta</h2><span style="font-size: 12px; font-weight: 800; background: #241D5E; color: #FFFFFF; border-radius: 20px; padding: 4px 10px">Pro et Empire</span></div>
+<span style="font-size: 14px; color: #3A3647; line-height: 1.5">Envoie les conversions directement depuis le serveur de Kolix : un suivi plus fiable, même quand le navigateur bloque le Pixel.</span>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px; background: #F4F1FE; border-radius: 14px; padding: 14px 16px">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3F25A8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 11h14v10H5zM8 11V7a4 4 0 0 1 8 0v4"></path></svg>
+<span style="flex: 1; font-size: 14px; font-weight: 700; color: #2E1F86">Votre plan Grow n’inclut pas l’API Conversion.</span>
+<button onClick="{{goPlans}}" style="font: inherit; font-size: 13px; font-weight: 800; background: {{accent}}; color: #FFFFFF; border: 0; border-radius: 10px; padding: 0 16px; min-height: 42px; cursor: pointer">Passer à Pro</button>
+</div>
+</section>
+</sc-if>
+
+<sc-if value="{{secNotif}}" hint-placeholder-val="{{ false }}">
+<section style="background: #FFFFFF; border-radius: 18px; padding: 22px 24px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 6px 20px rgba(108,76,241,0.06)">
+<h2 style="margin: 0 0 6px; font-size: 19px; font-weight: 800">Notifications</h2>
+<div style="overflow-x: auto"><table style="width: 100%; border-collapse: collapse; font-size: 14px; min-width: 520px">
+<thead><tr style="text-align: left; color: #5E5A70; font-size: 12px"><th style="padding: 8px 0; font-weight: 700">Événement</th><sc-for list="{{channels}}" as="ch" hint-placeholder-count="3"><th style="padding: 8px; font-weight: 700; text-align: center">{{ch}}</th></sc-for></tr></thead>
+<tbody>
+<sc-for list="{{notifs}}" as="n" hint-placeholder-count="5">
+<tr style="border-top: 1px solid #F0EDFB">
+<td style="padding: 12px 0"><div style="font-weight: 700">{{n.label}}</div><div style="font-size: 12px; color: #5E5A70">{{n.sub}}</div></td>
+<sc-for list="{{n.cells}}" as="c" hint-placeholder-count="3"><td style="padding: 12px 8px; text-align: center"><input type="checkbox" checked="{{c.on}}" onChange="{{c.toggle}}" aria-label="{{c.aria}}" style="width: 20px; height: 20px; accent-color: #6C4CF1"></td></sc-for>
+</tr>
+</sc-for>
+</tbody></table></div>
+</section>
+</sc-if>
+
+<sc-if value="{{secAccount}}" hint-placeholder-val="{{ false }}">
+<section style="background: #FFFFFF; border-radius: 18px; padding: 22px 24px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 6px 20px rgba(108,76,241,0.06)">
+<h2 style="margin: 0; font-size: 19px; font-weight: 800">Compte</h2>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px">
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; font-weight: 700; color: #5E5A70">E-mail<input type="email" value="[adresse e-mail]" style="font: inherit; font-size: 14px; border: 1px solid #E2DCF8; border-radius: 12px; padding: 0 12px; min-height: 46px; color: #16131F"></label>
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; font-weight: 700; color: #5E5A70">Téléphone<input type="tel" value="07 •• •• 00 01" style="font: inherit; font-size: 14px; border: 1px solid #E2DCF8; border-radius: 12px; padding: 0 12px; min-height: 46px; color: #16131F"></label>
+</div>
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; border-top: 1px solid #F0EDFB; padding-top: 14px"><span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 14px; font-weight: 800">Mot de passe</span><span style="font-size: 12px; color: #5E5A70">Modifié il y a 3 mois</span></span><button style="font: inherit; font-size: 13px; font-weight: 800; background: #F4F1FE; color: #3F25A8; border: 0; border-radius: 10px; padding: 0 14px; min-height: 42px; cursor: pointer">Changer le mot de passe</button></div>
+</section>
+<section style="background: #FFFFFF; border-radius: 18px; padding: 22px 24px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 6px 20px rgba(108,76,241,0.06)">
+<h2 style="margin: 0; font-size: 19px; font-weight: 800">Informations de facturation</h2>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px">
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; font-weight: 700; color: #5E5A70">Nom ou raison sociale<input type="text" value="Style &amp; Élégance" style="font: inherit; font-size: 14px; border: 1px solid #E2DCF8; border-radius: 12px; padding: 0 12px; min-height: 46px; color: #16131F"></label>
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; font-weight: 700; color: #5E5A70">Adresse<input type="text" value="Cocody, Abidjan" style="font: inherit; font-size: 14px; border: 1px solid #E2DCF8; border-radius: 12px; padding: 0 12px; min-height: 46px; color: #16131F"></label>
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; font-weight: 700; color: #5E5A70">Moyen de paiement de l’abonnement<select style="font: inherit; font-size: 14px; border: 1px solid #E2DCF8; border-radius: 12px; padding: 0 12px; min-height: 46px; background: #FFFFFF; color: #16131F"><option>Portefeuille Kolix</option><option>Wave</option><option>Orange Money</option><option>Carte bancaire</option></select></label>
+</div>
+<a href="#" style="font-size: 14px; font-weight: 800; text-decoration: none">Télécharger mes factures →</a>
+</section>
+</sc-if>
+
+<sc-if value="{{secPlan}}" hint-placeholder-val="{{ false }}">
+<section style="background: #FFFFFF; border-radius: 18px; padding: 22px 24px; display: flex; flex-direction: column; gap: 16px; box-shadow: 0 6px 20px rgba(108,76,241,0.06)">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 4px"><h2 style="margin: 0; font-size: 19px; font-weight: 800">Abonnement</h2><span style="font-size: 13px; color: #5E5A70">Plan actuel : <strong style="color: #16131F">Kolix Grow</strong> · 412 / 1 500 commandes ce mois · 4 / 5 utilisateurs</span></div>
+<div role="group" aria-label="Facturation" style="display: flex; background: #F4F1FE; border-radius: 12px; padding: 3px; gap: 3px"><sc-for list="{{billing}}" as="b" hint-placeholder-count="2"><button onClick="{{b.pick}}" aria-pressed="{{b.pressed}}" style="{{b.style}}">{{b.label}}</button></sc-for></div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px">
+<sc-for list="{{plans}}" as="p" hint-placeholder-count="4">
+<article style="{{p.cardStyle}}">
+<span style="font-size: 16px; font-weight: 800">{{p.name}}</span>
+<span style="font-size: 22px; font-weight: 800; letter-spacing: -0.02em">{{p.price}}</span>
+<span style="font-size: 12px; opacity: 0.85">{{p.period}}</span>
+<div style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; line-height: 1.4"><sc-for list="{{p.features}}" as="f" hint-placeholder-count="3"><span>• {{f}}</span></sc-for></div>
+<button onClick="{{p.pick}}" style="{{p.btnStyle}}">{{p.btn}}</button>
+</article>
+</sc-for>
+</div>
+<span style="font-size: 12px; color: #5E5A70">Essai gratuit de 7 jours sans carte bancaire pour tout nouveau plan.</span>
+</section>
+</sc-if>
+
+</div>
+</div>
+</main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#6C4CF1","options":["#6C4CF1","#7C5CFA","#5A3BD8"]},"side":{"editor":"color","default":"#5B3FD6","options":["#5B3FD6","#6C4CF1","#241D5E"]},"$preview":{"width":1440,"height":1240}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {
+      sec: 'cod', toast: null,
+      cod: { prenom: true, note: true, consent: true }, btnColor: '#C93C72', shape: 'round', btnText: 'Commander maintenant',
+      confirmMsg: 'Merci {Prénom} ! Votre commande est bien reçue. Notre livreur vous appelle avant de passer. Paiement en espèces ou Mobile Money à la livraison.',
+      domQuery: 'styleelegance', ext: '.ci', owned: [], pixelId: '', pixel: false, billing: 'month', planSel: 'Grow',
+      notif: { stock: [true, true, false], order: [true, true, false], pay: [true, false, true], withdraw: [true, false, true], weekly: [false, false, true] }
+    };
+  }
+  renderVals() {
+    const accent = this.props.accent ?? '#6C4CF1';
+    const side = this.props.side ?? '#5B3FD6';
+    const st = this.state;
+    const toast = msg => this.setState({ toast: msg });
+
+    const secDefs = [
+      ['general', 'Boutique', 'Nom et informations', 'M3 9l1.5-5h15L21 9M3 9h18v11H3zM9 20v-6h6v6'],
+      ['domain', 'Nom de domaine', 'Achat et gestion', 'M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20zM2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20'],
+      ['cod', 'Formulaire COD', 'Champs, design, confirmation', 'M9 11l3 3 8-8M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9'],
+      ['marketing', 'Pixel et API Meta', 'Suivi publicitaire', 'M3 3v18h18M7 14l4-4 4 4 5-6'],
+      ['notif', 'Notifications', 'Stock, commandes, paiements', 'M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0'],
+      ['account', 'Compte et facturation', 'E-mail, mot de passe', 'M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1'],
+      ['plan', 'Abonnement', 'Plan Grow', 'M2 7h20v12H2zM2 11h20']
+    ];
+    const sections = secDefs.map(([id, label, sub, icon]) => {
+      const on = st.sec === id;
+      return { label, sub, icon, current: on ? 'page' : 'false', pick: () => this.setState({ sec: id }), style: 'font: inherit; display: flex; align-items: center; gap: 12px; border: 0; border-radius: 12px; padding: 10px 12px; min-height: 56px; cursor: pointer; ' + (on ? 'background: #EEE9FF; color: #2E1F86' : 'background: transparent; color: #3A3647') };
+    });
+
+    const generalFields = [['Nom de la boutique', 'Style & Élégance'], ['Slogan', 'Élégance au quotidien'], ['Niche', 'Mode féminine'], ['Pays', 'Côte d’Ivoire'], ['Devise', 'FCFA (XOF)'], ['WhatsApp de la boutique', '07 •• •• 00 01'], ['E-mail de contact', '[e-mail de la boutique]'], ['Adresse', 'Cocody Angré, Abidjan']].map(([label, value]) => ({ label, value }));
+
+    const domFull = (st.domQuery || 'maboutique') + st.ext;
+    const domains = [{ name: 'styleelegance.kolix.shop', sub: 'Adresse Kolix gratuite', badge: 'Actif', badgeStyle: 'font-size: 12px; font-weight: 800; background: #E3F4EC; color: #1E5E3F; border-radius: 20px; padding: 4px 10px', isPrimary: st.owned.length === 0 }].concat(st.owned.map(d => ({ name: d, sub: 'Domaine personnalisé · renouvellement annuel', badge: 'DNS et SSL en cours', badgeStyle: 'font-size: 12px; font-weight: 800; background: #FFF0D6; color: #6B4100; border-radius: 20px; padding: 4px 10px', isPrimary: true })));
+    const exts = ['.ci', '.com', '.shop'].map(x => ({ label: x, pressed: st.ext === x ? 'true' : 'false', pick: () => this.setState({ ext: x }), style: 'font: inherit; font-size: 14px; font-weight: 800; border-radius: 12px; padding: 0 16px; min-height: 48px; cursor: pointer; ' + (st.ext === x ? 'background: #EEE9FF; color: #3F25A8; border: 1.5px solid #B9AAFF' : 'background: #FFFFFF; color: #3A3647; border: 1px solid #E2DCF8') }));
+
+    const codDefs = [['nom', 'Nom', 'Obligatoire', true], ['prenom', 'Prénom', 'Facultatif', false], ['tel', 'Numéro de téléphone', 'Obligatoire', true], ['lieu', 'Lieu de livraison', 'Obligatoire', true], ['note', 'Note de commande', 'Facultatif', false], ['consent', 'Consentement WhatsApp', 'Requis pour vos campagnes WhatsApp', false]];
+    const isOn = id => ['nom', 'tel', 'lieu'].indexOf(id) !== -1 ? true : !!st.cod[id];
+    const codFields = codDefs.map(([id, label, sub, locked]) => {
+      const on = isOn(id);
+      return {
+        label, sub: locked ? 'Toujours affiché' : sub, locked, pressed: on ? 'true' : 'false',
+        toggle: () => { if (!locked) this.setState({ cod: { ...this.state.cod, [id]: !this.state.cod[id] } }); },
+        rowStyle: 'font: inherit; display: flex; align-items: center; gap: 12px; border: 1px solid #EEEAFB; border-radius: 12px; padding: 8px 12px; min-height: 52px; color: #16131F; cursor: ' + (locked ? 'default' : 'pointer') + '; background: ' + (locked ? '#FAF9FE' : '#FFFFFF'),
+        track: 'width: 42px; height: 24px; border-radius: 12px; flex: none; display: flex; align-items: center; padding: 3px; box-sizing: border-box; ' + (on ? 'background: ' + (locked ? '#B9AAFF' : accent) + '; justify-content: flex-end' : 'background: #CFC7F2; justify-content: flex-start')
+      };
+    });
+    const btnColors = [['#C93C72', 'Rose'], ['#6C4CF1', 'Violet'], ['#1F7A63', 'Vert'], ['#B85C0E', 'Orange'], ['#16131F', 'Noir']].map(([c, name]) => ({ name, pressed: st.btnColor === c ? 'true' : 'false', pick: () => this.setState({ btnColor: c }), style: 'width: 40px; height: 40px; border-radius: 20px; border: 0; cursor: pointer; background: ' + c + (st.btnColor === c ? '; box-shadow: 0 0 0 3px #FFFFFF, 0 0 0 5px #16131F' : '') }));
+    const shapes = [['round', 'Arrondi'], ['square', 'Carré']].map(([id, label]) => ({ label, pressed: st.shape === id ? 'true' : 'false', pick: () => this.setState({ shape: id }), style: 'font: inherit; font-size: 13px; font-weight: 800; border-radius: 10px; padding: 0 14px; min-height: 40px; cursor: pointer; ' + (st.shape === id ? 'background: #EEE9FF; color: #3F25A8; border: 1.5px solid #B9AAFF' : 'background: #FFFFFF; color: #3A3647; border: 1px solid #E2DCF8') }));
+    const r = st.shape === 'round' ? 12 : 3;
+    const pvFields = [['nom', 'Nom'], ['prenom', 'Prénom'], ['tel', 'Numéro de téléphone'], ['lieu', 'Lieu de livraison'], ['note', 'Note de commande (facultatif)']].filter(([id]) => isOn(id)).map(([id, label]) => ({ label, style: 'border: 1px solid #E2E2E8; border-radius: ' + r + 'px; padding: 11px 12px; font-size: 12px; color: #8B869C' + (id === 'note' ? '; min-height: 44px' : '') }));
+
+    const pixelOk = st.pixel;
+    const channels = ['Dans Kolix', 'WhatsApp', 'E-mail'];
+    const notifDefs = [['stock', 'Alertes stock faible', 'Quand un produit atteint le seuil'], ['order', 'Nouvelles commandes', 'À chaque commande reçue'], ['pay', 'Paiements reçus', 'Paiement Mobile Money via QR code'], ['withdraw', 'Retraits effectués', 'Quand un retrait arrive sur votre compte'], ['weekly', 'Résumé hebdomadaire', 'Vos chiffres chaque lundi']];
+    const notifs = notifDefs.map(([id, label, sub]) => ({ label, sub, cells: channels.map((ch, i) => ({ on: !!st.notif[id][i], aria: label + ' · ' + ch, toggle: () => { const row = st.notif[id].slice(); row[i] = !row[i]; this.setState({ notif: { ...this.state.notif, [id]: row } }); } })) }));
+
+    const annual = st.billing === 'year';
+    const billing = [['month', 'Mensuel'], ['year', 'Annuel']].map(([id, label]) => ({ label, pressed: st.billing === id ? 'true' : 'false', pick: () => this.setState({ billing: id }), style: 'font: inherit; font-size: 13px; border: 0; border-radius: 9px; padding: 0 14px; min-height: 38px; cursor: pointer; ' + (st.billing === id ? 'background: #FFFFFF; color: #16131F; font-weight: 800; box-shadow: 0 2px 8px rgba(108,76,241,0.15)' : 'background: transparent; color: #5E5A70; font-weight: 600') }));
+    const planDefs = [
+      ['Start', '5 000', ['700 commandes / mois', '2 utilisateurs', 'Modules essentiels et Pixel Facebook']],
+      ['Grow', '10 000', ['1 500 commandes / mois', '5 utilisateurs', '+ Client et Kolix AI']],
+      ['Pro', '15 000', ['Commandes et utilisateurs illimités', '+ WhatsApp Marketing', '+ API Conversion Meta']],
+      ['Empire', 'Dès 50 000', ['Tout le plan Pro', 'Fulfillment dans 9 pays', 'Manager dédié']]
+    ];
+    const plans = planDefs.map(([name, price, features]) => {
+      const current = name === 'Grow';
+      const dark = name === 'Empire';
+      return {
+        name: 'Kolix ' + name, features,
+        price: annual ? '[prix annuel]' : price + ' FCFA',
+        period: annual ? 'par an · remise [à définir]' : 'par mois',
+        btn: current ? 'Plan actuel' : name === 'Start' ? 'Rétrograder' : 'Passer à ' + name,
+        pick: () => { if (!current) toast('Demande de passage à Kolix ' + name + ' enregistrée (aperçu).'); },
+        cardStyle: 'border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 8px; ' + (dark ? 'background: #241D5E; color: #FFFFFF' : current ? 'background: #F4F1FE; color: #16131F; box-shadow: inset 0 0 0 2px ' + accent : 'background: #FFFFFF; color: #16131F; box-shadow: inset 0 0 0 1px #E2DCF8'),
+        btnStyle: 'font: inherit; font-size: 13px; font-weight: 800; border: 0; border-radius: 10px; min-height: 42px; margin-top: auto; cursor: ' + (current ? 'default' : 'pointer') + '; ' + (current ? 'background: #E2DCF8; color: #3A3647' : dark ? 'background: #F5C800; color: #16131F' : 'background: ' + accent + '; color: #FFFFFF')
+      };
+    });
+
+    const navItems = [
+      ['Accueil', 'Accueil.dc.html', 'M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z'],
+      ['Boutique', 'Boutique.dc.html', 'M3 9l1.5-5h15L21 9M3 9h18v11H3zM9 20v-6h6v6'],
+      ['Produits', 'Produits.dc.html', 'M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L2 12V2h10l8.6 8.6a2 2 0 0 1 0 2.8zM7 7h.01'],
+      ['Commandes', 'Commandes.dc.html', 'M3 4h2l2.5 11h11L21 7H6.5M9 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2zM18 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2z'],
+      ['Stock', 'Stock.dc.html', 'M21 8l-9-5-9 5 9 5 9-5zM3 8v8l9 5 9-5V8M12 13v8'],
+      ['Comptabilité', 'Comptabilite.dc.html', 'M6 2h9l5 5v15H6zM14 2v6h6M9 13h6M9 17h6'],
+      ['Portefeuille', 'Portefeuille.dc.html', 'M3 6h18v13H3zM3 10h18M16 14.5h2'],
+      ['Client', 'Client.dc.html', 'M16 21v-2a4 4 0 0 0-8 0v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z'],
+      ['WhatsApp Marketing', 'WhatsApp.dc.html', 'M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 21l2.1-5.6A8.4 8.4 0 1 1 21 11.5z'],
+      ['Analytics', 'Analytics.dc.html', 'M4 20V10M10 20V4M16 20v-7M22 20H2'],
+      ['Utilisateurs', 'Utilisateurs.dc.html', 'M17 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9.5 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8'],
+      ['Kolix AI', '#', 'M12 3l2.2 5.8L20 11l-5.8 2.2L12 19l-2.2-5.8L4 11l5.8-2.2z'],
+      ['Paramètres', 'Parametres.dc.html', 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1']
+    ];
+    const nav = navItems.map(([label, href, icon], i) => ({ label, href, icon, style: 'display: flex; align-items: center; gap: 14px; padding: 11px 14px; border-radius: 12px; text-decoration: none; color: #FFFFFF; ' + (i === 12 ? 'background: rgba(255,255,255,0.20); font-weight: 800' : 'font-weight: 600') }));
+
+    return {
+      accent, side, nav, sections, generalFields, domains, exts, codFields, btnColors, shapes, pvFields, channels, notifs, billing, plans,
+      secGeneral: st.sec === 'general', secDomain: st.sec === 'domain', secCod: st.sec === 'cod', secMarketing: st.sec === 'marketing', secNotif: st.sec === 'notif', secAccount: st.sec === 'account', secPlan: st.sec === 'plan',
+      hasToast: !!st.toast, toast: st.toast || '', closeToast: () => this.setState({ toast: null }),
+      saveGeneral: () => toast('Informations de la boutique enregistrées.'),
+      domQuery: st.domQuery, setDomQuery: e => this.setState({ domQuery: e.target.value.replace(/[^a-z0-9-]/gi, '').toLowerCase() }), domFull,
+      buyDomain: () => { if (st.owned.indexOf(domFull) === -1) this.setState({ owned: st.owned.concat([domFull]), toast: domFull + ' acheté. Connexion automatique en cours.' }); },
+      showConsent: !!st.cod.consent,
+      btnText: st.btnText, setBtnText: e => this.setState({ btnText: e.target.value }),
+      pvBtn: 'border-radius: ' + r + 'px; padding: 13px; text-align: center; font-size: 14px; font-weight: 800; color: #FFFFFF; background: ' + st.btnColor,
+      confirmMsg: st.confirmMsg, setConfirm: e => this.setState({ confirmMsg: e.target.value }),
+      confirmPreview: st.confirmMsg.replace(/\{Prénom\}/g, 'Aya'),
+      saveCod: () => toast('Formulaire COD publié sur votre boutique.'),
+      pixelId: st.pixelId, setPixel: e => this.setState({ pixelId: e.target.value.replace(/\D/g, '').slice(0, 16) }),
+      pixelStatus: pixelOk ? 'Connecté' : 'Non connecté',
+      pixelBadge: 'font-size: 12px; font-weight: 800; border-radius: 20px; padding: 4px 10px; ' + (pixelOk ? 'background: #E3F4EC; color: #1E5E3F' : 'background: #ECEAF3; color: #3A3647'),
+      pixelBtn: pixelOk ? 'Déconnecter' : 'Connecter en 1 clic',
+      pixelBtnStyle: 'font: inherit; font-size: 14px; font-weight: 800; border-radius: 12px; padding: 0 18px; min-height: 48px; cursor: pointer; ' + (pixelOk ? 'background: #FFFFFF; color: #A3202F; border: 1px solid #F2C4C9' : 'background: ' + accent + '; color: #FFFFFF; border: 0'),
+      connectPixel: () => this.setState({ pixel: !pixelOk, pixelId: pixelOk ? st.pixelId : st.pixelId, toast: pixelOk ? 'Pixel déconnecté.' : 'Pixel Facebook connecté. Les événements sont envoyés.' }),
+      goPlans: () => this.setState({ sec: 'plan' })
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Kolix — Espace Partenaire</title>
+<script src="./vendor/react.js"></script>
+<script src="./vendor/react-dom.js"></script>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#5A3BD8}a:hover{color:#3F25A8}
+</style>
+</helmet>
+<div style="font-family: 'Plus Jakarta Sans', 'Helvetica Neue', sans-serif; color: #16131F; background: #F7F5FE; min-height: 100vh; display: flex; flex-wrap: wrap; position: relative">
+
+<nav aria-label="Navigation principale" style="flex: 1 1 240px; max-width: 100%; background: {{side}}; color: #FFFFFF; padding: 26px 16px; box-sizing: border-box; display: flex; flex-direction: column; gap: 22px">
+<div style="display: flex; align-items: center; gap: 10px; padding-left: 8px">
+<span style="width: 40px; height: 40px; border-radius: 12px; background: #FFFFFF; color: {{side}}; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 800">K</span>
+<span style="display: flex; flex-direction: column"><span style="font-size: 26px; font-weight: 800; letter-spacing: -0.03em; line-height: 1">Kolix</span><span style="font-size: 11px; color: #E2DCFF; font-weight: 600">Votre succès, notre mission</span></span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 2px; font-size: 15px">
+<sc-for list="{{nav}}" as="n" hint-placeholder-count="14">
+<a href="{{n.href}}" style="{{n.style}}">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{n.icon}}"></path></svg>
+<span style="flex: 1">{{n.label}}</span>
+<sc-if value="{{n.hasBadge}}" hint-placeholder-val="{{ false }}"><span style="{{n.badgeStyle}}">{{n.badge}}</span></sc-if>
+</a>
+</sc-for>
+</div>
+<div style="margin-top: auto; background: rgba(255,255,255,0.12); border-radius: 16px; padding: 14px; font-size: 12px; line-height: 1.5; color: #E2DCFF">Le module Partenaire est débloqué parce que votre compte a été activé avec un lien partenaire Kolix.</div>
+</nav>
+
+<div style="flex: 999 1 600px; min-width: 0; display: flex; flex-direction: column">
+
+<header style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; padding: 16px 32px; background: #FFFFFF; border-bottom: 1px solid #EEEAFB">
+<label style="flex: 0 1 520px; display: flex; align-items: center; gap: 10px; background: #F4F1FE; border-radius: 24px; padding: 0 18px; min-height: 46px">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5E5A70" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Rechercher</span>
+<input type="search" placeholder="Rechercher…" style="flex: 1; font: inherit; font-size: 14px; border: 0; background: transparent; color: #16131F; min-height: 44px">
+</label>
+<div style="display: flex; align-items: center; gap: 12px">
+<span style="width: 42px; height: 42px; border-radius: 21px; background: #EEE9FF; color: #4B2FC9; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800">AT</span>
+<span style="display: flex; flex-direction: column"><span style="font-size: 14px; font-weight: 800">[Nom du partenaire]</span><span style="font-size: 12px; color: #5E5A70">Partenaire Kolix</span></span>
+</div>
+</header>
+
+<main style="padding: 24px 32px 40px; display: flex; flex-direction: column; gap: 18px">
+
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 14px">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px"><h1 style="margin: 0; font-size: 30px; font-weight: 800; letter-spacing: -0.03em">Espace Partenaire</h1><span style="font-size: 12px; font-weight: 800; background: #EEE9FF; color: #3F25A8; border-radius: 20px; padding: 4px 10px">Catégorie : Formateurs e-commerce</span></div>
+<span style="font-size: 14px; color: #5E5A70">Partagez Kolix, suivez vos filleuls et vos gains. Vous touchez 20 % de chaque abonnement pendant 12 mois.</span>
+</div>
+</div>
+
+<section style="background: #FFFFFF; border-radius: 20px; padding: 20px 22px; display: flex; flex-wrap: wrap; gap: 18px; box-shadow: 0 6px 20px rgba(108,76,241,0.06)">
+<div style="flex: 2 1 380px; display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 12px; font-weight: 800; color: #5E5A70; text-transform: uppercase; letter-spacing: 0.08em">Votre lien d’affiliation</span>
+<div style="display: flex; gap: 8px">
+<span style="flex: 1; min-width: 0; display: flex; align-items: center; background: #F4F1FE; border-radius: 12px; padding: 0 14px; min-height: 48px; font-size: 15px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">kolix.app/r/aminatraore</span>
+<button onClick="{{copyLink}}" style="font: inherit; font-size: 14px; font-weight: 800; background: {{accent}}; color: #FFFFFF; border: 0; border-radius: 12px; padding: 0 18px; min-height: 48px; cursor: pointer; white-space: nowrap">{{copyLinkLabel}}</button>
+</div>
+</div>
+<div style="flex: 1 1 240px; display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 12px; font-weight: 800; color: #5E5A70; text-transform: uppercase; letter-spacing: 0.08em">Votre code promo</span>
+<div style="display: flex; gap: 8px">
+<span style="flex: 1; display: flex; align-items: center; justify-content: center; border: 2px dashed #B9AAFF; border-radius: 12px; min-height: 48px; font-size: 18px; font-weight: 800; letter-spacing: 0.08em; color: #3F25A8">AMINA10</span>
+<button onClick="{{copyCode}}" style="font: inherit; font-size: 14px; font-weight: 800; background: #F4F1FE; color: #3F25A8; border: 0; border-radius: 12px; padding: 0 16px; min-height: 48px; cursor: pointer; white-space: nowrap">{{copyCodeLabel}}</button>
+</div>
+</div>
+<div style="flex: 1 1 100%; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; font-size: 13px; color: #5E5A70">
+<span>Partager :</span>
+<button style="font: inherit; font-size: 13px; font-weight: 800; background: #E3F4EC; color: #1E5E3F; border: 0; border-radius: 20px; padding: 0 14px; min-height: 40px; cursor: pointer">WhatsApp</button>
+<button style="font: inherit; font-size: 13px; font-weight: 800; background: #E8EEFB; color: #1F3F8A; border: 0; border-radius: 20px; padding: 0 14px; min-height: 40px; cursor: pointer">Facebook</button>
+<button style="font: inherit; font-size: 13px; font-weight: 800; background: #F4F1FE; color: #3F25A8; border: 0; border-radius: 20px; padding: 0 14px; min-height: 40px; cursor: pointer">Kit de communication</button>
+<span style="margin-left: auto">Le code fonctionne aussi sans clic : idéal pour vos statuts et vos formations.</span>
+</div>
+</section>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px">
+<sc-for list="{{kpis}}" as="k" hint-placeholder-count="5">
+<div style="background: #FFFFFF; border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 6px; box-shadow: 0 6px 20px rgba(108,76,241,0.06)">
+<span style="font-size: 13px; color: #5E5A70; font-weight: 700">{{k.label}}</span>
+<span style="font-size: 24px; font-weight: 800; white-space: nowrap">{{k.value}}</span>
+<span style="font-size: 12px; color: #5E5A70">{{k.note}}</span>
+</div>
+</sc-for>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; gap: 16px">
+<section style="flex: 1 1 340px; background: {{accent}}; color: #FFFFFF; border-radius: 22px; padding: 24px 26px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 14px 34px rgba(108,76,241,0.32)">
+<span style="font-size: 14px; font-weight: 700; color: #EDE8FF">Gains disponibles</span>
+<span style="font-size: 40px; font-weight: 800; letter-spacing: -0.03em; line-height: 1">{{availLabel}}</span>
+<span style="font-size: 13px; color: #EDE8FF">{{pendingLabel}}</span>
+<div style="display: flex; justify-content: space-between; gap: 10px; font-size: 13px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.25)"><span style="color: #EDE8FF">Commission mensuelle actuelle</span><strong>{{monthlyLabel}}</strong></div>
+<div style="display: flex; justify-content: space-between; gap: 10px; font-size: 13px"><span style="color: #EDE8FF">Total gagné depuis le début</span><strong>{{totalLabel}}</strong></div>
+<button onClick="{{transfer}}" disabled="{{noAvail}}" style="{{transferStyle}}">{{transferLabel}}</button>
+<span style="font-size: 11px; color: #EDE8FF">Versement vers votre Portefeuille Kolix, puis retrait en Mobile Money. Seuil minimum : [à définir].</span>
+</section>
+
+<section style="flex: 2 1 460px; min-width: 0; background: #FFFFFF; border-radius: 22px; padding: 20px 22px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 6px 20px rgba(108,76,241,0.06)">
+<div style="display: flex; justify-content: space-between; align-items: baseline"><h2 style="margin: 0; font-size: 17px; font-weight: 800">Gains par mois</h2><span style="font-size: 12px; color: #5E5A70; font-weight: 600">Commissions validées, en FCFA</span></div>
+<div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px; height: 200px; align-items: end; border-bottom: 1px solid #E2DCF8">
+<sc-for list="{{months}}" as="m" hint-placeholder-count="6">
+<div style="display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end">
+<span style="font-size: 11px; font-weight: 800; color: #3A3647; white-space: nowrap">{{m.value}}</span>
+<span style="{{m.bar}}"></span>
+</div>
+</sc-for>
+</div>
+<div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px"><sc-for list="{{months}}" as="m" hint-placeholder-count="6"><span style="text-align: center; font-size: 12px; font-weight: 600; color: #5E5A70">{{m.label}}</span></sc-for></div>
+</section>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start">
+<section style="flex: 3 1 620px; min-width: 0; background: #FFFFFF; border-radius: 18px; box-shadow: 0 6px 20px rgba(108,76,241,0.06); overflow: hidden">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; padding: 16px 18px; border-bottom: 1px solid #EEEAFB">
+<h2 style="margin: 0; font-size: 17px; font-weight: 800">Mes filleuls</h2>
+<div role="group" aria-label="Filtrer par statut" style="display: flex; flex-wrap: wrap; gap: 6px"><sc-for list="{{chips}}" as="c" hint-placeholder-count="5"><button onClick="{{c.pick}}" aria-pressed="{{c.pressed}}" style="{{c.style}}">{{c.label}}</button></sc-for></div>
+</div>
+<div style="overflow-x: auto">
+<table style="width: 100%; border-collapse: collapse; font-size: 14px; min-width: 800px">
+<thead>
+<tr style="text-align: left; color: #5E5A70; font-size: 12px; background: #FAF9FE">
+<th style="padding: 12px 8px 12px 18px; font-weight: 700">Marchand</th>
+<th style="padding: 12px 8px; font-weight: 700">Inscription</th>
+<th style="padding: 12px 8px; font-weight: 700">Source</th>
+<th style="padding: 12px 8px; font-weight: 700">Plan</th>
+<th style="padding: 12px 8px; font-weight: 700">Statut</th>
+<th style="padding: 12px 8px; font-weight: 700">Période de commission</th>
+<th style="padding: 12px 18px 12px 8px; font-weight: 700; text-align: right">Gains</th>
+</tr>
+</thead>
+<tbody>
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="10">
+<tr style="border-top: 1px solid #F0EDFB">
+<td style="padding: 12px 8px 12px 18px"><div style="font-weight: 800">{{r.shop}}</div><div style="font-size: 12px; color: #5E5A70">{{r.who}}</div></td>
+<td style="padding: 12px 8px; color: #3A3647; white-space: nowrap">{{r.date}}</td>
+<td style="padding: 12px 8px; color: #3A3647">{{r.source}}</td>
+<td style="padding: 12px 8px"><span style="{{r.planStyle}}">{{r.plan}}</span></td>
+<td style="padding: 12px 8px"><span style="{{r.statusStyle}}">{{r.status}}</span></td>
+<td style="padding: 12px 8px; min-width: 150px"><div style="display: flex; align-items: center; gap: 8px"><span style="flex: 1; height: 6px; border-radius: 3px; background: #F0EDFB; overflow: hidden"><span style="{{r.bar}}"></span></span><span style="font-size: 12px; font-weight: 700; color: #3A3647; white-space: nowrap">{{r.months}}</span></div></td>
+<td style="padding: 12px 18px 12px 8px; text-align: right; white-space: nowrap"><div style="font-weight: 800">{{r.earned}}</div><div style="font-size: 12px; color: #5E5A70">{{r.monthly}}</div></td>
+</tr>
+</sc-for>
+</tbody>
+</table>
+</div>
+<div style="padding: 12px 18px; border-top: 1px solid #EEEAFB; font-size: 12px; color: #5E5A70">Par confidentialité, seuls le nom de la boutique et l’initiale du nom du marchand sont visibles.</div>
+</section>
+
+<section style="flex: 1 1 280px; background: #EEE9FF; border-radius: 18px; padding: 20px; display: flex; flex-direction: column; gap: 12px">
+<h2 style="margin: 0; font-size: 16px; font-weight: 800; color: #2E1F86">Règles du programme</h2>
+<sc-for list="{{rules}}" as="r" hint-placeholder-count="5">
+<div style="display: flex; gap: 10px; align-items: flex-start; font-size: 13px; color: #2E1F86; line-height: 1.5"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none; margin-top: 2px"><path d="M20 6L9 17l-5-5"></path></svg><span>{{r}}</span></div>
+</sc-for>
+</section>
+</div>
+
+</main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#6C4CF1","options":["#6C4CF1","#7C5CFA","#5A3BD8"]},"side":{"editor":"color","default":"#5B3FD6","options":["#5B3FD6","#6C4CF1","#241D5E"]},"$preview":{"width":1440,"height":1640}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { chip: 'all', copied: null, paid: 30000 };
+  }
+  renderVals() {
+    const accent = this.props.accent ?? '#6C4CF1';
+    const side = this.props.side ?? '#5B3FD6';
+    const fmt = n => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    const PRICE = { Start: 5000, Grow: 10000, Pro: 15000, Empire: 50000 };
+    const RATE = 0.2;
+    const raw = [
+      ['Glow by Aya', 'Aya K.', '12 juin', 'Lien', 'Grow', 'Abonné actif', 4],
+      ['Tech Express CI', 'Moussa D.', '3 avr.', 'Code AMINA10', 'Pro', 'Abonné actif', 6],
+      ['Bamba Mode', 'Fatou B.', '20 juil.', 'Lien', 'Start', 'Abonné actif', 3],
+      ['Yao Distribution', 'Konan Y.', '18 août', 'Code AMINA10', 'Empire', 'Abonné actif', 2],
+      ['Salif Shop', 'Salif O.', '15 mai', 'Lien', 'Start', 'Abonné actif', 5],
+      ['Awa Beauté', 'Awa C.', '14 sept.', 'Lien', 'Grow', 'Abonné actif', 1],
+      ['Mariam Store', 'Mariam T.', '2 juin', 'Code AMINA10', 'Start', 'Résilié', 2],
+      ['Koné Gadgets', 'Ibrahim K.', '16 oct.', 'Lien', 'Grow', 'En essai', 0],
+      ['Adjoua Déco', 'Adjoua N.', '17 oct.', 'Code AMINA10', 'Pro', 'En essai', 0],
+      ['SK Sneakers', 'Serge K.', '25 sept.', 'Lien', 'Grow', 'Remboursé', 0]
+    ];
+    const rowsAll = raw.map(([shop, who, date, source, plan, status, m]) => {
+      const monthly = PRICE[plan] * RATE;
+      return { shop, who, date, source, plan, status, m, monthly, earned: monthly * m };
+    });
+    const statusStyles = { 'Abonné actif': 'background: #E3F4EC; color: #1E5E3F', 'En essai': 'background: #FFF0D6; color: #6B4100', 'Résilié': 'background: #ECEAF3; color: #3A3647', 'Remboursé': 'background: #FCE3E0; color: #8A2414' };
+    const planStyles = { Start: 'background: #ECEAF3; color: #3A3647', Grow: 'background: #EEE9FF; color: #3F25A8', Pro: 'background: #241D5E; color: #FFFFFF', Empire: 'background: #F5C800; color: #16131F' };
+
+    const chipDefs = [['all', 'Tous'], ['Abonné actif', 'Abonnés actifs'], ['En essai', 'En essai'], ['Résilié', 'Résiliés'], ['Remboursé', 'Remboursés']];
+    const chips = chipDefs.map(([id, label]) => {
+      const on = this.state.chip === id;
+      const n = id === 'all' ? rowsAll.length : rowsAll.filter(r => r.status === id).length;
+      return { label: label + ' (' + n + ')', pressed: on ? 'true' : 'false', pick: () => this.setState({ chip: id }), style: 'font: inherit; font-size: 13px; border-radius: 20px; padding: 0 14px; min-height: 40px; cursor: pointer; ' + (on ? 'background: #EEE9FF; color: #3F25A8; font-weight: 800; border: 1.5px solid #B9AAFF' : 'background: #FFFFFF; color: #3A3647; font-weight: 600; border: 1px solid #E2DCF8') };
+    });
+    const visible = this.state.chip === 'all' ? rowsAll : rowsAll.filter(r => r.status === this.state.chip);
+    const rows = visible.map(r => {
+      const active = r.status === 'Abonné actif';
+      return {
+        ...r,
+        planStyle: 'display: inline-block; font-size: 12px; font-weight: 800; border-radius: 8px; padding: 4px 9px; ' + planStyles[r.plan],
+        statusStyle: 'display: inline-block; font-size: 12px; font-weight: 800; border-radius: 8px; padding: 4px 9px; white-space: nowrap; ' + statusStyles[r.status],
+        months: r.status === 'En essai' ? 'Essai 7 j' : r.status === 'Remboursé' ? 'Annulée' : r.m + ' / 12 mois',
+        bar: 'display: block; height: 100%; border-radius: 3px; width: ' + Math.round(r.m / 12 * 100) + '%; background: ' + (active ? accent : '#B4AFC4'),
+        earned: fmt(r.earned) + ' FCFA',
+        monthly: active ? '+ ' + fmt(r.monthly) + ' / mois' : r.status === 'En essai' ? 'Potentiel ' + fmt(r.monthly) + ' / mois' : 'Commission arrêtée'
+      };
+    });
+
+    const total = rowsAll.reduce((a, r) => a + r.earned, 0);
+    const monthly = rowsAll.filter(r => r.status === 'Abonné actif').reduce((a, r) => a + r.monthly, 0);
+    const pending = rowsAll.filter(r => r.status === 'En essai').reduce((a, r) => a + r.monthly, 0);
+    const avail = Math.max(0, total - this.state.paid);
+    const paying = rowsAll.filter(r => r.status === 'Abonné actif' || r.status === 'Résilié').length;
+    const clicks = 1240;
+
+    const mRaw = [['Mai', 2000], ['Juin', 5000], ['Juil.', 8000], ['Août', 11000], ['Sept.', 13000], ['Oct.', 19000]];
+    const mx = 19000;
+    const months = mRaw.map(([label, v], i) => ({ label, value: fmt(v), bar: 'width: 64%; max-width: 50px; border-radius: 10px 10px 4px 4px; height: ' + Math.round(v / mx * 160) + 'px; background: ' + (i === mRaw.length - 1 ? accent : '#B9AAFF') }));
+
+    const copyFor = key => () => { this.setState({ copied: key }); setTimeout(() => { if (this.state.copied === key) this.setState({ copied: null }); }, 1600); };
+
+    const navItems = [
+      ['Accueil', 'Accueil.dc.html', 'M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z'],
+      ['Boutique', 'Boutique.dc.html', 'M3 9l1.5-5h15L21 9M3 9h18v11H3zM9 20v-6h6v6'],
+      ['Produits', 'Produits.dc.html', 'M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L2 12V2h10l8.6 8.6a2 2 0 0 1 0 2.8zM7 7h.01'],
+      ['Commandes', 'Commandes.dc.html', 'M3 4h2l2.5 11h11L21 7H6.5M9 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2zM18 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2z'],
+      ['Stock', 'Stock.dc.html', 'M21 8l-9-5-9 5 9 5 9-5zM3 8v8l9 5 9-5V8M12 13v8'],
+      ['Comptabilité', 'Comptabilite.dc.html', 'M6 2h9l5 5v15H6zM14 2v6h6M9 13h6M9 17h6'],
+      ['Portefeuille', 'Portefeuille.dc.html', 'M3 6h18v13H3zM3 10h18M16 14.5h2'],
+      ['Client', 'Client.dc.html', 'M16 21v-2a4 4 0 0 0-8 0v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z'],
+      ['WhatsApp Marketing', '#', 'M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 21l2.1-5.6A8.4 8.4 0 1 1 21 11.5z'],
+      ['Analytics', 'Analytics.dc.html', 'M4 20V10M10 20V4M16 20v-7M22 20H2'],
+      ['Utilisateurs', 'Utilisateurs.dc.html', 'M17 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9.5 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8'],
+      ['Kolix AI', '#', 'M12 3l2.2 5.8L20 11l-5.8 2.2L12 19l-2.2-5.8L4 11l5.8-2.2z'],
+      ['Partenaire', 'Partenaire.dc.html', 'M16 3h5v5M21 3l-7 7M8 21H3v-5M3 21l7-7M14 21h7v-7M10 3H3v7', 'Partenaire'],
+      ['Paramètres', '#', 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1']
+    ];
+    const nav = navItems.map(([label, href, icon, badge], i) => ({
+      label, href, icon, badge: badge ? 'Débloqué' : '', hasBadge: !!badge,
+      badgeStyle: 'font-size: 10px; font-weight: 800; border-radius: 20px; padding: 2px 8px; background: #F5C800; color: #16131F',
+      style: 'display: flex; align-items: center; gap: 14px; padding: 10px 14px; border-radius: 12px; text-decoration: none; color: #FFFFFF; ' + (label === 'Partenaire' ? 'background: rgba(255,255,255,0.20); font-weight: 800' : 'font-weight: 600')
+    }));
+
+    return {
+      accent, side, nav, chips, rows, months,
+      kpis: [
+        { label: 'Clics sur le lien', value: fmt(clicks), note: '30 derniers jours' },
+        { label: 'Inscriptions', value: String(rowsAll.length), note: 'Via lien ou code promo' },
+        { label: 'Abonnés payants', value: String(paying), note: rowsAll.filter(r => r.status === 'Abonné actif').length + ' encore actifs' },
+        { label: 'Taux de conversion', value: (paying / rowsAll.length * 100).toFixed(0) + ' %', note: 'Inscriptions → abonnement' },
+        { label: 'Gains ce mois', value: fmt(monthly) + ' FCFA', note: 'Commissions validées' }
+      ],
+      rules: [
+        '20 % du prix de l’abonnement, chaque mois, pendant 12 mois.',
+        'Commission validée après le premier paiement, pas pendant l’essai gratuit de 7 jours.',
+        'Commission annulée si le marchand est remboursé.',
+        'Attribution pendant 30 jours après un clic, ou immédiate avec le code promo.',
+        'Vous ne pouvez pas vous affilier vous-même.'
+      ],
+      availLabel: fmt(avail) + ' FCFA',
+      pendingLabel: '+ ' + fmt(pending) + ' FCFA par mois en attente (filleuls en essai)',
+      monthlyLabel: fmt(monthly) + ' FCFA',
+      totalLabel: fmt(total) + ' FCFA',
+      noAvail: avail <= 0,
+      transferLabel: avail > 0 ? 'Transférer vers mon Portefeuille' : 'Gains transférés ✓',
+      transferStyle: 'font: inherit; font-size: 14px; font-weight: 800; border: 0; border-radius: 12px; min-height: 48px; margin-top: 4px; ' + (avail > 0 ? 'background: #FFFFFF; color: #3F25A8; cursor: pointer' : 'background: rgba(255,255,255,0.25); color: #FFFFFF; cursor: default'),
+      transfer: () => { if (avail > 0) this.setState({ paid: total }); },
+      copyLink: copyFor('link'), copyCode: copyFor('code'),
+      copyLinkLabel: this.state.copied === 'link' ? 'Copié ✓' : 'Copier le lien',
+      copyCodeLabel: this.state.copied === 'code' ? 'Copié ✓' : 'Copier'
+    };
+  }
+}
+</script>
+</body>
+</html>

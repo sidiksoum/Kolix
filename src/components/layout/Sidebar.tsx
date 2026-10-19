@@ -3,6 +3,7 @@ import { NavLink, useLocation } from 'react-router-dom';
 import {
   Home,
   Store,
+  Tag,
   ShoppingBag,
   Layers,
   FileText,
@@ -14,7 +15,8 @@ import {
   Sparkles,
   Settings,
   ChevronDown,
-  ArrowRight
+  ArrowRight,
+  Gift
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { cn } from '../../utils/cn';
@@ -23,21 +25,23 @@ export interface NavItemDef {
   label: string;
   path: string;
   icon: React.ElementType;
-  locked?: boolean;
+  badge?: string;
+  badgeColor?: 'pro' | 'warn' | 'default';
 }
 
 export const navItems: NavItemDef[] = [
-  { label: 'Accueil', path: '/', icon: Home },
+  { label: 'Accueil', path: '/dashboard', icon: Home },
   { label: 'Boutique', path: '/boutique', icon: Store },
-  { label: 'Commandes', path: '/commandes', icon: ShoppingBag },
-  { label: 'Stock', path: '/stock', icon: Layers },
+  { label: 'Produits', path: '/produits', icon: Tag },
+  { label: 'Commandes', path: '/commandes', icon: ShoppingBag, badge: '12' },
+  { label: 'Stock', path: '/stock', icon: Layers, badge: '4', badgeColor: 'warn' },
   { label: 'Comptabilité', path: '/comptabilite', icon: FileText },
   { label: 'Portefeuille', path: '/portefeuille', icon: Wallet },
   { label: 'Client', path: '/clients', icon: Users },
-  { label: 'WhatsApp Marketing', path: '/whatsapp', icon: MessageSquare, locked: true },
+  { label: 'WhatsApp Marketing', path: '/whatsapp', icon: MessageSquare, badge: 'PRO', badgeColor: 'pro' },
   { label: 'Analytics', path: '/analytics', icon: BarChart2 },
+  { label: 'Partenaire', path: '/partenaires', icon: Gift },
   { label: 'Utilisateurs', path: '/utilisateurs', icon: UserCheck },
-  { label: 'Kolix AI', path: '/ai', icon: Sparkles },
   { label: 'Paramètres', path: '/parametres', icon: Settings },
 ];
 
@@ -59,28 +63,36 @@ export const Sidebar: React.FC<{ isOpen?: boolean; onClose?: () => void }> = ({ 
     >
       {/* Brand Logo & Subtitle */}
       <div className="flex flex-col gap-0.5 pl-2 shrink-0">
-        <div className="flex items-center gap-1.5 text-[28px] font-extrabold tracking-[-0.04em] text-white">
+        <NavLink to="/" className="flex items-center gap-1.5 text-[28px] font-extrabold tracking-[-0.04em] text-white no-underline">
           kolix
           <span className="w-2.5 h-2.5 rounded-full bg-white inline-block mt-2.5 shadow-sm" />
-        </div>
+        </NavLink>
         <div className="text-[11px] font-bold tracking-[0.14em] uppercase text-white/80">
-          Espace marchand
+          Votre succès, notre mission
         </div>
       </div>
 
       {/* Current Shop Selector */}
       <button
         type="button"
-        className="flex justify-between items-center bg-black/15 hover:bg-black/25 transition-colors text-white border-0 rounded-2xl px-3.5 py-3 text-sm cursor-pointer min-h-[48px] text-left shrink-0"
+        className="flex justify-between items-center bg-white/15 hover:bg-white/20 transition-colors text-white border-0 rounded-2xl px-3.5 py-3 text-sm cursor-pointer min-h-[52px] text-left shrink-0"
       >
-        <span className="font-bold truncate pr-2">{user.currentShop.name}</span>
-        <ChevronDown className="w-3.5 h-3.5 shrink-0 opacity-80" />
+        <div className="flex items-center gap-2.5 min-w-0 pr-2">
+          <span className="w-8 h-8 rounded-xl bg-[#C93C72] text-white flex items-center justify-center font-extrabold text-sm flex-shrink-0">
+            S
+          </span>
+          <div className="min-w-0">
+            <span className="text-[10px] text-[#E2DCFF] font-bold block uppercase tracking-wider">Boutique active</span>
+            <span className="font-extrabold text-sm truncate block leading-tight">{user.currentShop.name}</span>
+          </div>
+        </div>
+        <ChevronDown className="w-4 h-4 shrink-0 text-white/80" />
       </button>
 
-      {/* Navigation Links (Scrollable section) */}
-      <nav aria-label="Navigation principale" className="flex flex-col gap-1 text-[15px] my-1">
+      {/* Navigation Links */}
+      <nav aria-label="Navigation principale" className="flex flex-col gap-1 text-[14px] my-1">
         {navItems.map((n) => {
-          const isActive = location.pathname === n.path || (n.path !== '/' && location.pathname.startsWith(n.path));
+          const isActive = location.pathname === n.path || (n.path !== '/dashboard' && location.pathname.startsWith(n.path));
           const Icon = n.icon;
 
           return (
@@ -91,15 +103,20 @@ export const Sidebar: React.FC<{ isOpen?: boolean; onClose?: () => void }> = ({ 
               className={cn(
                 'flex items-center gap-3 px-3.5 py-2.5 rounded-2xl no-underline transition-all duration-150',
                 isActive
-                  ? 'bg-[#241D5E] text-white font-extrabold shadow-kolix-navy'
+                  ? 'bg-white/20 text-white font-extrabold shadow-sm'
                   : 'text-white/85 hover:text-white hover:bg-white/10 font-semibold'
               )}
             >
               <Icon className="w-[18px] h-[18px] shrink-0" />
               <span className="flex-1 truncate">{n.label}</span>
-              {n.locked && (
-                <span className="text-[10px] font-extrabold bg-white/20 text-white rounded-full px-2 py-0.5">
-                  PRO
+              {n.badge && (
+                <span className={cn(
+                  'text-[10px] font-extrabold rounded-full px-2 py-0.5',
+                  n.badgeColor === 'pro' && 'bg-white/25 text-white',
+                  n.badgeColor === 'warn' && 'bg-[#FFE7B8] text-[#6B4100]',
+                  (!n.badgeColor || n.badgeColor === 'default') && 'bg-white/20 text-white'
+                )}>
+                  {n.badge}
                 </span>
               )}
             </NavLink>
@@ -113,8 +130,8 @@ export const Sidebar: React.FC<{ isOpen?: boolean; onClose?: () => void }> = ({ 
           <div className="text-[11px] text-[#BDB5E8] font-bold uppercase tracking-[0.1em]">
             Votre plan
           </div>
-          <div className="text-[17px] font-extrabold text-white">{user.currentShop.plan}</div>
-          <div className="text-[13px] text-[#D9D3F5]">
+          <div className="text-[16px] font-extrabold text-white">{user.currentShop.plan}</div>
+          <div className="text-[12px] text-[#D9D3F5]">
             {user.currentShop.ordersCount} / {user.currentShop.maxOrders} commandes ce mois
           </div>
           <div className="h-1.5 bg-white/15 rounded-full overflow-hidden mt-1">
@@ -123,12 +140,12 @@ export const Sidebar: React.FC<{ isOpen?: boolean; onClose?: () => void }> = ({ 
               style={{ width: `${percentage}%` }}
             />
           </div>
-          <a
-            href="#upgrade"
-            className="inline-flex items-center gap-1 text-[13px] font-bold text-white hover:text-[#A99BFA] no-underline mt-1 pt-1 border-t border-white/10"
+          <NavLink
+            to="/parametres"
+            className="inline-flex items-center gap-1 text-[12px] font-bold text-white hover:text-[#A99BFA] no-underline mt-1 pt-1 border-t border-white/10"
           >
             Passer à Pro <ArrowRight className="w-3.5 h-3.5 ml-1" />
-          </a>
+          </NavLink>
         </div>
       </div>
     </aside>
