@@ -36,7 +36,7 @@ export default {
         }
       },
       fontFamily: {
-        sans: ['"Plus Jakarta Sans"', 'Helvetica Neue', 'sans-serif'],
+        sans: ['Moanslight', '"Plus Jakarta Sans"', 'Helvetica Neue', 'sans-serif'],
       },
       boxShadow: {
         'kolix-sm': '0 4px 12px rgba(108, 76, 241, 0.05)',

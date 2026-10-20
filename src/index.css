@@ -2,6 +2,69 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'Moanslight';
+  src: url('/fonts/moanslight-thin.ttf') format('truetype'),
+       url('/fonts/moanslight-thin.otf') format('opentype');
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Moanslight';
+  src: url('/fonts/moanslight-extralight.ttf') format('truetype'),
+       url('/fonts/moanslight-extralight.otf') format('opentype');
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Moanslight';
+  src: url('/fonts/moanslight-light.ttf') format('truetype'),
+       url('/fonts/moanslight-light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Moanslight';
+  src: url('/fonts/moanslight-regular.ttf') format('truetype'),
+       url('/fonts/moanslight-regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Moanslight';
+  src: url('/fonts/moanslight-medium.ttf') format('truetype'),
+       url('/fonts/moanslight-medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Moanslight';
+  src: url('/fonts/moanslight-semibold.ttf') format('truetype'),
+       url('/fonts/moanslight-semibold.otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Moanslight';
+  src: url('/fonts/moanslight-bold.ttf') format('truetype'),
+       url('/fonts/moanslight-bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 @layer base {
   :root {
     --kolix-accent: #6C4CF1;
@@ -10,7 +73,7 @@
   }
 
   body {
-    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    font-family: 'Moanslight', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
     background-color: #F4F1FE;
     color: #16131F;
     overflow-x: hidden;

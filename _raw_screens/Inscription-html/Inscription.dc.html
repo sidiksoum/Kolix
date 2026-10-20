@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Kolix — Créer votre compte</title>
+<script src="./vendor/react.js"></script>
+<script src="./vendor/react-dom.js"></script>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Caveat:wght@600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#5A3BD8}a:hover{color:#3F25A8}
+</style>
+</helmet>
+<div style="font-family: 'Plus Jakarta Sans', 'Helvetica Neue', sans-serif; color: #16131F; background: #F4F1FE; min-height: 100vh; display: flex; flex-wrap: wrap; gap: 24px; padding: 28px; box-sizing: border-box">
+
+<section style="flex: 1 1 640px; min-width: 0; padding: 12px 8px; display: flex; flex-direction: column; gap: 28px">
+<a href="Landing.dc.html" style="display: flex; align-items: center; gap: 12px; text-decoration: none; color: #16131F">
+<span style="width: 50px; height: 50px; border-radius: 14px; background: {{accent}}; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 30px; font-weight: 800">K</span>
+<span style="display: flex; flex-direction: column"><span style="font-size: 30px; font-weight: 800; letter-spacing: -0.03em; line-height: 1">Kolix</span><span style="font-size: 13px; font-weight: 600; color: #3F25A8">Votre succès, notre mission</span></span>
+</a>
+
+<div style="display: flex; flex-direction: column; gap: 16px; max-width: 640px">
+<h1 style="margin: 0; font-size: 42px; line-height: 1.15; font-weight: 800; letter-spacing: -0.03em">Lancez votre boutique en ligne en quelques minutes, <span style="color: {{accent}}">sans compétence technique !</span></h1>
+<p style="margin: 0; font-size: 16px; line-height: 1.6; color: #3A3647">Kolix, la plateforme e-commerce no-code pensée pour les marchands d’Afrique francophone. Vendez en Cash on Delivery, gérez votre activité et faites grandir votre business, tout au même endroit.</p>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; gap: 28px; align-items: center">
+<div style="flex: 1 1 260px; display: flex; flex-direction: column; gap: 20px">
+<sc-for list="{{features}}" as="f" hint-placeholder-count="5">
+<div style="display: flex; gap: 14px; align-items: flex-start">
+<span style="width: 48px; height: 48px; border-radius: 24px; background: #FFFFFF; color: {{accent}}; display: flex; align-items: center; justify-content: center; flex: none; box-shadow: 0 6px 16px rgba(108,76,241,0.10)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{f.icon}}"></path></svg></span>
+<span style="display: flex; flex-direction: column; gap: 3px"><span style="font-size: 15px; font-weight: 800">{{f.title}}</span><span style="font-size: 13px; color: #5E5A70; line-height: 1.5">{{f.text}}</span></span>
+</div>
+</sc-for>
+</div>
+
+<div style="flex: 0 1 320px; position: relative; display: flex; justify-content: center; padding-bottom: 40px">
+<div style="width: 300px; height: 600px; background: #16131F; border-radius: 46px; padding: 11px; box-sizing: border-box; box-shadow: 0 30px 70px rgba(36,29,94,0.35)">
+<div style="width: 100%; height: 100%; background: #F7F5FE; border-radius: 36px; overflow: hidden; display: flex; flex-direction: column">
+<div style="background: #241D5E; color: #FFFFFF; padding: 12px 0 14px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 11px; font-weight: 800"><span>9:41</span><span style="display: flex; gap: 4px; align-items: center"><span style="width: 14px; height: 7px; border-radius: 2px; background: #FFFFFF"></span><span style="width: 18px; height: 9px; border-radius: 3px; border: 1.5px solid #FFFFFF; box-sizing: border-box"></span></span></div>
+<div style="display: flex; gap: 6px; padding: 0 10px; font-size: 11px; font-weight: 700; white-space: nowrap; overflow: hidden">
+<span style="padding: 6px 8px; color: #BDB5E8">Aujourd’hui</span><span style="padding: 6px 8px; color: #BDB5E8">Hier</span><span style="padding: 6px 8px; color: #BDB5E8">Semaine</span><span style="padding: 6px 10px; border-radius: 8px; background: {{accent}}; color: #FFFFFF">Ce mois</span>
+</div>
+<div style="display: flex; align-items: flex-end; justify-content: center; gap: 14px; padding: 0 4px">
+<span style="display: flex; flex-direction: column; align-items: center; opacity: 0.45; width: 46px; overflow: hidden"><span style="font-size: 10px">Visites</span><span style="font-size: 16px; font-weight: 800">29k</span></span>
+<span style="display: flex; flex-direction: column; align-items: center; gap: 2px"><span style="font-size: 11px; font-weight: 700; color: #E2DCFF">Ventes totales</span><span style="font-size: 22px; font-weight: 800; letter-spacing: -0.02em">3,26 M FCFA</span><span style="font-size: 11px; color: #E2DCFF">205 commandes livrées</span></span>
+<span style="display: flex; flex-direction: column; align-items: center; opacity: 0.45; width: 46px; overflow: hidden"><span style="font-size: 10px">Conv.</span><span style="font-size: 16px; font-weight: 800">64 %</span></span>
+</div>
+<span style="align-self: center; font-size: 11px; font-weight: 700; border: 1px solid rgba(255,255,255,0.55); border-radius: 8px; padding: 6px 12px">Voir le tableau de bord</span>
+<div style="position: relative; height: 92px; margin: 0 14px 0 30px">
+<span style="position: absolute; left: -22px; top: -5px; font-size: 8px; color: #BDB5E8">200k</span><span style="position: absolute; left: -22px; top: 41px; font-size: 8px; color: #BDB5E8">100k</span><span style="position: absolute; left: -12px; bottom: -4px; font-size: 8px; color: #BDB5E8">0</span>
+<span style="position: absolute; left: 0; right: 0; top: 0; border-top: 1px solid rgba(255,255,255,0.18)"></span><span style="position: absolute; left: 0; right: 0; top: 46px; border-top: 1px solid rgba(255,255,255,0.18)"></span>
+<div style="position: absolute; inset: 0; display: flex; align-items: flex-end; gap: 2px"><sc-for list="{{mBars}}" as="b" hint-placeholder-count="19"><span style="{{b}}"></span></sc-for></div>
+</div>
+<div style="display: flex; justify-content: space-between; margin: -6px 14px 0 30px; font-size: 8px; color: #BDB5E8"><span>1</span><span>5</span><span>10</span><span>15</span><span>19</span></div>
+</div>
+<div style="background: #FFFFFF; display: flex; flex-direction: column">
+<sc-for list="{{mTasks}}" as="t" hint-placeholder-count="4">
+<div style="display: flex; align-items: center; gap: 10px; padding: 11px 14px; border-bottom: 1px solid #F0EDFB; font-size: 12px">
+<span style="width: 26px; height: 26px; border-radius: 8px; background: #F4F1FE; color: #3F25A8; display: flex; align-items: center; justify-content: center; flex: none"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{t.icon}}"></path></svg></span>
+<span style="flex: 1; color: #3A3647"><strong style="color: #16131F">{{t.bold}}</strong> {{t.rest}}</span>
+<span style="color: #8B869C; font-size: 14px">›</span>
+</div>
+</sc-for>
+</div>
+<div style="margin: 10px; background: #FFFFFF; border-radius: 14px; padding: 12px; display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 10px; color: #5E5A70; font-weight: 700">Kolix AI · 7 derniers jours</span>
+<span style="font-size: 12px; font-weight: 800; line-height: 1.35">La Montre élégante part vite : il en reste 3.</span>
+</div>
+<div style="margin-top: auto; background: #FFFFFF; border-top: 1px solid #EEEAFB; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); padding: 8px 4px 12px">
+<sc-for list="{{mTabs}}" as="t" hint-placeholder-count="4"><span style="{{t.style}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{t.icon}}"></path></svg>{{t.label}}</span></sc-for>
+</div>
+</div>
+</div>
+<span style="position: absolute; left: -60px; bottom: 0; font-family: Caveat, 'Comic Sans MS', cursive; font-size: 26px; color: #3F25A8; transform: rotate(-8deg); white-space: nowrap">Votre succès commence ici !</span>
+<svg width="56" height="40" viewBox="0 0 56 40" fill="none" stroke="#3F25A8" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="position: absolute; left: 150px; bottom: 30px"><path d="M4 34C20 32 38 22 48 6M48 6l-9 2M48 6l1 9"></path></svg>
+</div>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; gap: 24px; align-items: center">
+<div style="flex: 0 1 360px; display: flex; align-items: center; gap: 14px; background: rgba(255,255,255,0.75); border-radius: 18px; padding: 16px 18px">
+<svg width="44" height="48" viewBox="0 0 44 48" aria-hidden="true"><path d="M14 2l10 2 6 6 8 4 4 8-4 6-2 8-6 6-6 2-2-6-4-4-2-8-6-2-4-6 2-8z" fill="{{accent}}"></path></svg>
+<span style="display: flex; flex-direction: column; gap: 3px"><span style="font-size: 15px; font-weight: 800">Une solution 100 % africaine</span><span style="font-size: 12px; color: #5E5A70; line-height: 1.45">Pensée pour les marchands d’Afrique francophone.</span></span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 10px">
+<span style="font-size: 12px; font-weight: 800; color: #3A3647">Présent dans 9 pays francophones</span>
+<div style="display: flex; flex-wrap: wrap; gap: 10px"><sc-for list="{{flags}}" as="f" hint-placeholder-count="9"><span style="display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px; font-weight: 800; color: #5E5A70"><span style="{{f.style}}"></span>{{f.code}}</span></sc-for></div>
+</div>
+</div>
+</section>
+
+<section style="flex: 1 1 460px; min-width: 0; max-width: 620px; display: flex; flex-direction: column; gap: 10px">
+<span style="align-self: flex-end; font-size: 13px; color: #5E5A70; padding: 4px 8px">Déjà un compte ? <a href="#" style="font-weight: 800">Se connecter</a></span>
+<div style="background: #FFFFFF; border-radius: 26px; padding: 36px 40px; display: flex; flex-direction: column; gap: 20px; box-shadow: 0 20px 50px rgba(36,29,94,0.10)">
+<div style="display: flex; align-items: center; gap: 12px">
+<span style="width: 44px; height: 44px; border-radius: 13px; background: {{accent}}; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: 800">K</span>
+<span style="display: flex; flex-direction: column"><span style="font-size: 26px; font-weight: 800; letter-spacing: -0.03em; line-height: 1">Kolix</span><span style="font-size: 12px; font-weight: 600; color: #3F25A8">Votre succès, notre mission</span></span>
+</div>
+
+<sc-if value="{{stepForm}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-direction: column; gap: 18px">
+<div style="display: flex; flex-direction: column; gap: 6px"><h2 style="margin: 0; font-size: 30px; font-weight: 800; letter-spacing: -0.03em">Créer votre compte</h2><span style="font-size: 14px; color: #5E5A70">Rejoignez les marchands qui vendent avec Kolix. 7 jours gratuits.</span></div>
+
+<span style="font-size: 14px; font-weight: 800">Informations personnelles</span>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px">
+<label style="{{fieldWrap}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5E5A70" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"></path></svg><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Nom complet</span><input type="text" value="{{f.name}}" onChange="{{setName}}" placeholder="Nom complet *" autocomplete="name" style="{{inputStyle}}"></label>
+<label style="{{fieldWrap}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5E5A70" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h18v14H3zM3 6l9 7 9-7"></path></svg><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Adresse e-mail</span><input type="email" value="{{f.email}}" onChange="{{setEmail}}" placeholder="Adresse e-mail *" autocomplete="email" style="{{inputStyle}}"></label>
+</div>
+<div style="{{fieldWrap}}">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5E5A70" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"></path></svg>
+<label style="flex: 1; display: flex"><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Numéro de téléphone WhatsApp</span><input type="tel" value="{{f.phone}}" onChange="{{setPhone}}" placeholder="Numéro WhatsApp *" autocomplete="tel-national" style="{{inputStyle}}"></label>
+<span style="width: 1px; height: 26px; background: #E2DCF8"></span>
+<label style="display: flex; align-items: center; gap: 6px"><span style="{{dialFlag}}"></span><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Indicatif</span><select value="{{f.dial}}" onChange="{{setDial}}" style="font: inherit; font-size: 14px; font-weight: 700; border: 0; background: transparent; color: #16131F; min-height: 44px"><sc-for list="{{dials}}" as="d" hint-placeholder-count="9"><option value="{{d.value}}">{{d.label}}</option></sc-for></select></label>
+</div>
+<div style="{{fieldWrap}}">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5E5A70" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 11h14v10H5zM8 11V7a4 4 0 0 1 8 0v4"></path></svg>
+<label style="flex: 1; display: flex"><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Mot de passe</span><input type="{{pwdType}}" value="{{f.pwd}}" onChange="{{setPwd}}" placeholder="Mot de passe * (8 caractères min.)" autocomplete="new-password" style="{{inputStyle}}"></label>
+<button onClick="{{togglePwd}}" aria-label="{{pwdAria}}" style="width: 40px; height: 40px; border: 0; background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5E5A70" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
+</div>
+
+<span style="font-size: 14px; font-weight: 800; margin-top: 4px">Informations sur votre activité</span>
+<sc-for list="{{selects}}" as="s" hint-placeholder-count="3">
+<label style="{{fieldWrap}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5E5A70" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{s.icon}}"></path></svg><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">{{s.label}}</span>
+<select value="{{s.value}}" onChange="{{s.set}}" style="{{s.style}}"><option value="">{{s.placeholder}}</option><sc-for list="{{s.options}}" as="o" hint-placeholder-count="6"><option value="{{o}}">{{o}}</option></sc-for></select></label>
+</sc-for>
+<sc-if value="{{showCode}}" hint-placeholder-val="{{ false }}">
+<label style="{{fieldWrap}}; background: #FFF6CC; border-color: #F5C800"><span style="font-size: 12px; font-weight: 800; color: #4D3B00">Code partenaire</span><input type="text" value="{{f.code}}" onChange="{{setCode}}" placeholder="Ex. AMINA10" style="{{inputStyle}}; text-transform: uppercase; font-weight: 800; letter-spacing: 0.06em"></label>
+</sc-if>
+
+<label style="display: flex; gap: 10px; align-items: flex-start; font-size: 13px; color: #3A3647; line-height: 1.5; cursor: pointer"><input type="checkbox" checked="{{f.cgu}}" onChange="{{toggleCgu}}" style="width: 20px; height: 20px; accent-color: #6C4CF1; flex: none; margin-top: 1px">J’accepte les <a href="#" style="font-weight: 800">Conditions générales d’utilisation</a> et la <a href="#" style="font-weight: 800">Politique de confidentialité</a> de Kolix.</label>
+<sc-if value="{{hasErr}}" hint-placeholder-val="{{ false }}"><span role="alert" style="font-size: 13px; font-weight: 700; color: #A3202F">{{errMsg}}</span></sc-if>
+<button onClick="{{submit}}" style="font: inherit; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 16px; font-weight: 800; background: {{accent}}; color: #FFFFFF; border: 0; border-radius: 14px; min-height: 56px; cursor: pointer; box-shadow: 0 12px 26px rgba(108,76,241,0.30)">Créer mon compte →</button>
+<div style="display: flex; align-items: center; gap: 12px; font-size: 13px; color: #5E5A70"><span style="flex: 1; height: 1px; background: #EEEAFB"></span>Ou<span style="flex: 1; height: 1px; background: #EEEAFB"></span></div>
+<button onClick="{{viaGoogle}}" style="font: inherit; display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 54px; border-radius: 14px; border: 1.5px solid #CFC7F2; background: #FFFFFF; color: #16131F; font-size: 15px; font-weight: 800; cursor: pointer"><span style="width: 26px; height: 26px; border-radius: 13px; background: #F1F1F4; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800">G</span>Continuer avec Google</button>
+</div>
+</sc-if>
+
+<sc-if value="{{stepOtp}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; flex-direction: column; gap: 6px"><h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.03em">{{otpTitle}}</h2><span style="font-size: 14px; color: #5E5A70; line-height: 1.5">{{otpSub}}</span></div>
+<sc-if value="{{needPhone}}" hint-placeholder-val="{{ false }}">
+<div style="{{fieldWrap}}"><span style="{{dialFlag}}"></span><select value="{{f.dial}}" onChange="{{setDial}}" style="font: inherit; font-size: 14px; font-weight: 700; border: 0; background: transparent; color: #16131F; min-height: 44px"><sc-for list="{{dials}}" as="d" hint-placeholder-count="9"><option value="{{d.value}}">{{d.label}}</option></sc-for></select><span style="width: 1px; height: 26px; background: #E2DCF8"></span><label style="flex: 1; display: flex"><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Numéro WhatsApp</span><input type="tel" value="{{f.phone}}" onChange="{{setPhone}}" placeholder="Numéro WhatsApp" style="{{inputStyle}}"></label></div>
+</sc-if>
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 700; color: #3A3647">Code reçu sur WhatsApp
+<input type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" value="{{f.otp}}" onChange="{{setOtp}}" placeholder="• • • • • •" style="font: inherit; font-size: 30px; font-weight: 800; letter-spacing: 0.5em; text-align: center; border: 1.5px solid #E2DCF8; border-radius: 16px; min-height: 68px; color: #16131F"></label>
+<sc-if value="{{hasErr}}" hint-placeholder-val="{{ false }}"><span role="alert" style="font-size: 13px; font-weight: 700; color: #A3202F">{{errMsg}}</span></sc-if>
+<button onClick="{{verify}}" style="font: inherit; font-size: 16px; font-weight: 800; background: {{accent}}; color: #FFFFFF; border: 0; border-radius: 14px; min-height: 56px; cursor: pointer">Vérifier et créer ma boutique</button>
+<button onClick="{{backToForm}}" style="font: inherit; font-size: 13px; font-weight: 800; background: transparent; border: 0; color: #3F25A8; cursor: pointer; min-height: 40px">← Modifier mes informations</button>
+</div>
+</sc-if>
+
+<sc-if value="{{stepDone}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 16px">
+<span style="width: 60px; height: 60px; border-radius: 30px; background: #E3F4EC; color: #1E5E3F; display: flex; align-items: center; justify-content: center"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg></span>
+<h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.03em">Bienvenue sur Kolix, {{firstName}} !</h2>
+<span style="font-size: 14px; color: #5E5A70; line-height: 1.5">Votre compte est créé et votre essai gratuit de 7 jours commence. Prochaine étape : nommer votre boutique et choisir votre niche.</span>
+<a href="Boutique.dc.html" style="display: flex; align-items: center; justify-content: center; min-height: 56px; border-radius: 14px; background: {{accent}}; color: #FFFFFF; font-size: 16px; font-weight: 800; text-decoration: none">Créer ma boutique →</a>
+<button onClick="{{restart}}" style="font: inherit; font-size: 13px; font-weight: 700; background: transparent; border: 0; color: #5E5A70; cursor: pointer; min-height: 40px">Recommencer la démo</button>
+</div>
+</sc-if>
+
+<span style="font-size: 13px; color: #5E5A70; text-align: center">Besoin d’aide ? Contactez notre équipe <a href="#" style="font-weight: 800">support</a></span>
+</div>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#6C4CF1","options":["#6C4CF1","#7C5CFA","#5A3BD8"]},"$preview":{"width":1440,"height":1120}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { step: 'form', method: null, err: '', showPwd: false, f: { name: '', email: '', phone: '', dial: '+225', pwd: '', activity: '', country: '', source: '', code: '', cgu: false, otp: '' } };
+  }
+  renderVals() {
+    const accent = this.props.accent ?? '#6C4CF1';
+    const st = this.state, f = st.f;
+    const upd = patch => this.setState({ f: { ...this.state.f, ...patch }, err: '' });
+    const flagDefs = {
+      CI: ['#F77F00', '#FFFFFF', '#009E60'], SN: ['#00853F', '#FDEF42', '#E31B23'], ML: ['#14B53A', '#FCD116', '#CE1126'], BF: ['#EF2B2D', '#009E49', null],
+      GN: ['#CE1126', '#FCD116', '#009460'], NE: ['#E05206', '#FFFFFF', '#0DB02B', 'h'], BJ: ['#008751', '#FCD116', '#E8112D', 'bj'], TG: ['#006A4E', '#FFCE00', '#D21034', 'tg'], CM: ['#007A5E', '#CE1126', '#FCD116']
+    };
+    const flagStyle = code => {
+      const [a, b, c, mode] = flagDefs[code];
+      let bg;
+      if (code === 'BF') bg = 'linear-gradient(180deg, ' + a + ' 50%, ' + b + ' 50%)';
+      else if (mode === 'h') bg = 'linear-gradient(180deg, ' + a + ' 33.3%, ' + b + ' 33.3% 66.6%, ' + c + ' 66.6%)';
+      else if (mode === 'tg') bg = 'linear-gradient(#D21034, #D21034) 0 0 / 40% 60% no-repeat, linear-gradient(180deg, #006A4E 0 20%, #FFCE00 20% 40%, #006A4E 40% 60%, #FFCE00 60% 80%, #006A4E 80%)';
+      else if (mode === 'bj') bg = 'linear-gradient(90deg, ' + a + ' 40%, transparent 40%), linear-gradient(180deg, ' + b + ' 50%, ' + c + ' 50%)';
+      else bg = 'linear-gradient(90deg, ' + a + ' 33.3%, ' + b + ' 33.3% 66.6%, ' + c + ' 66.6%)';
+      return 'width: 28px; height: 20px; border-radius: 4px; box-shadow: 0 0 0 1px rgba(22,19,31,0.12); background: ' + bg;
+    };
+    const codes = ['CI', 'SN', 'ML', 'BF', 'GN', 'NE', 'BJ', 'TG', 'CM'];
+    const dialMap = { '+225': 'CI', '+221': 'SN', '+223': 'ML', '+226': 'BF', '+224': 'GN', '+227': 'NE', '+229': 'BJ', '+228': 'TG', '+237': 'CM' };
+    const dials = Object.keys(dialMap).map(v => ({ value: v, label: v }));
+    const countries = ['Côte d’Ivoire', 'Sénégal', 'Mali', 'Burkina Faso', 'Guinée', 'Niger', 'Bénin', 'Togo', 'Cameroun', 'Autre pays'];
+    const sel = (on) => 'flex: 1; font: inherit; font-size: 14px; border: 0; background: transparent; min-height: 44px; color: ' + (on ? '#16131F' : '#8B869C');
+    const selects = [
+      { label: 'Type d’activité', placeholder: 'Quel est votre type d’activité ? *', value: f.activity, set: e => upd({ activity: e.target.value }), options: ['Mode féminine', 'Beauté et cosmétiques', 'Électronique et gadgets', 'Maison et électroménager', 'Compléments et bien-être', 'Mode masculine', 'Bijoux et accessoires', 'Enfants et puériculture', 'Articles religieux', 'Produits locaux et artisanat'], icon: 'M3 9l1.5-5h15L21 9M3 9h18v11H3zM9 20v-6h6v6', style: sel(!!f.activity) },
+      { label: 'Pays de résidence', placeholder: 'Pays de résidence *', value: f.country, set: e => upd({ country: e.target.value }), options: countries, icon: 'M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11zM12 12a2 2 0 1 0 0-4 2 2 0 0 0 0 4z', style: sel(!!f.country) },
+      { label: 'Comment avez-vous connu Kolix ?', placeholder: 'Comment avez-vous connu Kolix ? *', value: f.source, set: e => upd({ source: e.target.value }), options: ['Facebook ou Instagram', 'TikTok', 'WhatsApp', 'Un partenaire ou un code promo', 'Un ami', 'Google', 'Autre'], icon: 'M17 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9.5 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8', style: sel(!!f.source) }
+    ];
+    const digits = f.phone.replace(/\D/g, '');
+    const google = st.method === 'google';
+    const mVals = [42, 55, 38, 61, 74, 88, 70, 52, 66, 81, 95, 120, 98, 84, 92, 110, 76, 68, 104];
+    return {
+      accent, f, dials, selects,
+      features: [
+        { title: 'Créez votre boutique', text: 'Personnalisez votre boutique en ligne en quelques clics, sans code.', icon: 'M3 9l1.5-5h15L21 9M3 9h18v11H3zM9 20v-6h6v6' },
+        { title: 'Gérez vos commandes', text: 'Suivez vos ventes, vos livraisons et vos clients en temps réel.', icon: 'M3 4h2l2.5 11h11L21 7H6.5M9 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2zM18 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2z' },
+        { title: 'Encaissez facilement', text: 'Mobile Money, QR code, Cash on Delivery : tout est intégré.', icon: 'M3 6h18v13H3zM3 10h18M16 14.5h2' },
+        { title: 'Développez votre activité', text: 'Marketing WhatsApp, comptabilité, stock et bien plus encore.', icon: 'M4 20V10M10 20V4M16 20v-7M22 20H2' },
+        { title: 'Boostez-vous avec Kolix AI', text: 'Votre assistant intelligent, toujours à vos côtés.', icon: 'M12 3l2.2 5.8L20 11l-5.8 2.2L12 19l-2.2-5.8L4 11l5.8-2.2z' }
+      ],
+      flags: codes.map(code => ({ code, style: flagStyle(code) })),
+      dialFlag: flagStyle(dialMap[f.dial] || 'CI'),
+      mBars: mVals.map(v => 'flex: 1; border-radius: 2px 2px 0 0; background: #FFFFFF; height: ' + Math.round(v / 200 * 92) + 'px'),
+      mTasks: [
+        { bold: '32 commandes', rest: 'à confirmer', icon: 'M6 7h12l-1 13H7zM9 7a3 3 0 0 1 6 0' },
+        { bold: '8 livraisons', rest: 'prévues aujourd’hui', icon: 'M1 3h15v13H1zM16 8h4l3 3v5h-7M5.5 21a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM18.5 21a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z' },
+        { bold: '2 produits', rest: 'en stock faible', icon: 'M12 9v4M12 17h.01M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z' },
+        { bold: '3 commandes', rest: 'contestées à traiter', icon: 'M9 11l3 3 8-8M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9' }
+      ],
+      mTabs: [['Accueil', 'M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z'], ['Commandes', 'M6 7h12l-1 13H7zM9 7a3 3 0 0 1 6 0'], ['Produits', 'M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L2 12V2h10l8.6 8.6a2 2 0 0 1 0 2.8zM7 7h.01'], ['Boutique', 'M3 9l1.5-5h15L21 9M3 9h18v11H3zM9 20v-6h6v6']].map(([label, icon], i) => ({ label, icon, style: 'display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 9px; font-weight: 700; color: ' + (i === 0 ? accent : '#8B869C') })),
+      fieldWrap: 'position: relative; display: flex; align-items: center; gap: 10px; border: 1.5px solid #E2DCF8; border-radius: 14px; padding: 0 14px; min-height: 54px; background: #FFFFFF',
+      inputStyle: 'flex: 1; min-width: 0; font: inherit; font-size: 14px; border: 0; background: transparent; color: #16131F; min-height: 44px; outline-offset: 6px',
+      pwdType: st.showPwd ? 'text' : 'password', pwdAria: st.showPwd ? 'Masquer le mot de passe' : 'Afficher le mot de passe',
+      togglePwd: () => this.setState({ showPwd: !st.showPwd }),
+      setName: e => upd({ name: e.target.value }), setEmail: e => upd({ email: e.target.value }), setPhone: e => upd({ phone: e.target.value }),
+      setDial: e => upd({ dial: e.target.value }), setPwd: e => upd({ pwd: e.target.value }), setCode: e => upd({ code: e.target.value.toUpperCase() }),
+      setOtp: e => upd({ otp: e.target.value.replace(/\D/g, '').slice(0, 6) }),
+      toggleCgu: () => upd({ cgu: !f.cgu }),
+      showCode: f.source === 'Un partenaire ou un code promo',
+      hasErr: !!st.err, errMsg: st.err,
+      stepForm: st.step === 'form', stepOtp: st.step === 'otp', stepDone: st.step === 'done',
+      submit: () => {
+        if (f.name.trim().length < 2 || f.email.indexOf('@') < 1 || digits.length < 8 || f.pwd.length < 8) return this.setState({ err: 'Complétez votre nom, e-mail, numéro WhatsApp et un mot de passe de 8 caractères.' });
+        if (!f.activity || !f.country || !f.source) return this.setState({ err: 'Indiquez votre activité, votre pays et comment vous avez connu Kolix.' });
+        if (!f.cgu) return this.setState({ err: 'Acceptez les conditions pour créer votre compte.' });
+        this.setState({ step: 'otp', method: null, err: '' });
+      },
+      viaGoogle: () => this.setState({ step: 'otp', method: 'google', err: '' }),
+      needPhone: google,
+      otpTitle: google ? 'Plus qu’une étape' : 'Vérifiez votre numéro',
+      otpSub: google ? 'Compte Google connecté. Ajoutez votre numéro WhatsApp : il sert aux notifications de commandes et aux retraits Mobile Money.' : 'Nous avons envoyé un code à 6 chiffres sur WhatsApp au ' + f.dial + ' ' + f.phone + '.',
+      verify: () => {
+        if (google && digits.length < 8) return this.setState({ err: 'Saisissez un numéro WhatsApp valide.' });
+        if (f.otp.length !== 6) return this.setState({ err: 'Le code doit contenir 6 chiffres.' });
+        this.setState({ step: 'done', err: '' });
+      },
+      backToForm: () => this.setState({ step: 'form', err: '' }),
+      firstName: google ? '[Prénom]' : (f.name.trim().split(' ')[0] || ''),
+      restart: () => this.setState({ step: 'form', method: null, err: '', f: { name: '', email: '', phone: '', dial: '+225', pwd: '', activity: '', country: '', source: '', code: '', cgu: false, otp: '' } })
+    };
+  }
+}
+</script>
+</body>
+</html>
