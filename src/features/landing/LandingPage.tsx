@@ -185,7 +185,7 @@ export const LandingPage: React.FC = () => {
 
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-[#16131F] tracking-tight leading-[1.08]">
               Créez votre boutique en ligne{' '}
-              <span className="text-[#6C4CF1]">en quelques clics</span> et vendez vos produits physiques presque partout en Afrique
+              <span className="text-[#6C4CF1]">en quelques clics</span> et vendez vos produits physiques partout en Afrique
             </h1>
 
             <p className="text-base sm:text-lg text-[#3A3647] leading-relaxed max-w-2xl font-medium">
@@ -339,7 +339,7 @@ export const LandingPage: React.FC = () => {
             FINI LE BRICOLAGE
           </span>
           <h2 className="text-3xl sm:text-4xl font-black text-[#16131F] tracking-tight">
-            Votre business mérite mieux qu’un cahier et des captures WhatsApp
+            Votre business mérite mieux qu’un cahier et fichier excel 
           </h2>
         </div>
 
@@ -351,9 +351,9 @@ export const LandingPage: React.FC = () => {
             </span>
             <div className="space-y-4 text-[#3A3647]">
               {[
-                'Prises de commande sur WhatsApp et calepins souvent égarés.',
+                'Gestion du business sur fichiers excels souvent perdus ou cahiers souvent égarés.',
                 'Appels incessants pour confirmer la livraison et désistements fréquents.',
-                'Bénéfice net flou et caisse d’espèces mélangée aux dépenses personnelles.',
+                'Bénéfice net flou et l\'argent du business souvent mélangée à l\'argent personnel.',
                 'Clients perdus de vue sans relance ni historique d’achat.',
               ].map((text, i) => (
                 <div key={i} className="flex gap-3.5 items-start">
@@ -433,12 +433,12 @@ export const LandingPage: React.FC = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[
-            { title: 'Formulaire COD optimisé', text: 'Champs configurables, bouton de commande sur-mesure et confirmation WhatsApp instantanée.', icon: Store, bg: 'bg-[#EEE9FF]', color: 'text-[#6C4CF1]' },
-            { title: 'Gestion des commandes', text: 'Statuts clairs (Confirmée, En cours, Livrée, Retour), alertes d’injoignables et filtres par commune.', icon: ShoppingBag, bg: 'bg-[#E3F4EC]', color: 'text-[#1E5E3F]' },
-            { title: 'Portefeuille & Retraits', text: 'Encaissez en espèces ou Mobile Money, suivez vos soldes et retirez sans frais vers Wave ou Orange.', icon: Wallet, bg: 'bg-[#FFF6CC]', color: 'text-[#6B4100]' },
+            { title: 'Formulaire COD optimisé', text: 'Plusieurs thèmes disponibles, champs configurables et bouton de commande sur-mesure.', icon: Store, bg: 'bg-[#EEE9FF]', color: 'text-[#6C4CF1]' },
+            { title: 'Gestion des commandes', text: 'Statuts clairs (Confirmée, En cours, Livrée, Retour), création d\'accès pour vos collaborateurs et suivi des livraisons.', icon: ShoppingBag, bg: 'bg-[#E3F4EC]', color: 'text-[#1E5E3F]' },
+            { title: 'Portefeuille & Retraits', text: 'Encaissez en espèces ou Mobile Money, suivez vos soldes et retirez vers mobile money.', icon: Wallet, bg: 'bg-[#FFF6CC]', color: 'text-[#6B4100]' },
             { title: 'Gestion intelligente des stocks', text: 'Alertes automatiques dès qu’un article atteint le seuil critique pour ne jamais tomber en rupture.', icon: Layers, bg: 'bg-[#FCE3E0]', color: 'text-[#8A2414]' },
-            { title: 'WhatsApp Marketing PRO', text: 'Relancez vos anciens clients par produit ou date d’achat pour générer des ventes récurrentes.', icon: MessageCircle, bg: 'bg-[#E8EEFB]', color: 'text-[#1F3F8A]' },
-            { title: 'Kolix AI : Coach e-commerce', text: 'Analyses hebdomadaires, identification de vos zones à fort retour et conseils d’optimisation personnalisés.', icon: Sparkles, bg: 'bg-[#241D5E]', color: 'text-[#FFFFFF]' },
+            { title: 'WhatsApp Marketing PRO', text: 'Relancez vos anciens clients pour générer des ventes récurrentes.', icon: MessageCircle, bg: 'bg-[#E8EEFB]', color: 'text-[#1F3F8A]' },
+            { title: 'Kolix AI', text: 'Des visuels attrayants pour vos publicités pour plus de conversion.', icon: Sparkles, bg: 'bg-[#241D5E]', color: 'text-[#FFFFFF]' },
           ].map((f) => {
             const Icon = f.icon;
             return (

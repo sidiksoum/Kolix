@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useStore } from '../../context/StoreContext';
 import { useAuth } from '../../context/AuthContext';
 import { Button } from '../../components/ui/Button';
@@ -95,15 +96,15 @@ export const BoutiquePage: React.FC = () => {
           </p>
         </div>
 
-        <a
-          href={`https://${user.currentShop.domain}`}
+        <Link
+          to="/boutique-en-ligne"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 bg-white hover:bg-[#FAF8FF] border border-[#E2DCF8] text-[#16131F] font-extrabold text-sm px-5 min-h-[46px] rounded-2xl shadow-kolix-sm no-underline transition-all hover:border-[#6C4CF1]"
+          className="inline-flex items-center gap-2 bg-white hover:bg-[#FAF8FF] border border-[#E2DCF8] text-[#16131F] font-extrabold text-sm px-5 min-h-[46px] rounded-2xl shadow-kolix-sm no-underline transition-all hover:border-[#6C4CF1] hover:shadow-kolix-md"
         >
           <span>Voir ma boutique en ligne</span>
           <ExternalLink className="w-4 h-4 text-[#6C4CF1]" />
-        </a>
+        </Link>
       </div>
 
       {/* Tabs Bar */}

@@ -55,7 +55,7 @@ export const Sidebar: React.FC<{ isOpen?: boolean; onClose?: () => void }> = ({ 
     <aside
       className={cn(
         'w-[260px] h-screen sticky top-0 left-0 bottom-0 shrink-0 select-none z-40 transition-transform duration-300',
-        'bg-[rgb(108_76_241_/_var(--tw-bg-opacity,1))] text-white p-5 sm:p-6 box-border flex flex-col gap-4',
+        'bg-[rgb(36_29_94_/_var(--tw-bg-opacity,1))] text-white p-5 sm:p-6 box-border flex flex-col gap-4',
         'overflow-y-auto sidebar-scroll',
         'fixed lg:sticky',
         !isOpen && '-translate-x-full lg:translate-x-0'
@@ -126,7 +126,7 @@ export const Sidebar: React.FC<{ isOpen?: boolean; onClose?: () => void }> = ({ 
 
       {/* Plan Card (Kolix Grow) at the bottom */}
       <div className="mt-auto pt-4 shrink-0">
-        <div className="bg-[#241D5E] border border-white/10 rounded-2xl p-4 flex flex-col gap-2 shadow-kolix-navy">
+        <div className="bg-white/10 border border-white/10 rounded-2xl p-4 flex flex-col gap-2 shadow-sm">
           <div className="text-[11px] text-[#BDB5E8] font-bold uppercase tracking-[0.1em]">
             Votre plan
           </div>

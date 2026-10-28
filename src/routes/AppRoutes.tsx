@@ -17,6 +17,7 @@ import { AnalyticsPage } from '../features/analytics/AnalyticsPage';
 import { PartenairePage } from '../features/partenaire/PartenairePage';
 import { UtilisateursPage } from '../features/utilisateurs/UtilisateursPage';
 import { ParametresPage } from '../features/parametres/ParametresPage';
+import { ProductPage } from '../features/shop/ProductPage';
 
 export const AppRoutes: React.FC = () => {
   return (
@@ -25,6 +26,8 @@ export const AppRoutes: React.FC = () => {
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
+      <Route path="/boutique-en-ligne" element={<ProductPage />} />
+      <Route path="/shop" element={<ProductPage />} />
 
       {/* Authenticated / Dashboard Pages */}
       <Route element={<Layout />}>

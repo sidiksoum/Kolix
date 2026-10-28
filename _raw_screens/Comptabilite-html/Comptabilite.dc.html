@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Kolix — Comptabilité</title>
+<script src="./vendor/react.js"></script>
+<script src="./vendor/react-dom.js"></script>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#5A3BD8}a:hover{color:#3F25A8}
+</style>
+</helmet>
+<div style="font-family: 'Plus Jakarta Sans', 'Helvetica Neue', sans-serif; color: #16131F; background: #F7F5FE; min-height: 100vh; display: flex; flex-wrap: wrap; position: relative">
+
+<nav aria-label="Navigation principale" style="flex: 1 1 240px; max-width: 100%; background: {{side}}; color: #FFFFFF; padding: 26px 16px; box-sizing: border-box; display: flex; flex-direction: column; gap: 22px">
+<div style="display: flex; align-items: center; gap: 10px; padding-left: 8px">
+<span style="width: 40px; height: 40px; border-radius: 12px; background: #FFFFFF; color: {{side}}; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 800">K</span>
+<span style="display: flex; flex-direction: column"><span style="font-size: 26px; font-weight: 800; letter-spacing: -0.03em; line-height: 1">Kolix</span><span style="font-size: 11px; color: #E2DCFF; font-weight: 600">Votre succès, notre mission</span></span>
+</div>
+<button aria-label="Changer de boutique" style="font: inherit; width: 100%; display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.14); color: #FFFFFF; border: 0; border-radius: 14px; padding: 10px 12px; min-height: 56px; cursor: pointer; text-align: left">
+<span style="width: 36px; height: 36px; border-radius: 10px; flex: none; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #FFFFFF; background: #C93C72">S</span>
+<span style="flex: 1; display: flex; flex-direction: column; min-width: 0"><span style="font-size: 11px; color: #E2DCFF; font-weight: 700">Boutique active</span><span style="font-size: 14px; font-weight: 800">Style &amp; Élégance</span></span>
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 9l4-4 4 4M8 15l4 4 4-4"></path></svg>
+</button>
+<div style="display: flex; flex-direction: column; gap: 2px; font-size: 15px">
+<sc-for list="{{nav}}" as="n" hint-placeholder-count="13">
+<a href="{{n.href}}" style="{{n.style}}">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{n.icon}}"></path></svg>
+<span style="flex: 1">{{n.label}}</span>
+<sc-if value="{{n.hasBadge}}" hint-placeholder-val="{{ false }}"><span style="{{n.badgeStyle}}">{{n.badge}}</span></sc-if>
+</a>
+</sc-for>
+</div>
+</nav>
+
+<div style="flex: 999 1 600px; min-width: 0; display: flex; flex-direction: column">
+
+<header style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; padding: 16px 32px; background: #FFFFFF; border-bottom: 1px solid #EEEAFB">
+<label style="flex: 0 1 520px; display: flex; align-items: center; gap: 10px; background: #F4F1FE; border-radius: 24px; padding: 0 18px; min-height: 46px">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5E5A70" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Rechercher</span>
+<input type="search" placeholder="Rechercher une commande, un produit, un client…" style="flex: 1; font: inherit; font-size: 14px; border: 0; background: transparent; color: #16131F; min-height: 44px">
+</label>
+<div style="display: flex; align-items: center; gap: 14px">
+<a href="Stock.dc.html" style="display: flex; align-items: center; gap: 8px; background: #FCE3E0; color: #8A2414; border-radius: 24px; padding: 0 16px; min-height: 44px; font-size: 13px; font-weight: 800; text-decoration: none">Stock faible : 4 produits</a>
+<button aria-label="Notifications" style="position: relative; background: transparent; border: 0; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#16131F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.7 21a2 2 0 0 1-3.4 0"></path></svg><span style="position: absolute; top: 4px; right: 4px; min-width: 18px; height: 18px; border-radius: 9px; background: #D6304A; color: #FFFFFF; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center">4</span></button>
+<div style="display: flex; align-items: center; gap: 12px">
+<span style="width: 42px; height: 42px; border-radius: 21px; background: #EEE9FF; color: #4B2FC9; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800">SS</span>
+<span style="display: flex; flex-direction: column"><span style="font-size: 14px; font-weight: 800">Souleymane Sanogo</span><span style="font-size: 12px; color: #5E5A70">Propriétaire</span></span>
+</div>
+</div>
+</header>
+
+<main style="padding: 24px 32px 40px; display: flex; flex-direction: column; gap: 18px">
+
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 14px">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h1 style="margin: 0; font-size: 30px; font-weight: 800; letter-spacing: -0.03em">Comptabilité</h1>
+<span style="font-size: 14px; color: #5E5A70">Vos chiffres réels : ce que vous encaissez, ce que vous dépensez, ce qu’il vous reste.</span>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center">
+<div style="display: flex; align-items: center; background: #FFFFFF; border: 1px solid #E2DCF8; border-radius: 12px; min-height: 46px">
+<button aria-label="Mois précédent" style="width: 44px; height: 44px; border: 0; background: transparent; cursor: pointer; font-size: 16px">‹</button>
+<span style="font-size: 14px; font-weight: 800; padding: 0 6px">Octobre 2026</span>
+<button aria-label="Mois suivant" style="width: 44px; height: 44px; border: 0; background: transparent; cursor: pointer; font-size: 16px">›</button>
+</div>
+<button style="font: inherit; font-size: 14px; font-weight: 700; background: #FFFFFF; color: #16131F; border: 1px solid #E2DCF8; border-radius: 12px; padding: 0 16px; min-height: 46px; cursor: pointer">Exporter</button>
+<button onClick="{{openModal}}" style="font: inherit; font-size: 14px; font-weight: 800; background: {{accent}}; color: #FFFFFF; border: 0; border-radius: 12px; padding: 0 20px; min-height: 46px; cursor: pointer; box-shadow: 0 8px 20px rgba(108,76,241,0.30)">+ Ajouter une charge</button>
+</div>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px">
+<div style="background: #FFFFFF; border-radius: 18px; padding: 20px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 6px 20px rgba(108,76,241,0.06)">
+<span style="font-size: 13px; color: #5E5A70; font-weight: 700">Chiffre d’affaires</span>
+<span style="font-size: 26px; font-weight: 800; letter-spacing: -0.02em">{{caLabel}}</span>
+<span style="font-size: 12px; color: #5E5A70">Ventes livrées uniquement</span>
+<div style="display: flex; height: 8px; border-radius: 4px; overflow: hidden; background: #F0EDFB"><span style="{{momoBar}}"></span><span style="{{cashBar}}"></span></div>
+<div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 700"><span style="color: #3F25A8">Mobile Money {{momoLabel}}</span><span style="color: #3A3647">Espèces {{cashLabel}}</span></div>
+</div>
+<div style="background: #FFFFFF; border-radius: 18px; padding: 20px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 6px 20px rgba(108,76,241,0.06)">
+<span style="font-size: 13px; color: #5E5A70; font-weight: 700">Charges</span>
+<span style="font-size: 26px; font-weight: 800; letter-spacing: -0.02em; color: #8A2414">{{chargesLabel}}</span>
+<span style="font-size: 12px; color: #5E5A70">Stock, transport, publicité et autres</span>
+</div>
+<div style="background: {{accent}}; color: #FFFFFF; border-radius: 18px; padding: 20px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 12px 30px rgba(108,76,241,0.30)">
+<span style="font-size: 13px; color: #EDE8FF; font-weight: 700">Bénéfice net</span>
+<span style="font-size: 26px; font-weight: 800; letter-spacing: -0.02em">{{profitLabel}}</span>
+<span style="font-size: 12px; color: #EDE8FF">CA − charges, calculé automatiquement</span>
+</div>
+<div style="background: #FFFFFF; border-radius: 18px; padding: 20px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 6px 20px rgba(108,76,241,0.06)">
+<span style="font-size: 13px; color: #5E5A70; font-weight: 700">Marge nette</span>
+<span style="font-size: 26px; font-weight: 800; letter-spacing: -0.02em">{{marginLabel}}</span>
+<span style="font-size: 12px; color: #5E5A70">Part du CA qui vous reste</span>
+</div>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; gap: 16px">
+<section style="flex: 3 1 520px; min-width: 0; background: #FFFFFF; border-radius: 18px; padding: 20px 22px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 6px 20px rgba(108,76,241,0.06)">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px">
+<h2 style="margin: 0; font-size: 17px; font-weight: 800">CA, charges et bénéfice · 6 derniers mois</h2>
+<div style="display: flex; gap: 14px; font-size: 12px; font-weight: 700; color: #3A3647">
+<span style="display: flex; align-items: center; gap: 6px"><span style="width: 12px; height: 12px; border-radius: 3px; background: {{accent}}"></span>CA</span>
+<span style="display: flex; align-items: center; gap: 6px"><span style="width: 12px; height: 12px; border-radius: 3px; background: #D6CFF7; box-shadow: inset 0 0 0 1px #A99BFA"></span>Charges</span>
+</div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 14px; align-items: end; height: 240px; border-bottom: 1px solid #E2DCF8; padding: 0 4px">
+<sc-for list="{{months}}" as="m" hint-placeholder-count="6">
+<div style="height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 6px">
+<span style="{{m.profitStyle}}">{{m.profit}}</span>
+<div style="display: flex; gap: 4px; align-items: flex-end; height: 200px; width: 100%; justify-content: center">
+<span style="{{m.caBar}}"></span><span style="{{m.chBar}}"></span>
+</div>
+</div>
+</sc-for>
+</div>
+<div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 14px; padding: 0 4px">
+<sc-for list="{{months}}" as="m" hint-placeholder-count="6"><span style="{{m.labelStyle}}">{{m.label}}</span></sc-for>
+</div>
+<span style="font-size: 12px; color: #5E5A70">Au-dessus de chaque mois : le bénéfice net (en milliers de FCFA).</span>
+</section>
+
+<section style="flex: 2 1 320px; background: #FFFFFF; border-radius: 18px; padding: 20px 22px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 6px 20px rgba(108,76,241,0.06)">
+<h2 style="margin: 0; font-size: 17px; font-weight: 800">Répartition des charges</h2>
+<sc-for list="{{cats}}" as="c" hint-placeholder-count="5">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<div style="display: flex; justify-content: space-between; gap: 10px; font-size: 14px"><span style="font-weight: 700">{{c.label}}</span><span style="font-weight: 800; white-space: nowrap">{{c.amount}} <span style="color: #5E5A70; font-weight: 600">· {{c.pct}}</span></span></div>
+<div style="height: 8px; background: #F0EDFB; border-radius: 4px; overflow: hidden"><div style="{{c.bar}}"></div></div>
+</div>
+</sc-for>
+<div style="background: #F8F6FF; border-radius: 12px; padding: 12px 14px; font-size: 13px; color: #3A3647; line-height: 1.5">Les achats enregistrés dans le module Stock sont ajoutés automatiquement aux charges « Achat de stock ».</div>
+</section>
+</div>
+
+<section style="background: #FFFFFF; border-radius: 18px; box-shadow: 0 6px 20px rgba(108,76,241,0.06); overflow: hidden">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 12px; padding: 16px 18px; border-bottom: 1px solid #EEEAFB">
+<div style="display: flex; flex-direction: column; gap: 10px">
+<h2 style="margin: 0; font-size: 17px; font-weight: 800">Historique des transactions</h2>
+<div role="group" aria-label="Filtrer par type" style="display: flex; flex-wrap: wrap; gap: 6px"><sc-for list="{{typeChips}}" as="c" hint-placeholder-count="3"><button onClick="{{c.pick}}" aria-pressed="{{c.pressed}}" style="{{c.style}}">{{c.label}}</button></sc-for></div>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 10px">
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; font-weight: 700; color: #5E5A70">Du
+<input type="text" value="01/10/2026" style="font: inherit; font-size: 14px; border: 1px solid #E2DCF8; border-radius: 12px; padding: 0 12px; min-height: 44px; width: 130px; color: #16131F"></label>
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; font-weight: 700; color: #5E5A70">Au
+<input type="text" value="19/10/2026" style="font: inherit; font-size: 14px; border: 1px solid #E2DCF8; border-radius: 12px; padding: 0 12px; min-height: 44px; width: 130px; color: #16131F"></label>
+</div>
+</div>
+<div style="overflow-x: auto">
+<table style="width: 100%; border-collapse: collapse; font-size: 14px; min-width: 820px">
+<thead>
+<tr style="text-align: left; color: #5E5A70; font-size: 12px; background: #FAF9FE">
+<th style="padding: 12px 8px 12px 18px; font-weight: 700">Date</th>
+<th style="padding: 12px 8px; font-weight: 700">Libellé</th>
+<th style="padding: 12px 8px; font-weight: 700">Type</th>
+<th style="padding: 12px 8px; font-weight: 700">Catégorie</th>
+<th style="padding: 12px 8px; font-weight: 700">Mode de paiement</th>
+<th style="padding: 12px 18px 12px 8px; font-weight: 700; text-align: right">Montant</th>
+</tr>
+</thead>
+<tbody>
+<sc-for list="{{tx}}" as="t" hint-placeholder-count="10">
+<tr style="border-top: 1px solid #F0EDFB">
+<td style="padding: 12px 8px 12px 18px; color: #3A3647; white-space: nowrap">{{t.date}}</td>
+<td style="padding: 12px 8px; font-weight: 700">{{t.label}}</td>
+<td style="padding: 12px 8px"><span style="{{t.typeStyle}}">{{t.type}}</span></td>
+<td style="padding: 12px 8px; color: #3A3647">{{t.cat}}</td>
+<td style="padding: 12px 8px; color: #3A3647">{{t.mode}}</td>
+<td style="padding: 12px 18px 12px 8px; text-align: right; white-space: nowrap"><span style="{{t.amountStyle}}">{{t.amount}}</span></td>
+</tr>
+</sc-for>
+</tbody>
+</table>
+</div>
+</section>
+
+</main>
+</div>
+
+<sc-if value="{{modalOpen}}" hint-placeholder-val="{{ false }}">
+<div style="position: fixed; inset: 0; z-index: 20; background: rgba(22,19,31,0.55); display: flex; align-items: center; justify-content: center; padding: 24px">
+<div role="dialog" aria-modal="true" aria-label="Ajouter une charge" style="background: #FFFFFF; border-radius: 24px; width: 480px; max-width: 100%; padding: 26px; display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; justify-content: space-between; align-items: center"><h2 style="margin: 0; font-size: 22px; font-weight: 800">Ajouter une charge</h2><button onClick="{{closeModal}}" aria-label="Fermer" style="width: 44px; height: 44px; border-radius: 22px; border: 0; background: #F4F1FE; cursor: pointer; font-size: 18px">✕</button></div>
+<div role="group" aria-label="Catégorie" style="display: flex; flex-direction: column; gap: 8px"><span style="font-size: 12px; font-weight: 700; color: #5E5A70">Catégorie</span>
+<div style="display: flex; flex-wrap: wrap; gap: 6px"><sc-for list="{{catChips}}" as="c" hint-placeholder-count="5"><button onClick="{{c.pick}}" aria-pressed="{{c.pressed}}" style="{{c.style}}">{{c.label}}</button></sc-for></div></div>
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; font-weight: 700; color: #5E5A70">Libellé
+<input type="text" value="{{form.label}}" onChange="{{setLabel}}" placeholder="Ex. Campagne Facebook robes" style="font: inherit; font-size: 14px; border: 1px solid #E2DCF8; border-radius: 12px; padding: 0 12px; min-height: 46px; color: #16131F"></label>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; font-weight: 700; color: #5E5A70">Montant (FCFA)
+<input type="number" value="{{form.amount}}" onChange="{{setAmount}}" style="font: inherit; font-size: 14px; border: 1px solid #E2DCF8; border-radius: 12px; padding: 0 12px; min-height: 46px; color: #16131F"></label>
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; font-weight: 700; color: #5E5A70">Date
+<input type="text" value="19/10/2026" style="font: inherit; font-size: 14px; border: 1px solid #E2DCF8; border-radius: 12px; padding: 0 12px; min-height: 46px; color: #16131F"></label>
+</div>
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; font-weight: 700; color: #5E5A70">Payée par
+<select style="font: inherit; font-size: 14px; border: 1px solid #E2DCF8; border-radius: 12px; padding: 0 12px; min-height: 46px; background: #FFFFFF; color: #16131F"><option>Mobile Money</option><option>Espèces</option><option>Portefeuille Kolix</option><option>Carte bancaire</option></select></label>
+<button onClick="{{submit}}" style="font: inherit; font-size: 15px; font-weight: 800; background: {{accent}}; color: #FFFFFF; border: 0; border-radius: 12px; min-height: 50px; cursor: pointer">Enregistrer la charge</button>
+</div>
+</div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#6C4CF1","options":["#6C4CF1","#7C5CFA","#5A3BD8"]},"side":{"editor":"color","default":"#5B3FD6","options":["#5B3FD6","#6C4CF1","#241D5E"]},"$preview":{"width":1440,"height":1560}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {
+      type: 'all', modal: false,
+      form: { cat: 'Publicité', label: '', amount: 25000 },
+      charges: { 'Achat de stock': 1120000, 'Transport et livraison': 380000, 'Publicité': 450000, 'Abonnement Kolix': 10000, 'Autres': 65000 },
+      tx: [
+        { date: '19 oct.', label: 'Vente #KX-1048 · Aya Kouassi', type: 'Vente', cat: 'Commande livrée', mode: 'Mobile Money', amount: 18500 },
+        { date: '18 oct.', label: 'Vente #KX-1047 · Moussa Diarra', type: 'Vente', cat: 'Commande livrée', mode: 'Mobile Money', amount: 24000 },
+        { date: '18 oct.', label: 'Campagne Facebook « Robes »', type: 'Charge', cat: 'Publicité', mode: 'Carte bancaire', amount: -60000 },
+        { date: '17 oct.', label: 'Vente #KX-1045 · Konan Yao', type: 'Vente', cat: 'Commande livrée', mode: 'Espèces', amount: 22000 },
+        { date: '17 oct.', label: 'Livreur · tournée Cocody', type: 'Charge', cat: 'Transport et livraison', mode: 'Espèces', amount: -15000 },
+        { date: '16 oct.', label: 'Arrivage pagnes wax (20 u.)', type: 'Charge', cat: 'Achat de stock', mode: 'Mobile Money', amount: -70000 },
+        { date: '15 oct.', label: 'Abonnement Kolix Grow', type: 'Charge', cat: 'Abonnement Kolix', mode: 'Portefeuille Kolix', amount: -10000 },
+        { date: '15 oct.', label: 'Vente #KX-1039 · Awa Coulibaly', type: 'Vente', cat: 'Commande livrée', mode: 'Espèces', amount: 22000 },
+        { date: '14 oct.', label: 'Emballages et sachets', type: 'Charge', cat: 'Autres', mode: 'Espèces', amount: -8500 },
+        { date: '14 oct.', label: 'Vente #KX-1031 · Salif Ouattara', type: 'Vente', cat: 'Commande livrée', mode: 'Mobile Money', amount: 18500 }
+      ]
+    };
+  }
+  renderVals() {
+    const accent = this.props.accent ?? '#6C4CF1';
+    const side = this.props.side ?? '#5B3FD6';
+    const fmt = n => String(Math.round(Math.abs(n))).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    const momo = 1940000, cash = 1320000, ca = momo + cash;
+    const ch = this.state.charges;
+    const charges = Object.values(ch).reduce((a, b) => a + b, 0);
+    const profit = ca - charges;
+
+    const monthsRaw = [['Mai', 2900, 1900], ['Juin', 3150, 2050], ['Juil.', 3420, 2180], ['Août', 3880, 2400], ['Sept.', 4510, 2760], ['Oct.', ca / 1000, charges / 1000]];
+    const max = 4800;
+    const months = monthsRaw.map(([label, c, x], i) => {
+      const last = i === monthsRaw.length - 1;
+      return {
+        label, profit: '+' + fmt(c - x) + ' k',
+        profitStyle: 'font-size: 11px; font-weight: 800; color: #1E5E3F; white-space: nowrap',
+        caBar: 'width: 38%; max-width: 26px; border-radius: 6px 6px 2px 2px; height: ' + (c / max * 100).toFixed(1) + '%; background: ' + accent + (last ? '' : '; opacity: 0.75'),
+        chBar: 'width: 38%; max-width: 26px; border-radius: 6px 6px 2px 2px; height: ' + (x / max * 100).toFixed(1) + '%; background: #D6CFF7; box-shadow: inset 0 0 0 1px #A99BFA',
+        labelStyle: 'text-align: center; font-size: 12px; font-weight: ' + (last ? '800; color: #16131F' : '600; color: #5E5A70')
+      };
+    });
+
+    const catColors = { 'Achat de stock': '#241D5E', 'Transport et livraison': accent, 'Publicité': '#A99BFA', 'Abonnement Kolix': '#8B869C', 'Autres': '#D6CFF7' };
+    const cats = Object.keys(ch).map(k => ({ label: k, amount: fmt(ch[k]) + ' FCFA', pct: Math.round(ch[k] / charges * 100) + ' %', bar: 'height: 100%; border-radius: 4px; width: ' + (ch[k] / charges * 100).toFixed(1) + '%; background: ' + catColors[k] }));
+
+    const chip = on => 'font: inherit; font-size: 13px; border-radius: 20px; padding: 0 14px; min-height: 40px; cursor: pointer; ' + (on ? 'background: #EEE9FF; color: #3F25A8; font-weight: 800; border: 1.5px solid #B9AAFF' : 'background: #FFFFFF; color: #3A3647; font-weight: 600; border: 1px solid #E2DCF8');
+    const typeChips = [['all', 'Tout'], ['Vente', 'Ventes'], ['Charge', 'Charges']].map(([id, label]) => ({ label, pressed: this.state.type === id ? 'true' : 'false', pick: () => this.setState({ type: id }), style: chip(this.state.type === id) }));
+    const list = this.state.type === 'all' ? this.state.tx : this.state.tx.filter(t => t.type === this.state.type);
+    const tx = list.map(t => ({
+      ...t,
+      typeStyle: 'display: inline-block; font-size: 12px; font-weight: 800; border-radius: 8px; padding: 4px 9px; ' + (t.type === 'Vente' ? 'background: #E3F4EC; color: #1E5E3F' : 'background: #FCE3E0; color: #8A2414'),
+      amount: (t.amount >= 0 ? '+ ' : '− ') + fmt(t.amount) + ' FCFA',
+      amountStyle: 'font-weight: 800; color: ' + (t.amount >= 0 ? '#1E5E3F' : '#8A2414')
+    }));
+
+    const f = this.state.form;
+    const catChips = Object.keys(ch).map(k => ({ label: k, pressed: f.cat === k ? 'true' : 'false', pick: () => this.setState({ form: { ...this.state.form, cat: k } }), style: chip(f.cat === k) }));
+
+    const navItems = [
+      ['Accueil', 'Accueil.dc.html', 'M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z'],
+      ['Boutique', 'Boutique.dc.html', 'M3 9l1.5-5h15L21 9M3 9h18v11H3zM9 20v-6h6v6'],
+      ['Produits', 'Produits.dc.html', 'M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L2 12V2h10l8.6 8.6a2 2 0 0 1 0 2.8zM7 7h.01'],
+      ['Commandes', 'Commandes.dc.html', 'M3 4h2l2.5 11h11L21 7H6.5M9 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2zM18 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2z', '12'],
+      ['Stock', 'Stock.dc.html', 'M21 8l-9-5-9 5 9 5 9-5zM3 8v8l9 5 9-5V8M12 13v8', '4', true],
+      ['Comptabilité', 'Comptabilite.dc.html', 'M6 2h9l5 5v15H6zM14 2v6h6M9 13h6M9 17h6'],
+      ['Portefeuille', 'Portefeuille.dc.html', 'M3 6h18v13H3zM3 10h18M16 14.5h2'],
+      ['Client', '#', 'M16 21v-2a4 4 0 0 0-8 0v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z'],
+      ['WhatsApp Marketing', '#', 'M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 21l2.1-5.6A8.4 8.4 0 1 1 21 11.5z'],
+      ['Analytics', '#', 'M4 20V10M10 20V4M16 20v-7M22 20H2'],
+      ['Utilisateurs', '#', 'M17 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9.5 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8'],
+      ['Kolix AI', '#', 'M12 3l2.2 5.8L20 11l-5.8 2.2L12 19l-2.2-5.8L4 11l5.8-2.2z'],
+      ['Paramètres', '#', 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1']
+    ];
+    const nav = navItems.map(([label, href, icon, badge, warn], i) => ({
+      label, href, icon, badge: badge || '', hasBadge: !!badge,
+      badgeStyle: 'font-size: 11px; font-weight: 800; border-radius: 20px; padding: 2px 8px; ' + (warn ? 'background: #FFE7B8; color: #6B4100' : 'background: rgba(255,255,255,0.22); color: #FFFFFF'),
+      style: 'display: flex; align-items: center; gap: 14px; padding: 11px 14px; border-radius: 12px; text-decoration: none; color: #FFFFFF; ' + (i === 5 ? 'background: rgba(255,255,255,0.20); font-weight: 800' : 'font-weight: 600')
+    }));
+
+    return {
+      accent, side, nav, months, cats, typeChips, tx, catChips, form: f,
+      caLabel: fmt(ca) + ' FCFA', chargesLabel: fmt(charges) + ' FCFA', profitLabel: fmt(profit) + ' FCFA',
+      marginLabel: Math.round(profit / ca * 100) + ' %',
+      momoLabel: Math.round(momo / ca * 100) + ' %', cashLabel: Math.round(cash / ca * 100) + ' %',
+      momoBar: 'height: 100%; width: ' + (momo / ca * 100).toFixed(1) + '%; background: ' + accent,
+      cashBar: 'height: 100%; flex: 1; background: #241D5E',
+      modalOpen: this.state.modal,
+      openModal: () => this.setState({ modal: true }),
+      closeModal: () => this.setState({ modal: false }),
+      setLabel: e => this.setState({ form: { ...this.state.form, label: e.target.value } }),
+      setAmount: e => this.setState({ form: { ...this.state.form, amount: e.target.value } }),
+      submit: () => {
+        const amt = Math.max(0, Number(f.amount) || 0);
+        if (!amt) return;
+        const t = { date: '19 oct.', label: f.label || f.cat, type: 'Charge', cat: f.cat, mode: 'Mobile Money', amount: -amt };
+        this.setState({ modal: false, charges: { ...ch, [f.cat]: ch[f.cat] + amt }, tx: [t].concat(this.state.tx), form: { cat: f.cat, label: '', amount: 25000 } });
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>
