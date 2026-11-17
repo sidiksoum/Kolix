@@ -42,19 +42,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         try {
           const me = await authApi.getMe();
           if (me) {
-            setUser(prev => ({
-              ...prev,
-              id: me.id || prev.id,
-              name: me.full_name || prev.name,
-              email: me.email || prev.email,
-              role: (me.role as any) || prev.role,
-              initials: (me.full_name || prev.name)
-                .split(' ')
-                .map((n: string) => n[0])
-                .join('')
-                .toUpperCase()
-                .slice(0, 2)
-            }));
+            setUser(prev => {
+              const resolvedName = me.full_name || prev.name || 'Souleymane Sanogo';
+              const initials = resolvedName.trim().split(/\s+/).map((n: string) => n[0]).join('').toUpperCase().slice(0, 2) || 'SS';
+              return {
+                ...prev,
+                id: me.id || prev.id,
+                name: resolvedName,
+                email: me.email || prev.email,
+                role: (me.role as any) || prev.role || 'Propriétaire',
+                initials,
+                currentShop: prev?.currentShop || {
+                  id: 'shp_abidjan',
+                  name: 'Élégance & Tech Abidjan',
+                  domain: 'elegance-tech.kolix.shop',
+                  plan: 'Kolix Grow',
+                  ordersCount: 412,
+                  maxOrders: 1500
+                }
+              };
+            });
           }
         } catch {
           // Token expired or server unreachable, keep local state
@@ -71,19 +78,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const tokens = await authApi.login({ identifier, password });
       setTokenState(tokens.access_token);
 
+      const resolvedName = tokens.name || 'Marchand Kolix';
+      const initials = resolvedName.trim().split(/\s+/).map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'MK';
+
       const updatedUser: MerchantUser = {
         id: tokens.user_id,
-        name: tokens.name,
-        initials: tokens.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'SS',
+        name: resolvedName,
+        initials,
         email: tokens.email,
         role: (tokens.role as any) || 'Propriétaire',
         currentShop: {
-          id: tokens.shop_id || user.currentShop.id,
-          name: tokens.shop_domain ? tokens.shop_domain.split('.')[0] : user.currentShop.name,
-          domain: tokens.shop_domain || user.currentShop.domain,
-          plan: user.currentShop.plan,
-          ordersCount: user.currentShop.ordersCount,
-          maxOrders: user.currentShop.maxOrders
+          id: tokens.shop_id || user?.currentShop?.id || 'shop-1',
+          name: tokens.shop_domain ? tokens.shop_domain.split('.')[0] : (user?.currentShop?.name || 'Ma Boutique'),
+          domain: tokens.shop_domain || user?.currentShop?.domain || 'maboutique.kolix.ci',
+          plan: user?.currentShop?.plan || 'Kolix Grow',
+          ordersCount: user?.currentShop?.ordersCount ?? 0,
+          maxOrders: user?.currentShop?.maxOrders || 1500
         }
       };
 
@@ -109,16 +119,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
     setTokenState(tokens.access_token);
 
+    const resolvedName = tokens.name || 'Marchand Kolix';
+    const initials = resolvedName.trim().split(/\s+/).map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'MK';
+
     const updatedUser: MerchantUser = {
       id: tokens.user_id,
-      name: tokens.name,
-      initials: tokens.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'SS',
+      name: resolvedName,
+      initials,
       email: tokens.email,
       role: (tokens.role as any) || 'Propriétaire',
       currentShop: {
-        id: tokens.shop_id || user.currentShop.id,
-        name: tokens.shop_domain ? tokens.shop_domain.split('.')[0] : 'Ma Boutique',
-        domain: tokens.shop_domain || 'maboutique.kolix.ci',
+        id: tokens.shop_id || user?.currentShop?.id || 'shop-1',
+        name: tokens.shop_domain ? tokens.shop_domain.split('.')[0] : (user?.currentShop?.name || 'Ma Boutique'),
+        domain: tokens.shop_domain || user?.currentShop?.domain || 'maboutique.kolix.ci',
         plan: 'Kolix Grow',
         ordersCount: 0,
         maxOrders: 1500

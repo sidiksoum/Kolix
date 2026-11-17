@@ -42,21 +42,24 @@ export const AccueilPage: React.FC = () => {
   };
 
   // Peak calculation for bar chart
-  const maxCa = Math.max(...data.chartData.map(d => d.ca));
-  const chartHeightMax = Math.ceil((maxCa * 1.15) / 100000) * 100000;
-  const peakIdx = data.chartData.findIndex(d => d.ca === maxCa);
+  const chartData = data?.chartData || [];
+  const maxCa = chartData.length > 0 ? Math.max(...chartData.map(d => d.ca || 0)) : 100000;
+  const chartHeightMax = Math.ceil((maxCa * 1.15) / 100000) * 100000 || 100000;
+  const peakIdx = chartData.findIndex(d => d.ca === maxCa);
 
   // SVG Line path for sales
-  const maxV = Math.max(...data.chartData.map(d => d.ventes)) * 1.15;
-  const numPoints = data.chartData.length;
-  const salesPath = 'M' + data.chartData.map((d, i) => {
+  const maxV = (chartData.length > 0 ? Math.max(...chartData.map(d => d.ventes || 0)) : 10) * 1.15;
+  const numPoints = chartData.length || 1;
+  const salesPath = 'M' + chartData.map((d, i) => {
     const x = ((i + 0.5) / numPoints) * 100;
-    const y = 100 - (d.ventes / maxV) * 100;
+    const y = 100 - ((d.ventes || 0) / (maxV || 1)) * 100;
     return `${x.toFixed(2)} ${y.toFixed(2)}`;
   }).join(' L');
 
   // Donut chart calculations
   let accumulatedDash = 0;
+
+  const displayName = user?.name ? user.name.split(' ')[0] : 'Marchand';
 
   return (
     <div className="flex flex-col gap-6 animate-in fade-in duration-300">
@@ -64,7 +67,7 @@ export const AccueilPage: React.FC = () => {
       <div className="flex flex-wrap justify-between items-center gap-4">
         <div>
           <h1 className="text-3xl sm:text-4xl font-extrabold text-[#241D5E] tracking-tight">
-            Bienvenue {user.name.split(' ')[0]} !
+            Bienvenue {displayName} !
           </h1>
           <p className="text-base text-[#5E5A70] font-medium mt-1">
             Voici l’aperçu de votre activité et de vos ventes

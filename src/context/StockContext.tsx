@@ -31,9 +31,9 @@ export const StockProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         inventoryApi.getKpis(),
         inventoryApi.getAlerts()
       ]);
-      setInventory(items);
-      setKpis(stats);
-      setAlerts(alertItems);
+      setInventory(Array.isArray(items) ? items : []);
+      setKpis(stats || null);
+      setAlerts(Array.isArray(alertItems) ? alertItems : []);
       setThreshold(inventoryApi.getThreshold());
     } catch {
       toast.error('Erreur lors du chargement des stocks');
@@ -69,9 +69,9 @@ export const StockProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         inventoryApi.getKpis(),
         inventoryApi.getAlerts()
       ]);
-      setInventory(items);
-      setKpis(stats);
-      setAlerts(alertItems);
+      setInventory(Array.isArray(items) ? items : []);
+      setKpis(stats || null);
+      setAlerts(Array.isArray(alertItems) ? alertItems : []);
       toast.success(`Seuil d'alerte configuré à ${val} unités`);
     } catch {
       toast.error('Erreur lors de la mise à jour du seuil');

@@ -51,7 +51,16 @@ export const Sidebar: React.FC<{ isOpen?: boolean; onClose?: () => void }> = ({ 
   const { user } = useAuth();
   const location = useLocation();
 
-  const percentage = Math.round((user.currentShop.ordersCount / user.currentShop.maxOrders) * 100);
+  const shop = user?.currentShop || {
+    id: 'shp_abidjan',
+    name: 'Élégance & Tech Abidjan',
+    domain: 'elegance-tech.kolix.shop',
+    plan: 'Kolix Grow',
+    ordersCount: 412,
+    maxOrders: 1500
+  };
+
+  const percentage = Math.round(((shop.ordersCount || 0) / (shop.maxOrders || 1500)) * 100);
 
   return (
     <aside
@@ -85,7 +94,7 @@ export const Sidebar: React.FC<{ isOpen?: boolean; onClose?: () => void }> = ({ 
           </span>
           <div className="min-w-0">
             <span className="text-[10px] text-[#E2DCFF] font-bold block uppercase tracking-wider">Boutique active</span>
-            <span className="font-extrabold text-sm truncate block leading-tight">{user.currentShop.name}</span>
+            <span className="font-extrabold text-sm truncate block leading-tight">{shop.name}</span>
           </div>
         </div>
         <ChevronDown className="w-4 h-4 shrink-0 text-white/80" />
@@ -137,9 +146,9 @@ export const Sidebar: React.FC<{ isOpen?: boolean; onClose?: () => void }> = ({ 
           <div className="text-[11px] text-[#BDB5E8] font-bold uppercase tracking-[0.1em]">
             Votre plan
           </div>
-          <div className="text-[16px] font-extrabold text-white">{user.currentShop.plan}</div>
+          <div className="text-[16px] font-extrabold text-white">{shop.plan}</div>
           <div className="text-[12px] text-[#D9D3F5]">
-            {user.currentShop.ordersCount} / {user.currentShop.maxOrders} commandes ce mois
+            {shop.ordersCount} / {shop.maxOrders} commandes ce mois
           </div>
           <div className="h-1.5 bg-white/15 rounded-full overflow-hidden mt-1">
             <div

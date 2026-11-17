@@ -42,13 +42,13 @@ export const Header: React.FC<{ onOpenMobileMenu?: () => void }> = ({ onOpenMobi
       {/* Right Actions: Stock alert pill, notifications, profile */}
       <div className="flex items-center gap-3 sm:gap-4 relative">
         {/* Stock Alert Pill */}
-        {alerts.length > 0 && (
+        {(alerts?.length || 0) > 0 && (
           <Link
             to="/stock"
             className="flex items-center gap-2 bg-[#FCE3E0] hover:bg-[#F9CFCB] text-[#8A2414] rounded-full px-4 min-h-[44px] text-xs sm:text-[13px] font-extrabold no-underline transition-colors shrink-0 shadow-sm"
           >
             <AlertTriangle className="w-4 h-4 text-[#8A2414] stroke-[2.3]" />
-            <span>Stock faible : {alerts.length}</span>
+            <span>Stock faible : {alerts?.length}</span>
           </Link>
         )}
 
@@ -92,11 +92,11 @@ export const Header: React.FC<{ onOpenMobileMenu?: () => void }> = ({ onOpenMobi
             className="flex items-center gap-2.5 p-1 rounded-full hover:bg-white/60 transition-colors cursor-pointer"
           >
             <span className="w-[44px] h-[44px] rounded-full bg-[#241D5E] text-white flex items-center justify-center font-extrabold text-sm shrink-0 shadow-sm">
-              {user.initials}
+              {user?.initials || (user?.name ? user.name.slice(0, 2).toUpperCase() : 'SS')}
             </span>
             <div className="hidden sm:flex flex-col text-left">
-              <span className="text-sm font-extrabold text-[#16131F] leading-tight">{user.name}</span>
-              <span className="text-xs text-[#5E5A70] font-medium leading-tight">{user.role}</span>
+              <span className="text-sm font-extrabold text-[#16131F] leading-tight">{user?.name || 'Marchand Kolix'}</span>
+              <span className="text-xs text-[#5E5A70] font-medium leading-tight">{user?.role || 'Propriétaire'}</span>
             </div>
             <ChevronDown className="w-3.5 h-3.5 text-[#5E5A70] hidden sm:block" />
           </button>
