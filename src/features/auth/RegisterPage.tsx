@@ -16,8 +16,10 @@ import {
   Check, 
   ArrowRight,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  Loader2
 } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 import { toast } from 'sonner';
 
 type RegStep = 'form' | 'otp' | 'done';
@@ -48,8 +50,10 @@ const dialMap: Record<string, string> = {
 
 export const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
+  const { registerStep1, verifyOtp } = useAuth();
   const [step, setStep] = useState<RegStep>('form');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   // Form Fields
@@ -67,7 +71,7 @@ export const RegisterPage: React.FC = () => {
 
   const phoneDigits = phone.replace(/\D/g, '');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) {
       setError('Veuillez renseigner votre nom complet');
@@ -81,8 +85,8 @@ export const RegisterPage: React.FC = () => {
       setError('Veuillez renseigner un numéro WhatsApp valide (8 chiffres min.)');
       return;
     }
-    if (password.length < 8) {
-      setError('Le mot de passe doit contenir au moins 8 caractères');
+    if (password.length < 6) {
+      setError('Le mot de passe doit contenir au moins 6 caractères');
       return;
     }
     if (!activity) {
@@ -94,18 +98,54 @@ export const RegisterPage: React.FC = () => {
       return;
     }
     setError('');
-    setStep('otp');
-    toast.info(`Code de validation envoyé par WhatsApp au ${dial} ${phone}`);
+    setIsLoading(true);
+
+    const fullPhone = `${dial}${phoneDigits.replace(/^0+/, '')}`;
+
+    try {
+      const res = await registerStep1({
+        name: name.trim(),
+        email: email.trim(),
+        dial,
+        phone: fullPhone,
+        password,
+        activity,
+        country,
+        source: source || 'Recherche Google',
+        promo_code: promoCode || undefined
+      });
+
+      if (res?.otp_debug) {
+        setOtp(res.otp_debug);
+      }
+      setStep('otp');
+      toast.info(`Code de validation envoyé par e-mail à ${email.trim()}`);
+    } catch (err: any) {
+      setError(err.message || 'Erreur lors de la création du compte.');
+      toast.error(err.message || 'Erreur d’inscription');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleVerifyOtp = () => {
+  const handleVerifyOtp = async () => {
     if (otp.length < 6) {
-      setError('Veuillez saisir les 6 chiffres reçus par WhatsApp');
+      setError('Veuillez saisir les 6 chiffres reçus par e-mail');
       return;
     }
     setError('');
-    setStep('done');
-    toast.success('Compte créé avec succès !');
+    setIsLoading(true);
+
+    try {
+      await verifyOtp(email.trim(), otp.trim());
+      setStep('done');
+      toast.success('Compte créé et boutique activée avec succès !');
+    } catch (err: any) {
+      setError(err.message || 'Code OTP invalide ou expiré.');
+      toast.error(err.message || 'Validation échouée');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const mVals = [42, 55, 38, 61, 74, 88, 70, 52, 66, 81, 95, 120, 98, 84, 92, 110, 76, 68, 104];
@@ -482,10 +522,20 @@ export const RegisterPage: React.FC = () => {
                 {/* Submit CTA */}
                 <button
                   type="submit"
-                  className="w-full py-3.5 bg-[#6C4CF1] text-white font-extrabold rounded-2xl text-sm sm:text-base shadow-lg shadow-[#6C4CF1]/30 hover:bg-[#5B3FD6] active:scale-95 transition-all flex items-center justify-center gap-2 mt-1"
+                  disabled={isLoading}
+                  className="w-full py-3.5 bg-[#6C4CF1] text-white font-extrabold rounded-2xl text-sm sm:text-base shadow-lg shadow-[#6C4CF1]/30 hover:bg-[#5B3FD6] active:scale-95 transition-all flex items-center justify-center gap-2 mt-1 disabled:opacity-60 cursor-pointer"
                 >
-                  <span>Créer mon compte</span>
-                  <ArrowRight className="w-4 h-4" />
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      <span>Création du compte…</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Créer mon compte</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </>
+                  )}
                 </button>
 
                 {/* Separator */}
@@ -513,19 +563,19 @@ export const RegisterPage: React.FC = () => {
               </form>
             )}
 
-            {/* STEP 2: WHATSAPP OTP */}
+            {/* STEP 2: EMAIL OTP */}
             {step === 'otp' && (
               <div className="flex flex-col gap-5 animate-fade-in">
                 <div>
-                  <h2 className="text-2xl font-black text-[#16131F] tracking-tight">Vérification WhatsApp</h2>
+                  <h2 className="text-2xl font-black text-[#16131F] tracking-tight">Vérification par e-mail</h2>
                   <p className="text-xs text-[#5E5A70] mt-1 leading-relaxed">
-                    Saisissez le code à 6 chiffres envoyé au <strong>{dial} {phone}</strong> pour confirmer votre compte.
+                    Saisissez le code de confirmation envoyé à <strong>{email}</strong> (vérifiez aussi vos courriers indésirables / spams).
                   </p>
                 </div>
 
                 <div className="space-y-4">
                   <div>
-                    <label className="text-xs font-bold text-[#3A3647] block mb-1">Code reçu sur WhatsApp</label>
+                    <label className="text-xs font-bold text-[#3A3647] block mb-1">Code reçu par e-mail</label>
                     <input
                       type="text"
                       inputMode="numeric"
@@ -545,10 +595,18 @@ export const RegisterPage: React.FC = () => {
 
                   <button
                     type="button"
+                    disabled={isLoading}
                     onClick={handleVerifyOtp}
-                    className="w-full py-3.5 bg-[#6C4CF1] text-white font-extrabold rounded-2xl text-sm shadow-lg shadow-[#6C4CF1]/30 hover:bg-[#5B3FD6] active:scale-95 transition-all"
+                    className="w-full py-3.5 bg-[#6C4CF1] text-white font-extrabold rounded-2xl text-sm shadow-lg shadow-[#6C4CF1]/30 hover:bg-[#5B3FD6] active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-60 cursor-pointer"
                   >
-                    Vérifier et créer ma boutique
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                        <span>Validation en cours…</span>
+                      </>
+                    ) : (
+                      <span>Vérifier et créer ma boutique</span>
+                    )}
                   </button>
 
                   <button

@@ -15,7 +15,8 @@ import {
   ShieldCheck, 
   Smartphone, 
   CreditCard,
-  Building
+  Building,
+  Lock
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatFCFA, formatNumber } from '../../utils/formatters';
@@ -135,37 +136,48 @@ export const PortefeuillePage: React.FC = () => {
           </div>
         </section>
 
-        {/* Digital Wallet Card (Kolix Accent Purple) */}
+        {/* Digital Wallet Card (Kolix Accent Purple) with Padlock */}
         <section
           aria-label="Portefeuille numérique"
-          className="bg-[#6C4CF1] text-white rounded-3xl p-6 sm:p-7 flex flex-col justify-between gap-4 shadow-kolix-cta min-h-[240px]"
+          className="bg-[#6C4CF1] text-white rounded-3xl p-6 sm:p-7 flex flex-col justify-between gap-4 shadow-kolix-cta min-h-[240px] relative overflow-hidden"
         >
           <div className="flex justify-between items-center gap-3">
             <span className="flex items-center gap-2 text-sm font-extrabold">
               <Wallet className="w-5 h-5 text-white" />
               Portefeuille numérique · solde disponible
             </span>
-            <span className="flex items-center gap-1.5 text-xs font-bold bg-white/20 rounded-full px-3 py-1">
-              <span className="w-2 h-2 rounded-full bg-[#7CE0AE] animate-pulse" />
-              Temps réel
+            <span className="flex items-center gap-1.5 text-xs font-bold bg-[#16131F]/40 text-[#F7B940] border border-[#F7B940]/40 rounded-full px-3 py-1 shadow-sm">
+              <Lock className="w-3.5 h-3.5 text-[#F7B940]" />
+              Verrouillé
             </span>
           </div>
 
           <div className="my-1">
-            <span className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight">
-              {formatFCFA(summary?.digitalBalance || 845000)}
-            </span>
+            <div className="flex items-center gap-3">
+              <span className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight">
+                {formatFCFA(summary?.digitalBalance || 845000)}
+              </span>
+              <span className="w-9 h-9 rounded-xl bg-white/15 text-[#F7B940] flex items-center justify-center shrink-0" title="Portefeuille verrouillé">
+                <Lock className="w-5 h-5" />
+              </span>
+            </div>
             <div className="text-xs sm:text-sm font-medium text-[#EDE8FF] mt-2">
               En attente de virement : <strong>{formatFCFA(summary?.pendingBalance || 65000)}</strong>
             </div>
           </div>
 
+          <div className="bg-[#16131F]/30 border border-white/20 rounded-2xl px-3.5 py-2 flex items-center gap-2 text-xs text-[#EDE8FF]">
+            <Lock className="w-3.5 h-3.5 text-[#F7B940] shrink-0" />
+            <span>Portefeuille numérique verrouillé · Déblocage automatique après vérification</span>
+          </div>
+
           <div className="flex flex-wrap gap-2.5 mt-auto pt-2">
             <button
-              onClick={() => setIsWithdrawModalOpen(true)}
-              className="px-6 py-2.5 rounded-2xl bg-white hover:bg-[#FAF8FF] text-[#3F25A8] font-extrabold text-xs transition-all shadow-md cursor-pointer"
+              onClick={() => toast.info('Portefeuille numérique verrouillé. Déblocage en cours.')}
+              className="px-6 py-2.5 rounded-2xl bg-white/80 hover:bg-white text-[#3F25A8] font-extrabold text-xs transition-all shadow-md cursor-pointer flex items-center gap-1.5"
             >
-              Retirer mes fonds
+              <Lock className="w-3.5 h-3.5 text-[#3F25A8]" />
+              Retirer mes fonds (Verrouillé)
             </button>
             <button
               onClick={() => setFilterMode('momo')}

@@ -16,7 +16,8 @@ import {
   Settings,
   ChevronDown,
   ArrowRight,
-  Gift
+  Gift,
+  Lock
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { cn } from '../../utils/cn';
@@ -27,6 +28,7 @@ export interface NavItemDef {
   icon: React.ElementType;
   badge?: string;
   badgeColor?: 'pro' | 'warn' | 'default';
+  locked?: boolean;
 }
 
 export const navItems: NavItemDef[] = [
@@ -40,7 +42,7 @@ export const navItems: NavItemDef[] = [
   { label: 'Client', path: '/clients', icon: Users },
   { label: 'WhatsApp Marketing', path: '/whatsapp', icon: MessageSquare, badge: 'PRO', badgeColor: 'pro' },
   { label: 'Analytics', path: '/analytics', icon: BarChart2 },
-  { label: 'Partenaire', path: '/partenaires', icon: Gift },
+  { label: 'Partenaire', path: '/partenaires', icon: Gift, locked: true },
   { label: 'Utilisateurs', path: '/utilisateurs', icon: UserCheck },
   { label: 'Paramètres', path: '/parametres', icon: Settings },
 ];
@@ -109,6 +111,11 @@ export const Sidebar: React.FC<{ isOpen?: boolean; onClose?: () => void }> = ({ 
             >
               <Icon className="w-[18px] h-[18px] shrink-0" />
               <span className="flex-1 truncate">{n.label}</span>
+              {n.locked && (
+                <span title="Verrouillé" className="inline-flex items-center">
+                  <Lock className="w-3.5 h-3.5 text-[#F7B940] shrink-0" />
+                </span>
+              )}
               {n.badge && (
                 <span className={cn(
                   'text-[10px] font-extrabold rounded-full px-2 py-0.5',

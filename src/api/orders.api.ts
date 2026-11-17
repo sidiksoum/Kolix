@@ -68,8 +68,36 @@ export const ordersApi = {
 
   async create(dto: CreateOrderDto): Promise<Order> {
     try {
-      const res = await apiClient.post<{ data: Order }>(API_ENDPOINTS.ORDERS.BASE, dto);
-      return res.data;
+      const payload = {
+        client_name: dto.client,
+        client_phone: dto.phone,
+        city: dto.city,
+        delivery_place: dto.place,
+        product_name: dto.product,
+        amount: dto.amount,
+        note: dto.note,
+        payment_mode: 'COD_CASH'
+      };
+      const res = await apiClient.post<any>('/api/v1/public/orders/checkout', payload);
+      const data = res.data || res;
+      const newOrder: Order = {
+        id: data.order_id || `KX-${Math.floor(1000 + Math.random() * 9000)}`,
+        date: 'Aujourd’hui · ' + new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
+        client: data.client_name || dto.client,
+        phone: dto.phone,
+        city: data.city || dto.city,
+        place: data.delivery_place || dto.place,
+        product: dto.product,
+        amount: Number(data.total_amount || dto.amount),
+        status: (data.status as OrderStatus) || 'En cours',
+        note: dto.note || '—',
+        paid: null,
+        qrPayload: data.qr_payload || undefined,
+        paymentMode: 'COD_CASH'
+      };
+      ordersCache.unshift(newOrder);
+      persist();
+      return newOrder;
     } catch {
       const newId = `KX-${1049 + ordersCache.length - INITIAL_ORDERS.length}`;
       const newOrder: Order = {
@@ -84,8 +112,8 @@ export const ordersApi = {
         status: 'En cours',
         note: dto.note || '—',
         paid: null,
-        qrPayload: `KOLIX-PAY:${newId}:${dto.amount}:XOF:${dto.client.replace(/\s+/g, '-')}`,
-        paymentMode: 'COD_MOMO'
+        qrPayload: undefined,
+        paymentMode: 'COD_CASH'
       };
       ordersCache.unshift(newOrder);
       persist();

@@ -1,4 +1,5 @@
-const BASE_URL = import.meta.env.VITE_API_URL || 'https://api.kolix.app';
+const rawBase = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const BASE_URL = rawBase.replace(/\/+$/, '');
 
 interface RequestOptions extends RequestInit {
   params?: Record<string, string | number | boolean | undefined>;
@@ -37,7 +38,9 @@ class ApiClient {
   }
 
   private buildUrl(endpoint: string, params?: Record<string, string | number | boolean | undefined>): string {
-    const url = new URL(endpoint.startsWith('http') ? endpoint : `${BASE_URL}${endpoint}`);
+    const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+    const fullUrl = endpoint.startsWith('http') ? endpoint : `${BASE_URL}${cleanEndpoint}`;
+    const url = new URL(fullUrl);
     if (params) {
       Object.entries(params).forEach(([key, val]) => {
         if (val !== undefined && val !== null) {
@@ -75,7 +78,17 @@ class ApiClient {
         let errorData = null;
         try {
           errorData = await response.json();
-          if (errorData?.message) errorMessage = errorData.message;
+          if (errorData?.message) {
+            errorMessage = errorData.message;
+          } else if (errorData?.detail) {
+            if (typeof errorData.detail === 'string') {
+              errorMessage = errorData.detail;
+            } else if (Array.isArray(errorData.detail)) {
+              errorMessage = errorData.detail.map((d: any) => d.msg || JSON.stringify(d)).join(', ');
+            } else {
+              errorMessage = JSON.stringify(errorData.detail);
+            }
+          }
         } catch {
           // Non-JSON response
         }

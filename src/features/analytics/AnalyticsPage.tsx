@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { 
-  Sparkles, 
   Download, 
   FileSpreadsheet, 
   TrendingUp, 
@@ -203,59 +202,36 @@ export const AnalyticsPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Status Analysis + Kolix AI */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <section className="lg:col-span-2 bg-white rounded-2xl p-6 border border-gray-100 shadow-sm space-y-5">
-          <h2 className="text-lg font-bold text-[#16131F]">Analyse des statuts de commande</h2>
-          
-          {/* Segmented Bar */}
-          <div className="h-4 rounded-full overflow-hidden flex bg-gray-100 shadow-inner">
-            {stRaw.map(([s, _, n, color]) => (
-              <div 
-                key={s}
-                style={{ width: `${(n / 790) * 100}%`, backgroundColor: color }}
-                title={`${s}: ${pc(n, 790)}`}
-                className="h-full transition-all duration-300 hover:opacity-90"
-              />
-            ))}
-          </div>
+      {/* Status Analysis */}
+      <section className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm space-y-5">
+        <h2 className="text-lg font-bold text-[#16131F]">Analyse des statuts de commande</h2>
+        
+        {/* Segmented Bar */}
+        <div className="h-4 rounded-full overflow-hidden flex bg-gray-100 shadow-inner">
+          {stRaw.map(([s, _, n, color]) => (
+            <div 
+              key={s}
+              style={{ width: `${(n / 790) * 100}%`, backgroundColor: color }}
+              title={`${s}: ${pc(n, 790)}`}
+              className="h-full transition-all duration-300 hover:opacity-90"
+            />
+          ))}
+        </div>
 
-          {/* Cards Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            {stRaw.map(([s, rateLabel, n, color]) => (
-              <div key={s} className="border border-[#EEEAFB] rounded-xl p-3.5 flex flex-col gap-1 hover:border-[#6C4CF1]/30 transition-colors">
-                <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: color }} />
-                  <span className="text-xs font-bold text-[#3A3647] truncate">{rateLabel}</span>
-                </div>
-                <span className="text-xl font-extrabold text-[#16131F] mt-1">{pc(n, 790)}</span>
-                <span className="text-xs text-[#5E5A70]">{fmt(S(n))} commandes</span>
+        {/* Cards Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          {stRaw.map(([s, rateLabel, n, color]) => (
+            <div key={s} className="border border-[#EEEAFB] rounded-xl p-3.5 flex flex-col gap-1 hover:border-[#6C4CF1]/30 transition-colors">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: color }} />
+                <span className="text-xs font-bold text-[#3A3647] truncate">{rateLabel}</span>
               </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Kolix AI Reading */}
-        <section className="bg-[#241D5E] text-white rounded-2xl p-6 flex flex-col justify-between shadow-xl relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-[#6C4CF1]/20 rounded-full blur-2xl pointer-events-none" />
-          <div className="space-y-4 relative z-10">
-            <div className="flex items-center gap-2 text-xs font-extrabold tracking-wider uppercase text-[#B9AAFF]">
-              <Sparkles className="w-4 h-4 text-[#B9AAFF]" />
-              <span>Lecture Kolix AI</span>
+              <span className="text-xl font-extrabold text-[#16131F] mt-1">{pc(n, 790)}</span>
+              <span className="text-xs text-[#5E5A70]">{fmt(S(n))} commandes</span>
             </div>
-            <p className="text-sm font-medium leading-relaxed text-[#EDE8FF]">
-              Korhogo et Daloa livrent à peine plus d’une commande sur deux. Un appel de confirmation avant expédition ou un acompte Mobile Money pourrait réduire les retours.
-            </p>
-            <p className="text-xs leading-relaxed text-[#C5BDEB]">
-              Votre formulaire convertit bien : près d’un formulaire ouvert sur trois devient une commande.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/10 mt-4 flex items-center justify-between text-xs text-[#B9AAFF]">
-            <span>Analyse en temps réel</span>
-            <span className="w-2 h-2 rounded-full bg-[#7CE0AE] animate-ping" />
-          </div>
-        </section>
-      </div>
+          ))}
+        </div>
+      </section>
 
       {/* Sales by Period */}
       <section className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm space-y-4">

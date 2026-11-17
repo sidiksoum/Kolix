@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BlendGo – Mixeur portable rechargeable | Paiement à la livraison</title>
+<meta name="description" content="Mixeur portable rechargeable 400 ml. Livraison gratuite, paiement à la livraison partout en Côte d’Ivoire.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme: light;
+  --bg:#FBFAFE; --surface:#FFFFFF; --soft:#F1ECFC; --line:#E3DAF7;
+  --ink:#1D1430; --muted:#6A6080; --violet:#6B3FD4; --violet-d:#5530B3;
+  --lav:#C9B6F7; --ok:#1F9D6B; --promo:#D93A4A; --gold:#F2A516;
+  --radius-l:22px; --radius:14px; --radius-s:9px;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --bg:#130E1F; --surface:#1C1530; --soft:#261D40; --line:#352A55;
+    --ink:#F2EEFB; --muted:#A99FC2; --violet:#9C7BFF; --violet-d:#B49BFF;
+    --lav:#4A3A7A; --ok:#3CC48E; --promo:#FF6170; --gold:#F7B940;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --bg:#130E1F; --surface:#1C1530; --soft:#261D40; --line:#352A55;
+  --ink:#F2EEFB; --muted:#A99FC2; --violet:#9C7BFF; --violet-d:#B49BFF;
+  --lav:#4A3A7A; --ok:#3CC48E; --promo:#FF6170; --gold:#F7B940;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-behavior:smooth;scroll-padding-top:env(safe-area-inset-top,0px)}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+img,svg{max-width:100%;display:block}
+h1,h2,h3{font-family:"Bricolage Grotesque","Figtree",system-ui,sans-serif;line-height:1.1;margin:0;letter-spacing:-.01em}
+a{color:var(--violet)}
+:focus-visible{outline:3px solid var(--violet);outline-offset:2px;border-radius:6px}
+
+/* Bandeau */
+.topbar{background:var(--ink);color:var(--bg);text-align:center;font-size:.875rem;padding:.55rem 1rem;font-weight:500}
+.topbar strong{color:var(--lav)}
+.header{max-width:1180px;margin:0 auto;padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:1.5rem;color:var(--ink);text-decoration:none}
+.logo span{color:var(--violet)}
+.help{font-size:.9rem;color:var(--muted);text-decoration:none}
+
+/* Grille principale */
+.main{max-width:1180px;margin:0 auto;padding:0 1.25rem 3rem;display:grid;grid-template-columns:1.05fr 1fr;gap:3rem;align-items:start}
+@media (max-width:900px){.main{grid-template-columns:1fr;gap:1.75rem}}
+
+/* Galerie */
+.gallery{position:sticky;top:1.25rem}
+@media (max-width:900px){.gallery{position:static}}
+.stage{position:relative;background:var(--soft);border-radius:var(--radius-l);aspect-ratio:1/1;overflow:hidden;display:grid;place-items:center}
+.stage img,.stage svg{width:100%;height:100%;object-fit:cover}
+.badge-promo{position:absolute;top:1rem;left:1rem;background:var(--promo);color:#fff;font-weight:700;padding:.35rem .75rem;border-radius:999px;font-size:.9rem}
+.nav-btn{position:absolute;top:50%;transform:translateY(-50%);width:42px;height:42px;border-radius:50%;border:0;background:var(--surface);color:var(--ink);font-size:1.3rem;cursor:pointer;box-shadow:0 2px 10px rgba(29,20,48,.15)}
+.nav-btn.prev{left:.75rem}.nav-btn.next{right:.75rem}
+.thumbs{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem;margin-top:.75rem}
+.thumb{border:2px solid transparent;border-radius:var(--radius);background:var(--soft);padding:0;cursor:pointer;aspect-ratio:1/1;overflow:hidden}
+.thumb[aria-current="true"]{border-color:var(--violet)}
+.thumb img,.thumb svg{width:100%;height:100%;object-fit:cover}
+
+/* Infos produit */
+.rating{display:flex;align-items:center;gap:.5rem;font-size:.92rem;color:var(--muted)}
+.stars{color:var(--gold);letter-spacing:.1em}
+h1{font-size:clamp(2rem,4.2vw,2.9rem);font-weight:800;margin:.5rem 0 .6rem}
+.lead{color:var(--muted);margin:0 0 1.25rem;max-width:52ch}
+.price{display:flex;align-items:baseline;flex-wrap:wrap;gap:.4rem .9rem;margin-bottom:1.25rem}
+.price-now{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:2.4rem;color:var(--violet)}
+.price-old{font-size:1.2rem;color:var(--muted);text-decoration:line-through}
+.save{font-size:.9rem;font-weight:700;color:var(--promo);background:color-mix(in srgb,var(--promo) 12%,transparent);padding:.2rem .6rem;border-radius:999px}
+
+/* Compte à rebours : l’élément fort de la page */
+.countdown{background:var(--ink);color:var(--bg);border-radius:var(--radius-l);padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:1rem}
+.countdown p{margin:0;font-weight:600;max-width:20ch;line-height:1.3}
+.cd-units{display:flex;gap:.5rem}
+.cd-unit{background:color-mix(in srgb,var(--bg) 12%,transparent);border-radius:var(--radius-s);min-width:62px;text-align:center;padding:.45rem .35rem}
+.cd-unit b{display:block;font-family:"Bricolage Grotesque",sans-serif;font-size:1.75rem;font-weight:800;font-variant-numeric:tabular-nums;line-height:1}
+.cd-unit small{font-size:.72rem;opacity:.75}
+.stock{display:flex;align-items:center;gap:.6rem;font-size:.92rem;margin-bottom:1.5rem}
+.stock-bar{flex:1;height:8px;background:var(--line);border-radius:99px;overflow:hidden;max-width:220px}
+.stock-bar i{display:block;height:100%;width:18%;background:var(--promo);border-radius:99px}
+
+/* Formulaire */
+.order{background:var(--surface);border:2px solid var(--violet);border-radius:var(--radius-l);padding:1.5rem}
+.order h2{font-size:1.45rem;margin-bottom:.25rem}
+.order .sub{color:var(--muted);font-size:.92rem;margin:0 0 1.25rem}
+fieldset{border:0;padding:0;margin:0 0 1.25rem}
+legend{font-weight:700;margin-bottom:.6rem;padding:0}
+.offers{display:grid;gap:.6rem}
+.offer{display:flex;align-items:center;gap:.8rem;border:2px solid var(--line);border-radius:var(--radius);padding:.75rem .9rem;cursor:pointer;transition:border-color .15s}
+.offer:has(input:checked){border-color:var(--violet);background:var(--soft)}
+.offer input{accent-color:var(--violet);width:18px;height:18px;margin:0}
+.offer-txt{flex:1;line-height:1.3}
+.offer-txt small{display:block;color:var(--ok);font-weight:600}
+.offer-price{font-weight:700;text-align:right;line-height:1.25}
+.offer-price s{display:block;font-weight:400;color:var(--muted);font-size:.82rem}
+.tag-best{font-size:.72rem;font-weight:700;background:var(--violet);color:#fff;padding:.15rem .5rem;border-radius:99px;margin-left:.35rem;vertical-align:2px}
+.field{margin-bottom:.9rem}
+.field label{display:block;font-weight:600;font-size:.92rem;margin-bottom:.35rem}
+.field label .opt{font-weight:400;color:var(--muted)}
+.field input,.field textarea{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:var(--radius-s);padding:.8rem .9rem;transition:border-color .15s}
+.field textarea{min-height:84px;resize:vertical}
+.field input:focus,.field textarea:focus{outline:none;border-color:var(--violet);box-shadow:0 0 0 3px color-mix(in srgb,var(--violet) 20%,transparent)}
+.field.invalid input{border-color:var(--promo)}
+.err{display:none;color:var(--promo);font-size:.84rem;margin-top:.3rem}
+.field.invalid .err{display:block}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:.9rem}
+@media (max-width:520px){.row2{grid-template-columns:1fr}}
+.summary{border-top:1px dashed var(--line);padding-top:1rem;margin:1.25rem 0 1rem;display:grid;gap:.35rem;font-size:.95rem}
+.summary div{display:flex;justify-content:space-between}
+.summary .total{font-weight:800;font-size:1.15rem;margin-top:.25rem}
+.free{color:var(--ok);font-weight:700}
+.btn{width:100%;border:0;cursor:pointer;background:var(--violet);color:#fff;font:700 1.12rem/1.2 "Figtree",sans-serif;padding:1.05rem 1rem;border-radius:var(--radius);transition:background .15s,transform .1s}
+.btn:hover{background:var(--violet-d)}
+.btn:active{transform:scale(.99)}
+.btn[disabled]{opacity:.65;cursor:wait}
+.reassure{display:flex;flex-wrap:wrap;justify-content:center;gap:.4rem 1.1rem;margin:.9rem 0 0;padding:0;list-style:none;font-size:.85rem;color:var(--muted)}
+
+/* Sections bas de page */
+.section{max-width:1180px;margin:0 auto;padding:3.5rem 1.25rem}
+.section h2{font-size:clamp(1.6rem,3vw,2.2rem);font-weight:800;margin-bottom:1rem}
+.desc{display:grid;grid-template-columns:1.2fr 1fr;gap:3rem;align-items:start}
+@media (max-width:900px){.desc{grid-template-columns:1fr;gap:2rem}}
+.desc p{max-width:62ch;margin:0 0 1rem}
+.benefits{display:grid;gap:1rem;margin-top:1.5rem}
+.benefit{display:flex;gap:1rem;align-items:flex-start}
+.benefit .ico{flex:none;width:44px;height:44px;border-radius:12px;background:var(--soft);display:grid;place-items:center;font-size:1.3rem}
+.benefit h3{font-size:1.08rem;margin:.15rem 0 .2rem;font-family:"Figtree",sans-serif;font-weight:700}
+.benefit p{margin:0;color:var(--muted);font-size:.95rem}
+.specs{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-l);padding:1.5rem;overflow-x:auto}
+.specs h3{font-size:1.2rem;margin-bottom:.75rem}
+.specs table{width:100%;border-collapse:collapse;font-size:.95rem}
+.specs td{padding:.6rem 0;border-bottom:1px solid var(--line);vertical-align:top}
+.specs td:first-child{color:var(--muted);width:45%;padding-right:1rem}
+.specs tr:last-child td{border-bottom:0}
+.box{margin-top:1.25rem;font-size:.92rem;color:var(--muted)}
+
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;counter-reset:s;margin:0;padding:0;list-style:none}
+@media (max-width:760px){.steps{grid-template-columns:1fr}}
+.steps li{counter-increment:s;padding-top:3.2rem;position:relative}
+.steps li::before{content:counter(s);position:absolute;top:0;left:0;width:2.4rem;height:2.4rem;border-radius:50%;background:var(--violet);color:#fff;display:grid;place-items:center;font:800 1.1rem "Bricolage Grotesque",sans-serif}
+.steps h3{font-size:1.1rem;margin-bottom:.3rem;font-family:"Figtree",sans-serif;font-weight:700}
+.steps p{margin:0;color:var(--muted)}
+.band{background:var(--soft)}
+
+.reviews{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem}
+@media (max-width:900px){.reviews{grid-template-columns:1fr}}
+.review{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-l);padding:1.25rem;margin:0}
+.review blockquote{margin:.5rem 0 1rem}
+.review figcaption{font-size:.9rem;color:var(--muted)}
+.review figcaption b{color:var(--ink)}
+.verified{color:var(--ok);font-weight:600}
+
+.faq{max-width:780px}
+.faq details{border-bottom:1px solid var(--line);padding:1rem 0}
+.faq summary{font-weight:700;cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:1rem}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font-size:1.4rem;line-height:1;color:var(--violet);transition:transform .2s}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq details p{margin:.6rem 0 0;color:var(--muted);max-width:65ch}
+
+.footer{text-align:center;color:var(--muted);font-size:.85rem;padding:2rem 1.25rem 6rem;border-top:1px solid var(--line)}
+
+/* Barre mobile */
+.sticky-cta{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--surface);border-top:1px solid var(--line);padding:.75rem 1rem calc(.75rem + env(safe-area-inset-bottom,0px));display:none;align-items:center;gap:1rem;transform:translateY(110%);transition:transform .25s}
+.sticky-cta.show{transform:none}
+.sticky-cta .p{font-weight:800;font-size:1.1rem;line-height:1.1}
+.sticky-cta .p s{display:block;font-size:.78rem;font-weight:400;color:var(--muted)}
+.sticky-cta .btn{flex:1;padding:.85rem;font-size:1rem}
+@media (max-width:900px){.sticky-cta{display:flex}}
+
+/* Confirmation */
+.modal{position:fixed;inset:0;z-index:50;background:rgba(19,14,31,.6);display:none;place-items:center;padding:1.25rem}
+.modal.open{display:grid}
+.modal-card{background:var(--surface);border-radius:var(--radius-l);padding:2rem 1.5rem;max-width:440px;width:100%;text-align:center;animation:pop .3s ease-out}
+@keyframes pop{from{transform:scale(.94);opacity:0}to{transform:none;opacity:1}}
+.check{width:64px;height:64px;border-radius:50%;background:var(--ok);color:#fff;display:grid;place-items:center;font-size:2rem;margin:0 auto 1rem}
+.modal-card h2{font-size:1.6rem;margin-bottom:.5rem}
+.modal-card p{color:var(--muted);margin:.4rem 0}
+.modal-card .ref{font-weight:700;color:var(--ink)}
+.modal-card .btn{margin-top:1.25rem}
+</style>
+</head>
+<body>
+
+<div class="topbar">Livraison <strong>gratuite</strong> à Abidjan et à l’intérieur · Vous payez à la réception</div>
+
+<header class="header">
+  <a class="logo" href="#" id="shopName">Ma<span>Boutique</span></a>
+  <a class="help" id="helpLink" href="#">Besoin d’aide ? WhatsApp</a>
+</header>
+
+<main class="main">
+  <!-- Galerie -->
+  <section class="gallery" aria-label="Photos du produit">
+    <div class="stage" id="stage">
+      <span class="badge-promo" id="badgePromo">-36 %</span>
+      <button class="nav-btn prev" id="prev" aria-label="Photo précédente">‹</button>
+      <button class="nav-btn next" id="next" aria-label="Photo suivante">›</button>
+    </div>
+    <div class="thumbs" id="thumbs"></div>
+  </section>
+
+  <!-- Infos + formulaire -->
+  <section aria-labelledby="pTitle">
+    <div class="rating"><span class="stars" aria-hidden="true">★★★★★</span><span>4,8/5 · 327 avis clients</span></div>
+    <h1 id="pTitle">BlendGo, le mixeur qui tient dans votre sac</h1>
+    <p class="lead">Jus, smoothies et laits frappés en 30 secondes, partout. Rechargeable par USB-C, 15 mixages par charge.</p>
+
+    <div class="price">
+      <span class="price-now" id="priceNow">15 900 FCFA</span>
+      <span class="price-old" id="priceOld">25 000 FCFA</span>
+      <span class="save" id="priceSave">Vous économisez 9 100 FCFA</span>
+    </div>
+
+    <div class="countdown" role="timer" aria-live="off">
+      <p>Le prix promo se termine dans</p>
+      <div class="cd-units">
+        <div class="cd-unit"><b id="cdH">00</b><small>heures</small></div>
+        <div class="cd-unit"><b id="cdM">00</b><small>min</small></div>
+        <div class="cd-unit"><b id="cdS">00</b><small>sec</small></div>
+      </div>
+    </div>
+
+    <div class="stock"><span>Plus que <b id="stockLeft">14</b> en stock</span><span class="stock-bar"><i></i></span></div>
+
+    <form class="order" id="orderForm" novalidate>
+      <h2>Commandez maintenant</h2>
+      <p class="sub">Remplissez le formulaire, un conseiller vous appelle pour confirmer. Aucun paiement en ligne.</p>
+
+      <fieldset>
+        <legend>Choisissez votre offre</legend>
+        <div class="offers" id="offers"></div>
+      </fieldset>
+
+      <div class="field">
+        <label for="name">Nom complet</label>
+        <input id="name" name="name" autocomplete="name" placeholder="Ex. : Aya Koné" required>
+        <div class="err">Indiquez votre nom pour que le livreur vous identifie.</div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label for="phone">Numéro de téléphone</label>
+          <input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="07 00 00 00 00" required>
+          <div class="err">Entrez un numéro à 10 chiffres (ex. : 07 12 34 56 78).</div>
+        </div>
+        <div class="field">
+          <label for="city">Ville</label>
+          <input id="city" name="city" list="cities" autocomplete="address-level2" placeholder="Ex. : Abidjan" required>
+          <datalist id="cities">
+            <option>Abidjan</option><option>Bouaké</option><option>Yamoussoukro</option><option>Daloa</option>
+            <option>San-Pédro</option><option>Korhogo</option><option>Man</option><option>Gagnoa</option>
+            <option>Divo</option><option>Abengourou</option><option>Bondoukou</option><option>Bocanda</option>
+            <option>Grand-Bassam</option><option>Bingerville</option><option>Anyama</option>
+          </datalist>
+          <div class="err">Indiquez votre ville.</div>
+        </div>
+      </div>
+      <div class="field">
+        <label for="address">Adresse de livraison</label>
+        <input id="address" name="address" autocomplete="street-address" placeholder="Commune, quartier, repère (ex. : Cocody Angré, près de la pharmacie)" required>
+        <div class="err">Précisez le quartier et un repère pour le livreur.</div>
+      </div>
+      <div class="field">
+        <label for="note">Note de commande <span class="opt">(facultatif)</span></label>
+        <textarea id="note" name="note" placeholder="Couleur souhaitée, heure de livraison préférée…"></textarea>
+      </div>
+
+      <div class="summary" aria-live="polite">
+        <div><span>Sous-total</span><span id="sumSub">15 900 FCFA</span></div>
+        <div><span>Livraison</span><span class="free">Gratuite</span></div>
+        <div class="total"><span>Total à payer à la livraison</span><span id="sumTotal">15 900 FCFA</span></div>
+      </div>
+
+      <button class="btn" type="submit" id="submitBtn">Commander – payer à la livraison</button>
+      <ul class="reassure">
+        <li>💵 Paiement à la réception</li><li>🚚 Livré en 24–72 h</li><li>🔁 Échange sous 7 jours</li>
+      </ul>
+    </form>
+  </section>
+</main>
+
+<!-- Description -->
+<section class="section" id="description" aria-labelledby="dTitle">
+  <div class="desc">
+    <div>
+      <h2 id="dTitle">Votre jus frais, où que vous soyez</h2>
+      <p>Au bureau, à la salle de sport ou en voyage, BlendGo vous permet de préparer une boisson fraîche sans prise électrique ni gros appareil. Ajoutez vos fruits, un peu d’eau ou de lait, appuyez deux fois : c’est prêt.</p>
+      <p>Ses 6 lames en acier inoxydable broient mangue, ananas, banane, gingembre et même la glace pilée. Le gobelet de 400 ml se ferme hermétiquement : vous buvez directement dedans, sans transvaser.</p>
+      <div class="benefits">
+        <div class="benefit"><span class="ico" aria-hidden="true">🔋</span><div><h3>15 mixages par charge</h3><p>Rechargez avec n’importe quel chargeur de téléphone USB-C, en 2 à 3 heures.</p></div></div>
+        <div class="benefit"><span class="ico" aria-hidden="true">🥭</span><div><h3>Puissant malgré sa taille</h3><p>Moteur 22 000 tours/min, 6 lames : fruits, légumes et glaçons passent sans effort.</p></div></div>
+        <div class="benefit"><span class="ico" aria-hidden="true">🛡️</span><div><h3>Sécurité enfant</h3><p>Le moteur ne démarre que si le gobelet est bien vissé.</p></div></div>
+        <div class="benefit"><span class="ico" aria-hidden="true">💧</span><div><h3>Nettoyage en 10 secondes</h3><p>Un peu d’eau savonneuse, deux pressions, rincez. C’est propre.</p></div></div>
+      </div>
+    </div>
+    <aside class="specs">
+      <h3>Caractéristiques</h3>
+      <table>
+        <tr><td>Capacité</td><td>400 ml</td></tr>
+        <tr><td>Batterie</td><td>2 000 mAh, recharge USB-C</td></tr>
+        <tr><td>Autonomie</td><td>Environ 15 mixages</td></tr>
+        <tr><td>Vitesse</td><td>22 000 tours/min</td></tr>
+        <tr><td>Lames</td><td>6 lames en acier inoxydable</td></tr>
+        <tr><td>Matériau</td><td>Tritan sans BPA</td></tr>
+        <tr><td>Dimensions</td><td>24 × 8 cm, 420 g</td></tr>
+        <tr><td>Couleurs</td><td>Lavande, blanc, noir</td></tr>
+        <tr><td>Garantie</td><td>6 mois</td></tr>
+      </table>
+      <p class="box">Dans la boîte : 1 mixeur BlendGo, 1 câble USB-C, 1 couvercle de transport, 1 notice en français.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- Comment ça marche -->
+<section class="band" aria-labelledby="hTitle">
+  <div class="section">
+    <h2 id="hTitle">Comment se passe votre commande</h2>
+    <ol class="steps">
+      <li><h3>Vous remplissez le formulaire</h3><p>Une minute suffit. Aucun paiement à l’avance.</p></li>
+      <li><h3>Nous vous appelons</h3><p>Un conseiller confirme votre commande et votre adresse sous 24 h.</p></li>
+      <li><h3>Vous payez à la livraison</h3><p>Espèces ou Mobile Money, une fois le colis entre vos mains.</p></li>
+    </ol>
+  </div>
+</section>
+
+<!-- Avis -->
+<section class="section" aria-labelledby="rTitle">
+  <h2 id="rTitle">Ce qu’en disent nos clients</h2>
+  <div class="reviews">
+    <figure class="review"><span class="stars" aria-label="5 sur 5">★★★★★</span><blockquote>J’ai pris le pack de deux, un pour moi et un pour ma sœur. Je fais mon jus de gingembre au bureau chaque matin.</blockquote><figcaption><b>Mariam K.</b>, Cocody · <span class="verified">Achat vérifié</span></figcaption></figure>
+    <figure class="review"><span class="stars" aria-label="5 sur 5">★★★★★</span><blockquote>Livré en 48 h à Bouaké. Le livreur a attendu que je teste avant de payer. Très sérieux.</blockquote><figcaption><b>Yao F.</b>, Bouaké · <span class="verified">Achat vérifié</span></figcaption></figure>
+    <figure class="review"><span class="stars" aria-label="4 sur 5">★★★★☆</span><blockquote>Petit mais costaud, il écrase bien la mangue et les glaçons. La batterie tient presque une semaine.</blockquote><figcaption><b>Christelle A.</b>, Yopougon · <span class="verified">Achat vérifié</span></figcaption></figure>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section" aria-labelledby="fTitle">
+  <h2 id="fTitle">Questions fréquentes</h2>
+  <div class="faq">
+    <details><summary>Dois-je payer avant la livraison ?</summary><p>Non. Vous payez uniquement quand le livreur vous remet le colis, en espèces ou par Mobile Money.</p></details>
+    <details><summary>Quels sont les délais de livraison ?</summary><p>24 à 48 h à Abidjan, 48 à 72 h dans les autres villes de Côte d’Ivoire.</p></details>
+    <details><summary>La livraison est-elle vraiment gratuite ?</summary><p>Oui, partout en Côte d’Ivoire pendant la durée de l’offre.</p></details>
+    <details><summary>Et si le produit ne fonctionne pas ?</summary><p>Contactez-nous sur WhatsApp sous 7 jours : nous l’échangeons gratuitement. Le produit est aussi garanti 6 mois.</p></details>
+    <details><summary>Puis-je choisir la couleur ?</summary><p>Oui, indiquez la couleur souhaitée dans la note de commande ou au conseiller qui vous appellera.</p></details>
+  </div>
+</section>
+
+<footer class="footer">© <span id="year"></span> <span id="shopFooter">MaBoutique</span> · Boutique propulsée par Kolix</footer>
+
+<div class="sticky-cta" id="stickyCta">
+  <div class="p"><s id="stickyOld">25 000 FCFA</s><span id="stickyNow">15 900 FCFA</span></div>
+  <a class="btn" href="#orderForm" style="text-align:center;text-decoration:none">Commander</a>
+</div>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+  <div class="modal-card">
+    <div class="check" aria-hidden="true">✓</div>
+    <h2 id="mTitle">Commande reçue</h2>
+    <p>Merci <span id="mName"></span> ! Un conseiller vous appelle au <span class="ref" id="mPhone"></span> pour confirmer la livraison.</p>
+    <p>Référence : <span class="ref" id="mRef"></span></p>
+    <p>Montant à payer à la réception : <span class="ref" id="mTotal"></span></p>
+    <button class="btn" id="mClose" type="button">Continuer mes achats</button>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   CONFIGURATION KOLIX – à modifier par le marchand
+   ============================================================ */
+const CONFIG = {
+  shopName: "MaBoutique",
+  whatsapp: "",            // ex. "2250700000000" : la commande s’ouvre aussi dans WhatsApp
+  orderEndpoint: "",       // URL de l’API Kolix qui reçoit la commande (POST JSON)
+  product: { id: "BLENDGO-400", name: "BlendGo – Mixeur portable 400 ml" },
+  oldPrice: 25000,         // prix barré (FCFA)
+  offers: [
+    { qty: 1, label: "1 mixeur", price: 15900 },
+    { qty: 2, label: "Pack 2 mixeurs", price: 28900, best: true },
+    { qty: 3, label: "Pack 3 mixeurs", price: 39900 }
+  ],
+  images: [],              // URLs de vos photos ; vide = visuels de démonstration
+  stock: 14
+};
+
+const fmt = n => n.toLocaleString("fr-FR").replace(/\u202f|\u00a0/g, " ") + " FCFA";
+const $ = id => document.getElementById(id);
+
+/* --- Visuels de démonstration (SVG) --- */
+function blender(bg, liquid, extra = "") {
+  return `<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mixeur BlendGo">
+  <rect width="400" height="400" fill="${bg}"/>${extra}
+  <ellipse cx="200" cy="352" rx="78" ry="12" fill="#1D1430" opacity=".12"/>
+  <rect x="158" y="58" width="84" height="26" rx="10" fill="#5530B3"/>
+  <rect x="186" y="44" width="28" height="18" rx="6" fill="#5530B3"/>
+  <rect x="150" y="80" width="100" height="196" rx="16" fill="#FFFFFF" opacity=".55" stroke="#C9B6F7" stroke-width="3"/>
+  ${liquid ? `<path d="M153 150 Q200 138 247 150 V262 a13 13 0 0 1-13 13 H166 a13 13 0 0 1-13-13Z" fill="${liquid}"/>` : ""}
+  <path d="M178 264 L200 252 L222 264 L200 270Z" fill="#B8B2C8"/>
+  <rect x="146" y="272" width="108" height="76" rx="18" fill="#6B3FD4"/>
+  <circle cx="200" cy="310" r="13" fill="#F1ECFC"/><circle cx="200" cy="310" r="5" fill="#6B3FD4"/>
+  <rect x="166" y="90" width="8" height="150" rx="4" fill="#FFFFFF" opacity=".7"/>
+</svg>`;
+}
+const fruits = `<circle cx="80" cy="320" r="34" fill="#F2A516"/><circle cx="112" cy="296" r="22" fill="#E8574A"/><circle cx="318" cy="318" r="30" fill="#7BC25A"/><path d="M318 288 q8 -18 20 -20" stroke="#3F7A2A" stroke-width="5" fill="none"/>`;
+const usb = `<g transform="translate(270 110)"><rect width="88" height="46" rx="10" fill="#FFFFFF"/><rect x="22" y="15" width="44" height="16" rx="8" fill="#1D1430"/><text x="44" y="70" font-family="Figtree,sans-serif" font-size="15" font-weight="700" text-anchor="middle" fill="#1D1430">USB-C</text></g>`;
+const DEMO = [
+  blender("#EDE5FD", "#F28C38"),
+  blender("#FFF1E0", "#E8574A", fruits),
+  blender("#E4F4EC", "#8FCB5E", usb),
+  blender("#F1ECFC", "")
+];
+
+/* --- Galerie --- */
+const slides = CONFIG.images.length
+  ? CONFIG.images.map((src, i) => `<img src="${src}" alt="${CONFIG.product.name}, photo ${i + 1}">`)
+  : DEMO;
+let current = 0;
+const stage = $("stage"), thumbs = $("thumbs");
+const slot = document.createElement("div");
+slot.style.cssText = "width:100%;height:100%";
+stage.prepend(slot);
+thumbs.innerHTML = slides.map((s, i) =>
+  `<button class="thumb" type="button" data-i="${i}" aria-label="Voir la photo ${i + 1}">${s}</button>`).join("");
+function show(i) {
+  current = (i + slides.length) % slides.length;
+  slot.innerHTML = slides[current];
+  thumbs.querySelectorAll(".thumb").forEach((t, k) => t.setAttribute("aria-current", k === current));
+}
+thumbs.addEventListener("click", e => { const b = e.target.closest(".thumb"); if (b) show(+b.dataset.i); });
+$("prev").onclick = () => show(current - 1);
+$("next").onclick = () => show(current + 1);
+let sx = 0;
+stage.addEventListener("touchstart", e => sx = e.touches[0].clientX, { passive: true });
+stage.addEventListener("touchend", e => { const d = e.changedTouches[0].clientX - sx; if (Math.abs(d) > 40) show(current + (d < 0 ? 1 : -1)); });
+show(0);
+
+/* --- Prix & offres --- */
+const base = CONFIG.offers[0].price;
+$("shopName").innerHTML = CONFIG.shopName;
+$("shopFooter").textContent = CONFIG.shopName;
+$("priceNow").textContent = $("stickyNow").textContent = fmt(base);
+$("priceOld").textContent = $("stickyOld").textContent = fmt(CONFIG.oldPrice);
+$("priceSave").textContent = "Vous économisez " + fmt(CONFIG.oldPrice - base);
+$("badgePromo").textContent = "-" + Math.round((1 - base / CONFIG.oldPrice) * 100) + " %";
+$("stockLeft").textContent = CONFIG.stock;
+$("year").textContent = new Date().getFullYear();
+if (CONFIG.whatsapp) $("helpLink").href = "https://wa.me/" + CONFIG.whatsapp;
+
+$("offers").innerHTML = CONFIG.offers.map((o, i) => {
+  const was = CONFIG.oldPrice * o.qty, gain = was - o.price;
+  return `<label class="offer"><input type="radio" name="offer" value="${i}" ${i === 0 ? "checked" : ""}>
+    <span class="offer-txt">${o.label}${o.best ? '<span class="tag-best">Le plus choisi</span>' : ""}<small>Économie de ${fmt(gain)}</small></span>
+    <span class="offer-price"><s>${fmt(was)}</s>${fmt(o.price)}</span></label>`;
+}).join("");
+const selected = () => CONFIG.offers[+document.querySelector('input[name="offer"]:checked').value];
+function updateTotal() { const t = fmt(selected().price); $("sumSub").textContent = t; $("sumTotal").textContent = t; }
+$("offers").addEventListener("change", updateTotal);
+updateTotal();
+
+/* --- Compte à rebours (jusqu’à minuit, renouvelé chaque jour) --- */
+function tick() {
+  const now = new Date(), end = new Date(now);
+  end.setHours(23, 59, 59, 999);
+  const s = Math.max(0, Math.floor((end - now) / 1000));
+  const p = n => String(n).padStart(2, "0");
+  $("cdH").textContent = p(Math.floor(s / 3600));
+  $("cdM").textContent = p(Math.floor(s % 3600 / 60));
+  $("cdS").textContent = p(s % 60);
+}
+tick(); setInterval(tick, 1000);
+
+/* --- Barre mobile : visible quand le formulaire n’est pas à l’écran --- */
+const sticky = $("stickyCta");
+new IntersectionObserver(([e]) => sticky.classList.toggle("show", !e.isIntersecting && window.scrollY > 300))
+  .observe($("orderForm"));
+window.addEventListener("scroll", () => {
+  const r = $("orderForm").getBoundingClientRect();
+  sticky.classList.toggle("show", window.scrollY > 300 && (r.bottom < 0 || r.top > innerHeight));
+}, { passive: true });
+
+/* --- Validation & envoi --- */
+const form = $("orderForm");
+const rules = {
+  name: v => v.trim().length >= 2,
+  phone: v => /^(\+?225)?0?[1-9]\d{8}$/.test(v.replace(/[\s.-]/g, "")) && v.replace(/\D/g, "").length >= 10,
+  city: v => v.trim().length >= 2,
+  address: v => v.trim().length >= 4
+};
+function check(id) {
+  const ok = rules[id]($(id).value);
+  $(id).closest(".field").classList.toggle("invalid", !ok);
+  $(id).setAttribute("aria-invalid", !ok);
+  return ok;
+}
+Object.keys(rules).forEach(id => $(id).addEventListener("blur", () => check(id)));
+
+form.addEventListener("submit", async e => {
+  e.preventDefault();
+  const bad = Object.keys(rules).filter(id => !check(id));
+  if (bad.length) { $(bad[0]).focus(); return; }
+
+  const o = selected();
+  const order = {
+    ref: "CMD-" + Date.now().toString(36).toUpperCase().slice(-6),
+    product: CONFIG.product, quantity: o.qty, offer: o.label, total: o.price, currency: "XOF",
+    payment: "cash_on_delivery",
+    customer: { name: $("name").value.trim(), phone: $("phone").value.trim(), city: $("city").value.trim(), address: $("address").value.trim() },
+    note: $("note").value.trim(), createdAt: new Date().toISOString()
+  };
+
+  const btn = $("submitBtn");
+  btn.disabled = true; btn.textContent = "Envoi de la commande…";
+  try {
+    if (CONFIG.orderEndpoint) {
+      const r = await fetch(CONFIG.orderEndpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(order) });
+      if (!r.ok) throw new Error();
+    }
+    if (CONFIG.whatsapp) {
+      const msg = `Nouvelle commande ${order.ref}\n${order.product.name} – ${o.label}\nTotal : ${fmt(o.price)} (paiement à la livraison)\nNom : ${order.customer.name}\nTél : ${order.customer.phone}\nVille : ${order.customer.city}\nAdresse : ${order.customer.address}${order.note ? "\nNote : " + order.note : ""}`;
+      window.open("https://wa.me/" + CONFIG.whatsapp + "?text=" + encodeURIComponent(msg), "_blank");
+    }
+    $("mName").textContent = order.customer.name.split(" ")[0];
+    $("mPhone").textContent = order.customer.phone;
+    $("mRef").textContent = order.ref;
+    $("mTotal").textContent = fmt(o.price);
+    $("modal").classList.add("open");
+    $("mClose").focus();
+    form.reset(); updateTotal();
+  } catch {
+    alert("La commande n’a pas pu être envoyée. Vérifiez votre connexion internet puis appuyez à nouveau sur Commander.");
+  } finally {
+    btn.disabled = false; btn.textContent = "Commander – payer à la livraison";
+  }
+});
+$("mClose").onclick = () => $("modal").classList.remove("open");
+$("modal").addEventListener("click", e => { if (e.target.id === "modal") $("modal").classList.remove("open"); });
+document.addEventListener("keydown", e => { if (e.key === "Escape") $("modal").classList.remove("open"); });
+</script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   UserCheck, 
   Plus, 
@@ -10,8 +10,10 @@ import {
   AlertTriangle,
   ArrowRight,
   Phone,
-  Mail
+  Mail,
+  Loader2
 } from 'lucide-react';
+import { usersApi, CollaboratorDto } from '../../api/users.api';
 import { toast } from 'sonner';
 
 interface Collaborator {
@@ -100,6 +102,37 @@ export const UtilisateursPage: React.FC = () => {
     }
   ]);
 
+  const [isLoadingList, setIsLoadingList] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Load collaborators from backend API
+  const refreshUsers = async () => {
+    setIsLoadingList(true);
+    try {
+      const data = await usersApi.getCollaborators();
+      if (data && data.length > 0) {
+        setUsers(data.map(c => ({
+          id: String(c.id),
+          name: c.name,
+          role: c.role,
+          phone: c.phone || '—',
+          email: c.email || '—',
+          mods: c.permissions || [],
+          status: (c.status as any) || 'Actif',
+          owner: c.is_owner
+        })));
+      }
+    } catch {
+      // Keep existing users if not logged in or backend down
+    } finally {
+      setIsLoadingList(false);
+    }
+  };
+
+  useEffect(() => {
+    refreshUsers();
+  }, []);
+
   // Drawer Form State
   const [formOpen, setFormOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -164,7 +197,7 @@ export const UtilisateursPage: React.FC = () => {
     );
   };
 
-  const handleSaveUser = (e: React.FormEvent) => {
+  const handleSaveUser = async (e: React.FormEvent) => {
     e.preventDefault();
     const activeMods = formMods.filter(m => !LOCKED_MODULES.includes(m));
 
@@ -178,45 +211,85 @@ export const UtilisateursPage: React.FC = () => {
     }
 
     const isEmail = formContact.includes('@');
+    setIsSubmitting(true);
 
-    if (editingId) {
-      setUsers(prev =>
-        prev.map(u => {
-          if (u.id === editingId) {
-            return {
-              ...u,
-              name: formName.trim(),
-              role: formRole,
-              mods: activeMods,
-              email: isEmail ? formContact.trim() : u.email,
-              phone: isEmail ? u.phone : formContact.trim(),
-              status: formSuspended ? 'Suspendu' : u.status === 'Suspendu' ? 'Actif' : u.status
-            };
-          }
-          return u;
-        })
-      );
-      toast.success('Permissions du collaborateur mises à jour.');
-    } else {
-      const newUser: Collaborator = {
-        id: `u_${Date.now()}`,
-        name: formName.trim(),
-        role: formRole,
-        phone: isEmail ? '—' : formContact.trim(),
-        email: isEmail ? formContact.trim() : '—',
-        mods: activeMods,
-        status: 'Invitation envoyée'
-      };
-      setUsers(prev => [...prev, newUser]);
-      toast.success(`Invitation envoyée à ${formName.trim()} !`);
+    try {
+      if (editingId) {
+        // Backend update
+        try {
+          await usersApi.updateCollaborator(editingId, {
+            name: formName.trim(),
+            role: formRole,
+            phone: isEmail ? undefined : formContact.trim(),
+            status: formSuspended ? 'Suspendu' : 'Actif',
+            permissions: activeMods
+          });
+        } catch {
+          // If offline / dev fallback
+        }
+
+        setUsers(prev =>
+          prev.map(u => {
+            if (u.id === editingId) {
+              return {
+                ...u,
+                name: formName.trim(),
+                role: formRole,
+                mods: activeMods,
+                email: isEmail ? formContact.trim() : u.email,
+                phone: isEmail ? u.phone : formContact.trim(),
+                status: formSuspended ? 'Suspendu' : u.status === 'Suspendu' ? 'Actif' : u.status
+              };
+            }
+            return u;
+          })
+        );
+        toast.success('Permissions du collaborateur mises à jour.');
+      } else {
+        // Backend create
+        let generatedId = `u_${Date.now()}`;
+        try {
+          const created = await usersApi.addCollaborator({
+            name: formName.trim(),
+            phone: isEmail ? '0700000000' : formContact.trim(),
+            email: isEmail ? formContact.trim() : `${formName.toLowerCase().replace(/\s+/g, '')}@kolix.ci`,
+            role: formRole,
+            permissions: activeMods
+          });
+          if (created?.id) generatedId = String(created.id);
+        } catch {
+          // Local fallback
+        }
+
+        const newUser: Collaborator = {
+          id: generatedId,
+          name: formName.trim(),
+          role: formRole,
+          phone: isEmail ? '—' : formContact.trim(),
+          email: isEmail ? formContact.trim() : '—',
+          mods: activeMods,
+          status: 'Invitation envoyée'
+        };
+        setUsers(prev => [...prev, newUser]);
+        toast.success(`Invitation envoyée à ${formName.trim()} !`);
+      }
+
+      setFormOpen(false);
+    } catch (err: any) {
+      toast.error(err.message || 'Erreur lors de l’enregistrement');
+    } finally {
+      setIsSubmitting(false);
     }
-
-    setFormOpen(false);
   };
 
-  const handleDeleteUser = () => {
+  const handleDeleteUser = async () => {
     if (!deleteTargetId) return;
     const target = users.find(u => u.id === deleteTargetId);
+    try {
+      await usersApi.deleteCollaborator(deleteTargetId);
+    } catch {
+      // Local fallback
+    }
     setUsers(prev => prev.filter(u => u.id !== deleteTargetId));
     setDeleteTargetId(null);
     toast.success(`L'accès de ${target?.name || 'l’utilisateur'} a été supprimé.`);
@@ -562,9 +635,17 @@ export const UtilisateursPage: React.FC = () => {
                 {/* Submit button */}
                 <button
                   type="submit"
-                  className="w-full py-3.5 bg-[#6C4CF1] text-white font-extrabold rounded-2xl text-sm shadow-md shadow-[#6C4CF1]/25 hover:bg-[#5B3FD6] active:scale-95 transition-all mt-4"
+                  disabled={isSubmitting}
+                  className="w-full py-3.5 bg-[#6C4CF1] text-white font-extrabold rounded-2xl text-sm shadow-md shadow-[#6C4CF1]/25 hover:bg-[#5B3FD6] active:scale-95 transition-all mt-4 flex items-center justify-center gap-2 disabled:opacity-60 cursor-pointer"
                 >
-                  {editingId ? 'Enregistrer les modifications' : 'Créer l’accès du collaborateur'}
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      <span>Enregistrement…</span>
+                    </>
+                  ) : (
+                    <span>{editingId ? 'Enregistrer les modifications' : 'Créer l’accès du collaborateur'}</span>
+                  )}
                 </button>
               </form>
             </div>

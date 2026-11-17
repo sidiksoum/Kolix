@@ -5,7 +5,6 @@ import { Badge } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
 import { Modal } from '../../components/ui/Modal';
 import { Input } from '../../components/ui/Input';
-import { QRCodeSVG } from 'qrcode.react';
 import { 
   Plus, 
   Download, 
@@ -15,7 +14,7 @@ import {
   X, 
   Search, 
   ChevronDown, 
-  QrCode, 
+  Link2, 
   MessageCircle, 
   FileSpreadsheet, 
   FileText,
@@ -203,7 +202,7 @@ export const CommandesPage: React.FC = () => {
                   className="w-full text-left p-3 rounded-xl hover:bg-[#F4F1FE] transition-colors flex items-center gap-3"
                 >
                   <span className="w-9 h-9 rounded-lg bg-[#FFEBDD] text-[#8A3D0A] flex items-center justify-center shrink-0">
-                    <QrCode className="w-5 h-5" />
+                    <Link2 className="w-5 h-5" />
                   </span>
                   <div>
                     <div className="font-extrabold text-sm text-[#16131F]">Formulaire express COD</div>
@@ -466,26 +465,6 @@ export const CommandesPage: React.FC = () => {
                 <span className="text-lg font-extrabold text-[#241D5E]">
                   {formatFCFA(selectedOrder.amount)}
                 </span>
-              </div>
-            </div>
-
-            {/* Dynamic QR Code Section */}
-            <div className="flex gap-3.5 items-center p-3.5 bg-white rounded-2xl border border-[#E2DCF8] shadow-sm">
-              <div className="bg-white p-2 rounded-xl shadow-inner border border-[#F0EDFB] shrink-0">
-                <QRCodeSVG
-                  value={selectedOrder.qrPayload || `KOLIX-PAY:${selectedOrder.id}:${selectedOrder.amount}`}
-                  size={96}
-                  level="M"
-                  fgColor="#241D5E"
-                />
-              </div>
-              <div className="flex flex-col gap-1">
-                <div className="text-xs font-extrabold text-[#241D5E]">
-                  QR code de la commande
-                </div>
-                <div className="text-[11px] text-[#5E5A70] leading-snug">
-                  À présenter au client à la livraison. Compatible <strong>Wave, Orange Money, MTN MoMo</strong>.
-                </div>
               </div>
             </div>
 

@@ -11,7 +11,8 @@ import {
   CheckCircle2, 
   Download,
   ShieldCheck,
-  Sparkles
+  Sparkles,
+  Lock
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -81,6 +82,10 @@ export const PartenairePage: React.FC = () => {
         <div>
           <div className="flex items-center gap-3">
             <h1 className="text-3xl font-extrabold text-[#16131F] tracking-tight">Espace Partenaire</h1>
+            <span className="flex items-center gap-1.5 text-xs font-extrabold bg-[#FFF0D6] text-[#6B4100] border border-[#FFE0A8] rounded-full px-3 py-1 shadow-sm">
+              <Lock className="w-3.5 h-3.5 text-[#6B4100]" />
+              Verrouillé
+            </span>
             <span className="text-xs font-extrabold bg-[#EEE9FF] text-[#3F25A8] rounded-full px-3 py-1">
               Catégorie : Formateurs e-commerce
             </span>
@@ -88,6 +93,17 @@ export const PartenairePage: React.FC = () => {
           <p className="text-sm text-[#5E5A70] mt-1">
             Partagez Kolix, suivez vos filleuls et vos gains en temps réel. Vous touchez 20 % de chaque abonnement pendant 12 mois.
           </p>
+        </div>
+      </div>
+
+      {/* Lock Notice Banner */}
+      <div className="bg-[#FAF8FF] border border-[#E2DCF8] rounded-2xl p-4 flex items-center gap-3.5 text-sm text-[#241D5E] shadow-sm">
+        <span className="w-10 h-10 rounded-xl bg-[#F4F1FE] text-[#6C4CF1] flex items-center justify-center shrink-0 shadow-sm">
+          <Lock className="w-5 h-5 text-[#6C4CF1]" />
+        </span>
+        <div className="flex-1">
+          <strong className="block text-sm font-extrabold">Programme Partenaire · Accès Verrouillé</strong>
+          <span className="text-xs text-[#5E5A70]">Ce programme est actuellement verrouillé pour les nouveaux retraits. Vos filleuls continuent d’enregistrer leurs commissions normalement.</span>
         </div>
       </div>
 

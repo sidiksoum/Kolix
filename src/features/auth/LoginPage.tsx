@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Lock, Mail, Eye, EyeOff, Check, ArrowRight, Phone, MessageSquare, AlertCircle } from 'lucide-react';
+import { Lock, Mail, Eye, EyeOff, Check, ArrowRight, Phone, MessageSquare, AlertCircle, Loader2 } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 import { toast } from 'sonner';
 
 type LoginMode = 'phone' | 'email';
@@ -20,21 +21,24 @@ const flagMap: Record<string, string> = {
 
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [view, setView] = useState<LoginView>('login');
-  const [mode, setMode] = useState<LoginMode>('phone');
+  const [mode, setMode] = useState<LoginMode>('email');
   const [dial, setDial] = useState('+225');
-  const [identifier, setIdentifier] = useState('0700000001');
-  const [password, setPassword] = useState('motdepasse123');
+  const [identifier, setIdentifier] = useState('souleymane@kolix.ci');
+  const [password, setPassword] = useState('kolix2026!');
   const [showPassword, setShowPassword] = useState(false);
   const [remember, setRemember] = useState(true);
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [activeShopInfo, setActiveShopInfo] = useState<{ name: string; domain: string } | null>(null);
   
   // Code / OTP state
   const [otp, setOtp] = useState('');
   const [isReset, setIsReset] = useState(false);
   const [newPassword, setNewPassword] = useState('');
 
-  const handleLogin = (e?: React.FormEvent) => {
+  const handleLogin = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (!identifier) {
       setError(mode === 'phone' ? 'Veuillez saisir votre numéro WhatsApp' : 'Veuillez saisir votre adresse e-mail');
@@ -45,8 +49,34 @@ export const LoginPage: React.FC = () => {
       return;
     }
     setError('');
-    setView('done');
-    toast.success('Identifiants vérifiés avec succès !');
+    setIsLoading(true);
+
+    try {
+      const fullId = mode === 'phone' && !identifier.startsWith('+') ? `${dial}${identifier.replace(/^0+/, '')}` : identifier.trim();
+      const tokens = await login(fullId, password);
+      setActiveShopInfo({
+        name: tokens.shop_domain ? tokens.shop_domain.split('.')[0] : 'Style & Élégance',
+        domain: tokens.shop_domain || 'styleelegance.kolix.ci'
+      });
+      setView('done');
+      toast.success('Connexion réussie !');
+    } catch {
+      // Try raw identifier as fallback
+      try {
+        const tokens = await login(identifier.trim(), password);
+        setActiveShopInfo({
+          name: tokens.shop_domain ? tokens.shop_domain.split('.')[0] : 'Style & Élégance',
+          domain: tokens.shop_domain || 'styleelegance.kolix.ci'
+        });
+        setView('done');
+        toast.success('Connexion réussie !');
+      } catch (innerErr: any) {
+        setError(innerErr.message || 'Identifiants invalides. Vérifiez votre saisie.');
+        toast.error(innerErr.message || 'Identifiants incorrects');
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleUseCode = () => {
@@ -217,9 +247,17 @@ export const LoginPage: React.FC = () => {
                 {/* Primary Submit */}
                 <button
                   type="submit"
-                  className="w-full py-3.5 bg-[#6C4CF1] text-white font-extrabold rounded-2xl text-sm sm:text-base shadow-lg shadow-[#6C4CF1]/30 hover:bg-[#5B3FD6] active:scale-95 transition-all mt-1"
+                  disabled={isLoading}
+                  className="w-full py-3.5 bg-[#6C4CF1] text-white font-extrabold rounded-2xl text-sm sm:text-base shadow-lg shadow-[#6C4CF1]/30 hover:bg-[#5B3FD6] active:scale-95 transition-all mt-1 disabled:opacity-60 flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  Se connecter
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      <span>Connexion en cours…</span>
+                    </>
+                  ) : (
+                    <span>Se connecter</span>
+                  )}
                 </button>
               </form>
 
@@ -347,11 +385,11 @@ export const LoginPage: React.FC = () => {
               {/* Active Shop Preview Card */}
               <div className="w-full flex items-center gap-3 bg-[#F4F1FE] rounded-2xl p-4 text-left border border-[#E2DCF8]">
                 <span className="w-11 h-11 rounded-xl bg-[#C93C72] text-white flex items-center justify-center font-extrabold text-base flex-shrink-0">
-                  S
+                  {activeShopInfo?.name?.[0]?.toUpperCase() || 'S'}
                 </span>
                 <div className="flex-1 min-w-0">
-                  <span className="font-extrabold text-sm text-[#16131F] block truncate">Style & Élégance</span>
-                  <span className="text-xs text-[#5E5A70] block truncate">styleelegance.kolix.shop · Kolix Grow</span>
+                  <span className="font-extrabold text-sm text-[#16131F] block truncate">{activeShopInfo?.name || 'Style & Élégance'}</span>
+                  <span className="text-xs text-[#5E5A70] block truncate">{activeShopInfo?.domain || 'styleelegance.kolix.ci'} · Kolix Grow</span>
                 </div>
               </div>
 
