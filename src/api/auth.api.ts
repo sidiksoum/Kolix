@@ -41,6 +41,7 @@ export interface AuthTokens {
   email: string;
   name: string;
   role: string;
+  permissions?: string[];
   shop_id?: string;
   shop_domain?: string;
 }

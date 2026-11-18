@@ -16,12 +16,13 @@ export interface MerchantUser {
   name: string;
   initials: string;
   email: string;
-  role: 'Propriétaire' | 'Gestionnaire' | 'Livreur' | 'Comptable';
+  role: 'Propriétaire' | 'Gestionnaire' | 'Livreur' | 'Comptable' | string;
+  permissions?: string[];
   currentShop: {
     id: string;
     name: string;
     domain: string;
-    plan: 'Kolix Starter' | 'Kolix Grow' | 'Kolix Pro' | 'Kolix Empire';
+    plan: 'Kolix Starter' | 'Kolix Grow' | 'Kolix Pro' | 'Kolix Empire' | string;
     ordersCount: number;
     maxOrders: number;
   };

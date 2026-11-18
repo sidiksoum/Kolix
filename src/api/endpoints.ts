@@ -22,8 +22,13 @@ export const API_ENDPOINTS = {
     BASE: '/api/v1/inventory',
     KPIS: '/api/v1/inventory/kpis',
     ALERTS: '/api/v1/inventory/alerts',
-    UPDATE_STOCK: (id: string) => `/api/v1/inventory/${id}`,
-    SET_THRESHOLD: '/api/v1/inventory/threshold',
+    UPDATE_STOCK: (id: string) => `/api/v1/inventory/${id}/restock`,
+    RESTOCK: (id: string) => `/api/v1/inventory/${id}/restock`,
+    SET_THRESHOLD: (id: string) => `/api/v1/inventory/${id}/threshold`,
+  },
+  CLIENTS: {
+    BASE: '/api/v1/clients',
+    EXPORT: '/api/v1/clients/export',
   },
   WALLET: {
     SUMMARY: '/api/v1/wallet/summary',

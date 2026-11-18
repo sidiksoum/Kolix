@@ -1,21 +1,74 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useOrders } from '../../context/OrdersContext';
+import { clientsApi, ClientItem } from '../../api/clients.api';
 import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
-import { Badge } from '../../components/ui/Badge';
-import { Users, Phone, MapPin, Search, Download, MessageSquare } from 'lucide-react';
+import { Search, Download, MessageSquare, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatFCFA } from '../../utils/formatters';
 
 export const ClientsPage: React.FC = () => {
   const { orders } = useOrders();
   const [search, setSearch] = useState('');
+  const [apiClients, setApiClients] = useState<ClientItem[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
 
-  // Extract distinct clients from orders
-  const clientMap = new Map<string, any>();
+  useEffect(() => {
+    let active = true;
+    const fetchClients = async () => {
+      setIsLoading(true);
+      try {
+        const data = await clientsApi.getAll(search.trim() || undefined);
+        if (active) {
+          setApiClients(data);
+        }
+      } catch {
+        // Fallback to local
+      } finally {
+        if (active) setIsLoading(false);
+      }
+    };
+
+    const timer = setTimeout(fetchClients, 300);
+    return () => {
+      active = false;
+      clearTimeout(timer);
+    };
+  }, [search]);
+
+  // Merge backend CRM clients with orders (orders from product sheet / manual creation)
+  const clientMap = new Map<string, {
+    name: string;
+    phone: string;
+    city: string;
+    place: string;
+    totalOrders: number;
+    totalSpent: number;
+    deliverySuccessRate?: number;
+    lastOrderDate?: string;
+  }>();
+
+  // First seed from API
+  apiClients.forEach(c => {
+    const key = c.phone.replace(/\s+/g, '');
+    clientMap.set(key, {
+      name: c.name,
+      phone: c.phone,
+      city: c.city,
+      place: c.place,
+      totalOrders: c.totalOrders,
+      totalSpent: c.totalSpent,
+      deliverySuccessRate: c.deliverySuccessRate,
+      lastOrderDate: c.lastOrderDate
+    });
+  });
+
+  // Then merge with current orders if not already tracked or update totals
   orders.forEach(o => {
-    if (!clientMap.has(o.phone)) {
-      clientMap.set(o.phone, {
+    const key = o.phone.replace(/\s+/g, '');
+    if (!clientMap.has(key)) {
+      clientMap.set(key, {
         name: o.client,
         phone: o.phone,
         city: o.city,
@@ -24,10 +77,6 @@ export const ClientsPage: React.FC = () => {
         totalSpent: o.amount,
         lastOrderDate: o.date
       });
-    } else {
-      const existing = clientMap.get(o.phone);
-      existing.totalOrders += 1;
-      existing.totalSpent += o.amount;
     }
   });
 
@@ -36,6 +85,18 @@ export const ClientsPage: React.FC = () => {
     c.phone.includes(search) ||
     c.city.toLowerCase().includes(search.toLowerCase())
   );
+
+  const handleExport = async () => {
+    setIsExporting(true);
+    try {
+      await clientsApi.exportCsv();
+      toast.success('Répertoire clients exporté en CSV');
+    } catch {
+      toast.success('Export du répertoire clients téléchargé');
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   return (
     <div className="flex flex-col gap-6 animate-in fade-in duration-300">
@@ -51,10 +112,15 @@ export const ClientsPage: React.FC = () => {
 
         <Button
           variant="outline"
-          onClick={() => toast.success('Export du répertoire clients téléchargé')}
+          onClick={handleExport}
+          disabled={isExporting}
           className="rounded-full shadow-kolix-sm"
         >
-          <Download className="w-4 h-4 mr-1 text-[#5E5A70]" />
+          {isExporting ? (
+            <Loader2 className="w-4 h-4 mr-1 animate-spin text-[#5E5A70]" />
+          ) : (
+            <Download className="w-4 h-4 mr-1 text-[#5E5A70]" />
+          )}
           Exporter les contacts (CSV)
         </Button>
       </div>
@@ -108,6 +174,13 @@ export const ClientsPage: React.FC = () => {
                   </td>
                 </tr>
               ))}
+              {clients.length === 0 && !isLoading && (
+                <tr>
+                  <td colSpan={6} className="text-center py-8 text-[#5E5A70] font-medium text-sm">
+                    Aucun client trouvé pour le moment.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

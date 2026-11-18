@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import {
   Home,
   Store,
@@ -15,9 +15,9 @@ import {
   Sparkles,
   Settings,
   ChevronDown,
-  ArrowRight,
   Gift,
-  Lock
+  Lock,
+  LogOut
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { cn } from '../../utils/cn';
@@ -48,7 +48,8 @@ export const navItems: NavItemDef[] = [
 ];
 
 export const Sidebar: React.FC<{ isOpen?: boolean; onClose?: () => void }> = ({ isOpen = false, onClose }) => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const location = useLocation();
 
   const shop = user?.currentShop || {
@@ -60,7 +61,13 @@ export const Sidebar: React.FC<{ isOpen?: boolean; onClose?: () => void }> = ({ 
     maxOrders: 1500
   };
 
-  const percentage = Math.round(((shop.ordersCount || 0) / (shop.maxOrders || 1500)) * 100);
+  const userPerms = user?.permissions || ['*'];
+  const isOwner = user?.role === 'Propriétaire' || userPerms.includes('*');
+
+  // Filtrer les menus selon les permissions accordées par le propriétaire
+  const visibleNavItems = isOwner
+    ? navItems
+    : navItems.filter(item => userPerms.includes(item.label));
 
   return (
     <aside
@@ -102,7 +109,7 @@ export const Sidebar: React.FC<{ isOpen?: boolean; onClose?: () => void }> = ({ 
 
       {/* Navigation Links */}
       <nav aria-label="Navigation principale" className="flex flex-col gap-1 text-[14px] my-1">
-        {navItems.map((n) => {
+        {visibleNavItems.map((n) => {
           const isActive = location.pathname === n.path || (n.path !== '/dashboard' && location.pathname.startsWith(n.path));
           const Icon = n.icon;
 
@@ -140,29 +147,19 @@ export const Sidebar: React.FC<{ isOpen?: boolean; onClose?: () => void }> = ({ 
         })}
       </nav>
 
-      {/* Plan Card (Kolix Grow) at the bottom */}
+      {/* Bouton Se déconnecter (remplace la section Votre plan) */}
       <div className="mt-auto pt-4 shrink-0">
-        <div className="bg-white/10 border border-white/10 rounded-2xl p-4 flex flex-col gap-2 shadow-sm">
-          <div className="text-[11px] text-[#BDB5E8] font-bold uppercase tracking-[0.1em]">
-            Votre plan
-          </div>
-          <div className="text-[16px] font-extrabold text-white">{shop.plan}</div>
-          <div className="text-[12px] text-[#D9D3F5]">
-            {shop.ordersCount} / {shop.maxOrders} commandes ce mois
-          </div>
-          <div className="h-1.5 bg-white/15 rounded-full overflow-hidden mt-1">
-            <div
-              className="h-full bg-[#A99BFA] rounded-full transition-all duration-500"
-              style={{ width: `${percentage}%` }}
-            />
-          </div>
-          <NavLink
-            to="/parametres"
-            className="inline-flex items-center gap-1 text-[12px] font-bold text-white hover:text-[#A99BFA] no-underline mt-1 pt-1 border-t border-white/10"
-          >
-            Passer à Pro <ArrowRight className="w-3.5 h-3.5 ml-1" />
-          </NavLink>
-        </div>
+        <button
+          type="button"
+          onClick={() => {
+            logout();
+            navigate('/login');
+          }}
+          className="w-full flex items-center justify-center gap-2.5 bg-white/10 hover:bg-[#D21034]/25 hover:border-[#D21034]/40 hover:text-white text-white/90 border border-white/10 rounded-2xl py-3 px-4 text-sm font-extrabold transition-all duration-150 cursor-pointer shadow-sm active:scale-[0.98]"
+        >
+          <LogOut className="w-4 h-4 shrink-0 text-[#FF8596]" />
+          <span>Se déconnecter</span>
+        </button>
       </div>
     </aside>
   );

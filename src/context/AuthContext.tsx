@@ -87,6 +87,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         initials,
         email: tokens.email,
         role: (tokens.role as any) || 'Propriétaire',
+        permissions: tokens.permissions || (tokens.role === 'Propriétaire' ? ['*'] : []),
         currentShop: {
           id: tokens.shop_id || user?.currentShop?.id || 'shop-1',
           name: tokens.shop_domain ? tokens.shop_domain.split('.')[0] : (user?.currentShop?.name || 'Ma Boutique'),
@@ -128,6 +129,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       initials,
       email: tokens.email,
       role: (tokens.role as any) || 'Propriétaire',
+      permissions: tokens.permissions || ['*'],
       currentShop: {
         id: tokens.shop_id || user?.currentShop?.id || 'shop-1',
         name: tokens.shop_domain ? tokens.shop_domain.split('.')[0] : (user?.currentShop?.name || 'Ma Boutique'),

@@ -19,6 +19,7 @@ export interface CollaboratorCreateDto {
   email: string;
   role: string;
   permissions: string[];
+  password?: string;
 }
 
 export interface CollaboratorUpdateDto {
@@ -27,6 +28,7 @@ export interface CollaboratorUpdateDto {
   role?: string;
   status?: string;
   permissions?: string[];
+  password?: string;
 }
 
 export const usersApi = {

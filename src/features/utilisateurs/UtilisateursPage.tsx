@@ -138,6 +138,7 @@ export const UtilisateursPage: React.FC = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formName, setFormName] = useState('');
   const [formContact, setFormContact] = useState('');
+  const [formPassword, setFormPassword] = useState('Kolix@2026!');
   const [formRole, setFormRole] = useState('Gestionnaire de commandes');
   const [formMods, setFormMods] = useState<string[]>(ROLE_PRESETS['Gestionnaire de commandes']);
   const [formSuspended, setFormSuspended] = useState(false);
@@ -165,6 +166,7 @@ export const UtilisateursPage: React.FC = () => {
     setEditingId(null);
     setFormName('');
     setFormContact('');
+    setFormPassword('Kolix@2026!');
     setFormRole('Gestionnaire de commandes');
     setFormMods([...ROLE_PRESETS['Gestionnaire de commandes']]);
     setFormSuspended(false);
@@ -176,6 +178,7 @@ export const UtilisateursPage: React.FC = () => {
     setEditingId(user.id);
     setFormName(user.name);
     setFormContact(user.email !== '—' ? user.email : user.phone);
+    setFormPassword('');
     setFormRole(user.role);
     setFormMods(user.mods === 'all' ? [...ALL_MODULES] : [...user.mods]);
     setFormSuspended(user.status === 'Suspendu');
@@ -222,7 +225,8 @@ export const UtilisateursPage: React.FC = () => {
             role: formRole,
             phone: isEmail ? undefined : formContact.trim(),
             status: formSuspended ? 'Suspendu' : 'Actif',
-            permissions: activeMods
+            permissions: activeMods,
+            password: formPassword.trim() || undefined
           });
         } catch {
           // If offline / dev fallback
@@ -254,7 +258,8 @@ export const UtilisateursPage: React.FC = () => {
             phone: isEmail ? '0700000000' : formContact.trim(),
             email: isEmail ? formContact.trim() : `${formName.toLowerCase().replace(/\s+/g, '')}@kolix.ci`,
             role: formRole,
-            permissions: activeMods
+            permissions: activeMods,
+            password: formPassword.trim() || 'Kolix@2026!'
           });
           if (created?.id) generatedId = String(created.id);
         } catch {
@@ -530,6 +535,31 @@ export const UtilisateursPage: React.FC = () => {
                     placeholder="07 00 00 00 00 ou awa@exemple.com"
                     className="w-full border border-[#E2DCF8] rounded-xl px-3.5 py-2.5 text-sm font-bold text-[#16131F] focus:outline-none focus:ring-2 focus:ring-[#6C4CF1]/30"
                   />
+                </div>
+
+                {/* Mot de passe de connexion */}
+                <div className="space-y-1">
+                  <div className="flex justify-between items-baseline">
+                    <label className="text-xs font-bold text-[#5E5A70]">
+                      {editingId ? 'Nouveau mot de passe (optionnel)' : 'Mot de passe d’accès initial *'}
+                    </label>
+                    <span className="text-[10px] text-[#6C4CF1] font-bold">
+                      Défini par le propriétaire
+                    </span>
+                  </div>
+                  <input
+                    type="text"
+                    value={formPassword}
+                    onChange={e => setFormPassword(e.target.value)}
+                    placeholder={editingId ? 'Laisser vide pour ne pas modifier' : 'Ex: Kolix@2026!'}
+                    required={!editingId}
+                    className="w-full border border-[#E2DCF8] rounded-xl px-3.5 py-2.5 text-sm font-bold text-[#16131F] focus:outline-none focus:ring-2 focus:ring-[#6C4CF1]/30 font-mono"
+                  />
+                  <p className="text-[11px] text-[#5E5A70]">
+                    {editingId
+                      ? 'Renseignez un mot de passe uniquement si vous souhaitez réinitialiser l’accès du collaborateur.'
+                      : 'Ce mot de passe permettra au collaborateur de se connecter directement à son espace marchand.'}
+                  </p>
                 </div>
 
                 {/* Function / Role Presets */}
