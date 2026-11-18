@@ -51,6 +51,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 name: resolvedName,
                 email: me.email || prev.email,
                 role: (me.role as any) || prev.role || 'Propriétaire',
+                permissions: (me as any).permissions || prev.permissions || ((me.role as any) === 'Propriétaire' ? ['*'] : []),
                 initials,
                 currentShop: prev?.currentShop || {
                   id: 'shp_abidjan',

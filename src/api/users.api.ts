@@ -24,6 +24,7 @@ export interface CollaboratorCreateDto {
 
 export interface CollaboratorUpdateDto {
   name?: string;
+  email?: string;
   phone?: string;
   role?: string;
   status?: string;

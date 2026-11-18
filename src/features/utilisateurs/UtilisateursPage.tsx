@@ -137,7 +137,8 @@ export const UtilisateursPage: React.FC = () => {
   const [formOpen, setFormOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formName, setFormName] = useState('');
-  const [formContact, setFormContact] = useState('');
+  const [formEmail, setFormEmail] = useState('');
+  const [formPhone, setFormPhone] = useState('');
   const [formPassword, setFormPassword] = useState('Kolix@2026!');
   const [formRole, setFormRole] = useState('Gestionnaire de commandes');
   const [formMods, setFormMods] = useState<string[]>(ROLE_PRESETS['Gestionnaire de commandes']);
@@ -165,7 +166,8 @@ export const UtilisateursPage: React.FC = () => {
     }
     setEditingId(null);
     setFormName('');
-    setFormContact('');
+    setFormEmail('');
+    setFormPhone('');
     setFormPassword('Kolix@2026!');
     setFormRole('Gestionnaire de commandes');
     setFormMods([...ROLE_PRESETS['Gestionnaire de commandes']]);
@@ -177,7 +179,8 @@ export const UtilisateursPage: React.FC = () => {
   const handleOpenEdit = (user: Collaborator) => {
     setEditingId(user.id);
     setFormName(user.name);
-    setFormContact(user.email !== '—' ? user.email : user.phone);
+    setFormEmail(user.email !== '—' ? user.email : '');
+    setFormPhone(user.phone !== '—' ? user.phone : '');
     setFormPassword('');
     setFormRole(user.role);
     setFormMods(user.mods === 'all' ? [...ALL_MODULES] : [...user.mods]);
@@ -204,8 +207,16 @@ export const UtilisateursPage: React.FC = () => {
     e.preventDefault();
     const activeMods = formMods.filter(m => !LOCKED_MODULES.includes(m));
 
-    if (!formName.trim() || !formContact.trim()) {
-      setFormError('Veuillez renseigner le nom et le contact.');
+    if (!formName.trim()) {
+      setFormError('Veuillez renseigner le nom et prénom.');
+      return;
+    }
+    if (!formEmail.trim() && !formPhone.trim()) {
+      setFormError('Veuillez renseigner au moins une adresse email ou un numéro de téléphone.');
+      return;
+    }
+    if (!editingId && (!formPassword.trim() || formPassword.trim().length < 4)) {
+      setFormError('Veuillez définir un mot de passe d’au moins 4 caractères.');
       return;
     }
     if (activeMods.length === 0) {
@@ -213,7 +224,10 @@ export const UtilisateursPage: React.FC = () => {
       return;
     }
 
-    const isEmail = formContact.includes('@');
+    const cleanName = formName.trim();
+    const cleanEmail = formEmail.trim().toLowerCase() || `${cleanName.toLowerCase().replace(/[^a-z0-9]/g, '')}_${Date.now().toString(36)}@kolix.shop`;
+    const cleanPhone = formPhone.trim().replace(/\s+/g, '') || `07${Math.floor(10000000 + Math.random() * 90000000)}`;
+
     setIsSubmitting(true);
 
     try {
@@ -221,15 +235,16 @@ export const UtilisateursPage: React.FC = () => {
         // Backend update
         try {
           await usersApi.updateCollaborator(editingId, {
-            name: formName.trim(),
+            name: cleanName,
             role: formRole,
-            phone: isEmail ? undefined : formContact.trim(),
+            email: formEmail.trim() ? formEmail.trim().toLowerCase() : undefined,
+            phone: formPhone.trim() ? formPhone.trim().replace(/\s+/g, '') : undefined,
             status: formSuspended ? 'Suspendu' : 'Actif',
             permissions: activeMods,
             password: formPassword.trim() || undefined
           });
         } catch {
-          // If offline / dev fallback
+          // Dev fallback
         }
 
         setUsers(prev =>
@@ -237,46 +252,48 @@ export const UtilisateursPage: React.FC = () => {
             if (u.id === editingId) {
               return {
                 ...u,
-                name: formName.trim(),
+                name: cleanName,
                 role: formRole,
                 mods: activeMods,
-                email: isEmail ? formContact.trim() : u.email,
-                phone: isEmail ? u.phone : formContact.trim(),
+                email: formEmail.trim() || u.email,
+                phone: formPhone.trim() || u.phone,
                 status: formSuspended ? 'Suspendu' : u.status === 'Suspendu' ? 'Actif' : u.status
               };
             }
             return u;
           })
         );
-        toast.success('Permissions du collaborateur mises à jour.');
+        toast.success('Permissions et accès du collaborateur mis à jour.');
       } else {
         // Backend create
         let generatedId = `u_${Date.now()}`;
+        const pwdToSave = formPassword.trim() || 'Kolix@2026!';
         try {
           const created = await usersApi.addCollaborator({
-            name: formName.trim(),
-            phone: isEmail ? '0700000000' : formContact.trim(),
-            email: isEmail ? formContact.trim() : `${formName.toLowerCase().replace(/\s+/g, '')}@kolix.ci`,
+            name: cleanName,
+            phone: cleanPhone,
+            email: cleanEmail,
             role: formRole,
             permissions: activeMods,
-            password: formPassword.trim() || 'Kolix@2026!'
+            password: pwdToSave
           });
           if (created?.id) generatedId = String(created.id);
-        } catch {
-          // Local fallback
+        } catch (apiErr: any) {
+          console.warn('addCollaborator backend error', apiErr);
+          // Keep local fallback so UI remains responsive
         }
 
         const newUser: Collaborator = {
           id: generatedId,
-          name: formName.trim(),
+          name: cleanName,
           role: formRole,
-          phone: isEmail ? '—' : formContact.trim(),
-          email: isEmail ? formContact.trim() : '—',
+          phone: formPhone.trim() || cleanPhone,
+          email: formEmail.trim() || cleanEmail,
           mods: activeMods,
-          status: 'Invitation envoyée'
+          status: 'Actif'
         };
         setUsers(prev => [...prev, newUser]);
-        toast.success(`Invitation envoyée à ${formName.trim()} !`);
+        toast.success(`Accès collaborateur créé pour ${cleanName} ! Mot de passe : ${pwdToSave}`);
       }
 
       setFormOpen(false);
@@ -525,16 +542,40 @@ export const UtilisateursPage: React.FC = () => {
                   />
                 </div>
 
-                {/* Contact (Phone / Email) */}
+                {/* Email de connexion */}
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-[#5E5A70]">Téléphone ou e-mail *</label>
+                  <div className="flex justify-between items-baseline">
+                    <label className="text-xs font-bold text-[#5E5A70]">Adresse e-mail de connexion *</label>
+                    <span className="text-[10px] text-[#5E5A70]">Identifiant principal</span>
+                  </div>
                   <input
-                    type="text"
-                    value={formContact}
-                    onChange={e => setFormContact(e.target.value)}
-                    placeholder="07 00 00 00 00 ou awa@exemple.com"
+                    type="email"
+                    value={formEmail}
+                    onChange={e => setFormEmail(e.target.value)}
+                    placeholder="ex: awa.kone@gmail.com"
                     className="w-full border border-[#E2DCF8] rounded-xl px-3.5 py-2.5 text-sm font-bold text-[#16131F] focus:outline-none focus:ring-2 focus:ring-[#6C4CF1]/30"
                   />
+                  <p className="text-[11px] text-[#5E5A70]">
+                    Le collaborateur utilisera cette adresse pour se connecter à son espace marchand.
+                  </p>
+                </div>
+
+                {/* Téléphone WhatsApp */}
+                <div className="space-y-1">
+                  <div className="flex justify-between items-baseline">
+                    <label className="text-xs font-bold text-[#5E5A70]">Numéro de téléphone / WhatsApp</label>
+                    <span className="text-[10px] text-[#5E5A70]">Optionnel</span>
+                  </div>
+                  <input
+                    type="tel"
+                    value={formPhone}
+                    onChange={e => setFormPhone(e.target.value)}
+                    placeholder="ex: 07 45 12 88 30"
+                    className="w-full border border-[#E2DCF8] rounded-xl px-3.5 py-2.5 text-sm font-bold text-[#16131F] focus:outline-none focus:ring-2 focus:ring-[#6C4CF1]/30"
+                  />
+                  <p className="text-[11px] text-[#5E5A70]">
+                    Permet aussi de se connecter avec son numéro de téléphone ou de coordonner les livraisons.
+                  </p>
                 </div>
 
                 {/* Mot de passe de connexion */}
