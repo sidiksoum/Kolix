@@ -64,6 +64,21 @@ export const ProductPage: React.FC = () => {
     }
   }, [productParam]);
 
+  const shopParam = searchParams.get('shop') || searchParams.get('s') || searchParams.get('store');
+  let activeShopId = (productData as any)?.shop_id || shopParam || undefined;
+  let activeShopSlug = shopParam || undefined;
+
+  if (!activeShopId) {
+    try {
+      const savedUser = localStorage.getItem('kolix_user_profile');
+      if (savedUser) {
+        const u = JSON.parse(savedUser);
+        if (u?.currentShop?.id) activeShopId = u.currentShop.id;
+        if (u?.currentShop?.domain) activeShopSlug = u.currentShop.domain;
+      }
+    } catch {}
+  }
+
   const activeProductName = productData?.name || CONFIG.product.name;
   const activeHeadline = productData?.fiche_produit?.headline || productData?.name || "BlendGo, le mixeur qui tient dans votre sac";
   const activeLead = productData?.fiche_produit?.leadSubtitle || productData?.description || "Jus, smoothies et laits frappés en 30 secondes, partout. Rechargeable par USB-C, 15 mixages par charge.";
@@ -304,7 +319,10 @@ export const ProductPage: React.FC = () => {
           place: address.trim(),
           product: `${activeProductName} (${selectedOffer.label})`,
           amount: selectedOffer.price,
-          note: note.trim()
+          note: note.trim(),
+          shop_id: activeShopId,
+          shop_slug: activeShopSlug,
+          product_id: productData?.id
         });
       }
 

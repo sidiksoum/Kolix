@@ -46,4 +46,7 @@ export interface CreateOrderDto {
   product: string;
   amount: number;
   note?: string;
+  shop_id?: string;
+  shop_slug?: string;
+  product_id?: string;
 }

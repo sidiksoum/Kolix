@@ -37,6 +37,7 @@ export interface FicheProduitData {
 
 export interface Product {
   id: string;
+  shop_id?: string;
   slug?: string;
   name: string;
   status: ProductStatus;

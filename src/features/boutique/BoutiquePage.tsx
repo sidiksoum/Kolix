@@ -32,6 +32,8 @@ export const BoutiquePage: React.FC = () => {
   } = useStore();
 
   const [activeTab, setActiveTab] = useState<'shops' | 'editor' | 'domains'>('shops');
+  const currentShopId = user?.currentShop?.id;
+  const storeUrl = currentShopId ? `/boutique-en-ligne?shop=${encodeURIComponent(currentShopId)}` : '/boutique-en-ligne';
 
   const colorSwatches = [
     { name: 'Kolix Violet', hex: '#6C4CF1' },
@@ -56,7 +58,7 @@ export const BoutiquePage: React.FC = () => {
         </div>
 
         <Link
-          to="/boutique-en-ligne"
+          to={storeUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-2 bg-[#6C4CF1] hover:bg-[#5B3FD6] text-white font-extrabold text-sm px-5 min-h-[46px] rounded-2xl shadow-kolix-cta no-underline transition-all active:scale-95 cursor-pointer"
@@ -117,7 +119,7 @@ export const BoutiquePage: React.FC = () => {
 
             <div className="flex items-center gap-3">
               <Link
-                to="/boutique-en-ligne"
+                to={storeUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 bg-[#241D5E] hover:bg-[#1C164A] text-white font-extrabold text-xs sm:text-sm px-4 py-2.5 rounded-full shadow-sm no-underline"
@@ -177,7 +179,7 @@ export const BoutiquePage: React.FC = () => {
 
                 <div className="grid grid-cols-2 gap-2 mt-auto">
                   <Link
-                    to="/boutique-en-ligne"
+                    to={storeUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center justify-center gap-1.5 rounded-2xl border border-[#E2DCF8] text-[#241D5E] font-bold text-xs py-2.5 hover:bg-[#F4F1FE] transition-colors"
@@ -236,7 +238,7 @@ export const BoutiquePage: React.FC = () => {
                 </h3>
               </div>
               <Link
-                to="/boutique-en-ligne"
+                to={storeUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 text-xs font-bold text-[#6C4CF1] bg-[#F4F1FE] px-3 py-1.5 rounded-full hover:bg-[#E9E3FD] transition-colors"

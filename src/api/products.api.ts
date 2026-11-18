@@ -6,6 +6,7 @@ import { INITIAL_PRODUCTS } from './mockData';
 function normalizeProduct(raw: any): Product {
   return {
     id: String(raw.id),
+    shop_id: raw.shop_id ? String(raw.shop_id) : undefined,
     slug: raw.slug || '',
     name: raw.name || '',
     status: (raw.status as ProductStatus) || 'Actif',

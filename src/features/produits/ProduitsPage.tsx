@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import { productsApi } from '../../api/products.api';
 import { Product, ProductStatus, FicheProduitData } from '../../types/product';
 import { Button } from '../../components/ui/Button';
@@ -29,6 +30,7 @@ import { formatFCFA } from '../../utils/formatters';
 import { cn } from '../../utils/cn';
 
 export const ProduitsPage: React.FC = () => {
+  const { user } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedTab, setSelectedTab] = useState<string>('Tous');
@@ -479,7 +481,7 @@ export const ProduitsPage: React.FC = () => {
                       </td>
                       <td className="py-3 px-3">
                         <Link
-                          to={`/boutique-en-ligne?product=${encodeURIComponent(targetParam)}`}
+                          to={`/boutique-en-ligne?product=${encodeURIComponent(targetParam)}${user?.currentShop?.id ? `&shop=${encodeURIComponent(user.currentShop.id)}` : ''}`}
                           target="_blank"
                           rel="noreferrer"
                           className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#F4F1FE] hover:bg-[#EAE5FC] text-[#6C4CF1] font-bold text-xs transition-colors border border-[#6C4CF1]/20 shadow-xs"

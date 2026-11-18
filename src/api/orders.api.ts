@@ -27,7 +27,7 @@ function mapBackendOrderToFrontend(item: any): Order {
     : item.date || 'Aujourd’hui';
 
   return {
-    id: item.id || `KX-${Math.floor(1000 + Math.random() * 9000)}`,
+    id: item.id || item.order_id || `KX-${Math.floor(1000 + Math.random() * 9000)}`,
     date: item.date || dateStr,
     client: item.client_name || item.client || 'Client',
     phone: item.client_phone || item.phone || '',
@@ -73,7 +73,7 @@ export const ordersApi = {
     try {
       const res = await apiClient.get<any>(API_ENDPOINTS.ORDERS.DETAIL(id));
       const item = res?.data || res;
-      if (item && item.id) {
+      if (item && (item.id || item.order_id)) {
         return mapBackendOrderToFrontend(item);
       }
       return ordersCache.find(o => o.id === id) || null;
@@ -147,6 +147,9 @@ export const ordersApi = {
 
   async create(dto: CreateOrderDto): Promise<Order> {
     const payload = {
+      shop_id: dto.shop_id,
+      shop_domain_or_slug: dto.shop_slug,
+      product_id: dto.product_id,
       client_name: dto.client,
       client_phone: dto.phone,
       city: dto.city,
