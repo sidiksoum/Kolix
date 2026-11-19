@@ -44,6 +44,7 @@ export const API_ENDPOINTS = {
   },
   ANALYTICS: {
     DASHBOARD: (period: string) => `/api/v1/analytics/dashboard?period=${period}`,
+    REPORTS: (period: string, grain: string = 'semaine') => `/api/v1/analytics/reports?period=${period}&grain=${grain}`,
     ZONES: '/api/v1/analytics/zones',
     TOP_PRODUCTS: '/api/v1/analytics/top-products',
   },

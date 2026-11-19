@@ -57,54 +57,45 @@ export const ComptabilitePage: React.FC = () => {
 
   // Charges by category
   const [chargesState, setChargesState] = useState<Record<string, number>>({
-    'Achat de stock': 1120000,
-    'Transport et livraison': 380000,
-    'Publicité': 450000,
-    'Abonnement Kolix': 10000,
-    'Autres': 65000
+    'Achat de stock': 0,
+    'Transport et livraison': 0,
+    'Publicité': 0,
+    'Abonnement Kolix': 0,
+    'Autres': 0
   });
 
   // Base Sales
-  const [momo, setMomo] = useState(1940000);
-  const [cash, setCash] = useState(1320000);
+  const [momo, setMomo] = useState(0);
+  const [cash, setCash] = useState(0);
   const ca = momo + cash;
 
   // Transactions list
-  const [transactions, setTransactions] = useState<Transaction[]>([
-    { id: 't1', date: '19 oct.', label: 'Vente #KX-1048 · Aya Kouassi', type: 'Vente', cat: 'Commande livrée', mode: 'Mobile Money', amount: 18500 },
-    { id: 't2', date: '18 oct.', label: 'Vente #KX-1047 · Moussa Diarra', type: 'Vente', cat: 'Commande livrée', mode: 'Mobile Money', amount: 24000 },
-    { id: 't3', date: '18 oct.', label: 'Campagne Facebook « Robes »', type: 'Charge', cat: 'Publicité', mode: 'Carte bancaire', amount: -60000 },
-    { id: 't4', date: '17 oct.', label: 'Vente #KX-1045 · Konan Yao', type: 'Vente', cat: 'Commande livrée', mode: 'Espèces', amount: 22000 },
-    { id: 't5', date: '17 oct.', label: 'Livreur · tournée Cocody', type: 'Charge', cat: 'Transport et livraison', mode: 'Espèces', amount: -15000 },
-    { id: 't6', date: '16 oct.', label: 'Arrivage pagnes wax (20 u.)', type: 'Charge', cat: 'Achat de stock', mode: 'Mobile Money', amount: -70000 },
-    { id: 't7', date: '15 oct.', label: 'Abonnement Kolix Grow', type: 'Charge', cat: 'Abonnement Kolix', mode: 'Portefeuille Kolix', amount: -10000 },
-    { id: 't8', date: '15 oct.', label: 'Vente #KX-1039 · Awa Coulibaly', type: 'Vente', cat: 'Commande livrée', mode: 'Espèces', amount: 22000 },
-    { id: 't9', date: '14 oct.', label: 'Emballages et sachets', type: 'Charge', cat: 'Autres', mode: 'Espèces', amount: -8500 },
-    { id: 't10', date: '14 oct.', label: 'Vente #KX-1031 · Salif Ouattara', type: 'Vente', cat: 'Commande livrée', mode: 'Mobile Money', amount: 18500 }
-  ]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
 
   // Monthly Bars calculation
-  const [monthsData, setMonthsData] = useState<Array<{ label: string; ca: number; ch: number }>>([
-    { label: 'Mai', ca: 2900, ch: 1900 },
-    { label: 'Juin', ca: 3150, ch: 2050 },
-    { label: 'Juil.', ca: 3420, ch: 2180 },
-    { label: 'Août', ca: 3880, ch: 2400 },
-    { label: 'Sept.', ca: 4510, ch: 2760 },
-    { label: 'Oct.', ca: 3260, ch: 2025 }
-  ]);
+  const [monthsData, setMonthsData] = useState<Array<{ label: string; ca: number; ch: number }>>([]);
 
   const loadAccounting = async () => {
     try {
       setIsLoading(true);
       const data = await accountingApi.getDashboard(selectedMonth);
       if (data) {
-        if (data.momo_revenue) setMomo(data.momo_revenue);
-        if (data.cash_revenue) setCash(data.cash_revenue);
-        if (data.charges_by_category) setChargesState(data.charges_by_category);
+        if (typeof data.momo_revenue === 'number') setMomo(data.momo_revenue);
+        if (typeof data.cash_revenue === 'number') setCash(data.cash_revenue);
+        if (data.charges_by_category) {
+          setChargesState({
+            'Achat de stock': data.charges_by_category['Achat de stock'] || 0,
+            'Transport et livraison': data.charges_by_category['Transport et livraison'] || 0,
+            'Publicité': data.charges_by_category['Publicité'] || 0,
+            'Abonnement Kolix': data.charges_by_category['Abonnement Kolix'] || 0,
+            'Autres': data.charges_by_category['Autres'] || 0,
+            ...data.charges_by_category
+          });
+        }
         if (Array.isArray(data.monthly_history) && data.monthly_history.length > 0) {
           setMonthsData(data.monthly_history.map(m => ({ label: m.label, ca: m.ca, ch: m.ch })));
         }
-        if (Array.isArray(data.recent_transactions) && data.recent_transactions.length > 0) {
+        if (Array.isArray(data.recent_transactions)) {
           setTransactions(data.recent_transactions);
         }
       }
@@ -124,10 +115,10 @@ export const ComptabilitePage: React.FC = () => {
   const totalCharges = Object.values(chargesState).reduce((a, b) => a + b, 0);
   const netProfit = ca - totalCharges;
   const netMargin = ca > 0 ? Math.round((netProfit / ca) * 100) : 0;
-  const momoPct = ca > 0 ? Math.round((momo / ca) * 100) : 59;
+  const momoPct = ca > 0 ? Math.round((momo / ca) * 100) : 50;
   const cashPct = 100 - momoPct;
 
-  const maxMonthlyCa = 4800;
+  const maxMonthlyCa = Math.max(...monthsData.map(m => Math.max(m.ca, m.ch)), 10) * 1.15;
 
   const catColors: Record<string, string> = {
     'Achat de stock': '#241D5E',
@@ -313,18 +304,24 @@ export const ComptabilitePage: React.FC = () => {
           </div>
         </div>
 
-        {/* Bénéfice net (Purple Highlight) */}
-        <div className="bg-gradient-to-br from-[#6C4CF1] to-[#4B2FC9] text-white rounded-3xl p-5 shadow-lg shadow-[#6C4CF1]/20 flex flex-col justify-between gap-3">
+        {/* Bénéfice net (Purple Highlight if positive, warm red if negative) */}
+        <div className={`text-white rounded-3xl p-5 shadow-lg flex flex-col justify-between gap-3 ${
+          netProfit >= 0 
+            ? 'bg-gradient-to-br from-[#6C4CF1] to-[#4B2FC9] shadow-[#6C4CF1]/20' 
+            : 'bg-gradient-to-br from-[#8A2414] to-[#5C160B] shadow-[#8A2414]/20'
+        }`}>
           <div>
             <span className="text-xs font-bold text-[#EDE8FF] uppercase tracking-wider block">Bénéfice net</span>
             <div className="text-2xl sm:text-3xl font-black text-white mt-1 tracking-tight">
-              {fmt(netProfit)} FCFA
+              {netProfit < 0 ? `− ${fmt(netProfit)}` : `+ ${fmt(netProfit)}`} FCFA
             </div>
-            <span className="text-xs text-[#EDE8FF] mt-0.5 block">CA − charges réelles</span>
+            <span className="text-xs text-[#EDE8FF] mt-0.5 block">Chiffre d’affaires − Charges totales</span>
           </div>
           <div className="pt-2 border-t border-white/20 flex items-center justify-between text-xs text-[#EDE8FF]">
             <span>Résultat d’exploitation</span>
-            <span className="font-bold text-white">Calcul automatique</span>
+            <span className="font-bold text-white">
+              {netProfit >= 0 ? 'Bénéficiaire' : 'Déficitaire'}
+            </span>
           </div>
         </div>
 
@@ -332,14 +329,16 @@ export const ComptabilitePage: React.FC = () => {
         <div className="bg-white rounded-3xl p-5 border border-gray-100 shadow-sm flex flex-col justify-between gap-3">
           <div>
             <span className="text-xs font-bold text-[#5E5A70] uppercase tracking-wider block">Marge nette</span>
-            <div className="text-2xl sm:text-3xl font-black text-[#1E5E3F] mt-1 tracking-tight">
+            <div className={`text-2xl sm:text-3xl font-black mt-1 tracking-tight ${netProfit >= 0 ? 'text-[#1E5E3F]' : 'text-[#8A2414]'}`}>
               {netMargin} %
             </div>
             <span className="text-xs text-[#5E5A70] mt-0.5 block">Part du CA qui vous reste</span>
           </div>
           <div className="pt-2 border-t border-gray-50 flex items-center justify-between text-xs text-[#5E5A70]">
             <span>Santé financière</span>
-            <span className="text-[#1E5E3F] font-bold">Excellente</span>
+            <span className={`font-bold ${netProfit >= 0 ? (netMargin >= 20 ? 'text-[#1E5E3F]' : 'text-[#3A3647]') : 'text-[#8A2414]'}`}>
+              {netProfit >= 0 ? (netMargin >= 20 ? 'Excellente' : 'Stable') : 'Déficitaire'}
+            </span>
           </div>
         </div>
       </div>
@@ -519,26 +518,34 @@ export const ComptabilitePage: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-[#F0EDFB]">
-              {filteredTransactions.map(t => (
-                <tr key={t.id} className="hover:bg-[#FAF9FE]/50 transition-colors">
-                  <td className="py-3.5 px-6 text-[#3A3647] font-medium whitespace-nowrap">{t.date}</td>
-                  <td className="py-3.5 px-4 font-bold text-[#16131F]">{t.label}</td>
-                  <td className="py-3.5 px-4">
-                    <span className={`inline-block text-xs font-extrabold px-2.5 py-1 rounded-lg ${
-                      t.type === 'Vente' ? 'bg-[#E3F4EC] text-[#1E5E3F]' : 'bg-[#FCE3E0] text-[#8A2414]'
-                    }`}>
-                      {t.type}
-                    </span>
-                  </td>
-                  <td className="py-3.5 px-4 text-[#3A3647] text-xs">{t.cat}</td>
-                  <td className="py-3.5 px-4 text-[#3A3647] text-xs font-medium">{t.mode}</td>
-                  <td className={`py-3.5 px-6 text-right font-black whitespace-nowrap ${
-                    t.amount >= 0 ? 'text-[#1E5E3F]' : 'text-[#8A2414]'
-                  }`}>
-                    {t.amount >= 0 ? `+ ${fmt(t.amount)}` : `− ${fmt(t.amount)}`} FCFA
+              {filteredTransactions.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="py-10 text-center text-sm font-semibold text-[#5E5A70]">
+                    Aucune transaction enregistrée pour ce mois.
                   </td>
                 </tr>
-              ))}
+              ) : (
+                filteredTransactions.map(t => (
+                  <tr key={t.id} className="hover:bg-[#FAF9FE]/50 transition-colors">
+                    <td className="py-3.5 px-6 text-[#3A3647] font-medium whitespace-nowrap">{t.date}</td>
+                    <td className="py-3.5 px-4 font-bold text-[#16131F]">{t.label}</td>
+                    <td className="py-3.5 px-4">
+                      <span className={`inline-block text-xs font-extrabold px-2.5 py-1 rounded-lg ${
+                        t.type === 'Vente' ? 'bg-[#E3F4EC] text-[#1E5E3F]' : 'bg-[#FCE3E0] text-[#8A2414]'
+                      }`}>
+                        {t.type}
+                      </span>
+                    </td>
+                    <td className="py-3.5 px-4 text-[#3A3647] text-xs">{t.cat}</td>
+                    <td className="py-3.5 px-4 text-[#3A3647] text-xs font-medium">{t.mode}</td>
+                    <td className={`py-3.5 px-6 text-right font-black whitespace-nowrap ${
+                      t.amount >= 0 ? 'text-[#1E5E3F]' : 'text-[#8A2414]'
+                    }`}>
+                      {t.amount >= 0 ? `+ ${fmt(t.amount)}` : `− ${fmt(t.amount)}`} FCFA
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
