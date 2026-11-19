@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   UserCheck, 
   Plus, 
@@ -14,6 +14,7 @@ import {
   Loader2
 } from 'lucide-react';
 import { usersApi, CollaboratorDto } from '../../api/users.api';
+import { useRealtime } from '../../context/RealtimeContext';
 import { toast } from 'sonner';
 
 interface Collaborator {
@@ -60,6 +61,7 @@ const ROLE_COLORS: Record<string, { bg: string; text: string }> = {
 };
 
 export const UtilisateursPage: React.FC = () => {
+  const { subscribe } = useRealtime();
   const MAX_SEATS = 5;
 
   const [users, setUsers] = useState<Collaborator[]>([]);
@@ -67,8 +69,8 @@ export const UtilisateursPage: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Load collaborators from backend API
-  const refreshUsers = async () => {
-    setIsLoadingList(true);
+  const refreshUsers = useCallback(async (showSpinner = true) => {
+    if (showSpinner) setIsLoadingList(true);
     try {
       const data = await usersApi.getCollaborators();
       if (Array.isArray(data)) {
@@ -88,11 +90,21 @@ export const UtilisateursPage: React.FC = () => {
     } finally {
       setIsLoadingList(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    refreshUsers();
-  }, []);
+    refreshUsers(true);
+  }, [refreshUsers]);
+
+  // Écoute des mises à jour temps réel
+  useEffect(() => {
+    const unsubCollab = subscribe('COLLABORATOR_UPDATED', () => {
+      refreshUsers(false);
+    });
+    return () => {
+      unsubCollab();
+    };
+  }, [subscribe, refreshUsers]);
 
   // Drawer Form State
   const [formOpen, setFormOpen] = useState(false);

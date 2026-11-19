@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useRealtime } from '../../context/RealtimeContext';
 import { PeriodType } from '../../types/common';
 import { analyticsApi } from '../../api/analytics.api';
 import { DashboardAnalytics } from '../../types/analytics';
@@ -18,9 +19,11 @@ import { cn } from '../../utils/cn';
 
 export const AccueilPage: React.FC = () => {
   const { user } = useAuth();
+  const { subscribe } = useRealtime();
   const navigate = useNavigate();
   const [period, setPeriod] = useState<PeriodType>('mois');
   const [data, setData] = useState<DashboardAnalytics | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   // Redirection automatique pour les collaborateurs dont le propriétaire n'a pas coché "Accueil"
   useEffect(() => {
@@ -49,14 +52,44 @@ export const AccueilPage: React.FC = () => {
     }
   }, [user, navigate]);
 
-  useEffect(() => {
-    analyticsApi.getDashboard(period).then(setData);
+  const fetchDashboard = useCallback((showSpinner = false) => {
+    if (showSpinner) setLoading(true);
+    analyticsApi.getDashboard(period).then((res) => {
+      setData(res);
+      setLoading(false);
+    }).catch(() => {
+      setLoading(false);
+    });
   }, [period]);
 
-  if (!data) {
+  useEffect(() => {
+    fetchDashboard(true);
+  }, [fetchDashboard]);
+
+  // Écoute des mises à jour temps réel via WebSocket
+  useEffect(() => {
+    const onRealtimeUpdate = () => {
+      fetchDashboard(false);
+    };
+
+    const unsubDashboard = subscribe('DASHBOARD_UPDATE', onRealtimeUpdate);
+    const unsubOrderCreated = subscribe('ORDER_CREATED', onRealtimeUpdate);
+    const unsubStatusChanged = subscribe('ORDER_STATUS_CHANGED', onRealtimeUpdate);
+    const unsubStock = subscribe('STOCK_UPDATED', onRealtimeUpdate);
+
+    return () => {
+      unsubDashboard();
+      unsubOrderCreated();
+      unsubStatusChanged();
+      unsubStock();
+    };
+  }, [subscribe, fetchDashboard]);
+
+  if (loading || !data) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
+      <div className="flex flex-col items-center justify-center min-h-[400px] gap-3">
         <div className="w-10 h-10 border-4 border-[#6C4CF1] border-t-transparent rounded-full animate-spin" />
+        <span className="text-sm font-semibold text-[#5E5A70]">Chargement de votre tableau de bord...</span>
       </div>
     );
   }
@@ -333,20 +366,26 @@ export const AccueilPage: React.FC = () => {
             <h2 className="text-lg font-extrabold text-[#241D5E]">Ventes par zone</h2>
           </div>
           <div className="flex flex-col gap-3.5 mt-1">
-            {data.zones.map((zone, i) => (
-              <div key={i} className="flex flex-col gap-1.5">
-                <div className="flex justify-between text-xs font-bold text-[#16131F]">
-                  <span className="truncate pr-2">{zone.name}</span>
-                  <span className="font-extrabold">{zone.formattedPercentage}</span>
-                </div>
-                <div className="h-2 bg-[#F0EDFB] rounded-full overflow-hidden">
-                  <div
-                    className={cn('h-full rounded-full transition-all duration-500', i === 0 ? 'bg-[#241D5E]' : 'bg-[#8B6CF6]')}
-                    style={{ width: `${zone.percentage}%` }}
-                  />
-                </div>
+            {data.zones.length === 0 ? (
+              <div className="py-8 text-center text-xs text-[#8B869C] font-semibold">
+                Aucune vente par zone enregistrée.
               </div>
-            ))}
+            ) : (
+              data.zones.map((zone, i) => (
+                <div key={i} className="flex flex-col gap-1.5">
+                  <div className="flex justify-between text-xs font-bold text-[#16131F]">
+                    <span className="truncate pr-2">{zone.name}</span>
+                    <span className="font-extrabold">{zone.formattedPercentage}</span>
+                  </div>
+                  <div className="h-2 bg-[#F0EDFB] rounded-full overflow-hidden">
+                    <div
+                      className={cn('h-full rounded-full transition-all duration-500', i === 0 ? 'bg-[#241D5E]' : 'bg-[#8B6CF6]')}
+                      style={{ width: `${zone.percentage}%` }}
+                    />
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </section>
 
@@ -360,18 +399,24 @@ export const AccueilPage: React.FC = () => {
             <span className="text-xs text-[#5E5A70] font-semibold">Ventes livrées</span>
           </div>
           <div className="flex flex-col divide-y divide-[#F0EDFB]">
-            {data.topProducts.map((p) => (
-              <div key={p.rank} className="flex items-center gap-3 py-2.5">
-                <span className="w-7 h-7 rounded-lg bg-[#F4F1FE] text-[#4B2FC9] text-xs font-extrabold flex items-center justify-center shrink-0">
-                  {p.rank}
-                </span>
-                <div className="flex-1 min-w-0 flex flex-col">
-                  <span className="text-sm font-bold text-[#16131F] truncate">{p.name}</span>
-                  <span className="text-xs text-[#5E5A70]">{p.caFormatted}</span>
-                </div>
-                <span className="text-sm font-extrabold text-[#241D5E]">{p.salesCount}</span>
+            {data.topProducts.length === 0 ? (
+              <div className="py-8 text-center text-xs text-[#8B869C] font-semibold">
+                Aucun produit vendu pour le moment.
               </div>
-            ))}
+            ) : (
+              data.topProducts.map((p) => (
+                <div key={p.rank} className="flex items-center gap-3 py-2.5">
+                  <span className="w-7 h-7 rounded-lg bg-[#F4F1FE] text-[#4B2FC9] text-xs font-extrabold flex items-center justify-center shrink-0">
+                    {p.rank}
+                  </span>
+                  <div className="flex-1 min-w-0 flex flex-col">
+                    <span className="text-sm font-bold text-[#16131F] truncate">{p.name}</span>
+                    <span className="text-xs text-[#5E5A70]">{p.caFormatted}</span>
+                  </div>
+                  <span className="text-sm font-extrabold text-[#241D5E]">{p.salesCount}</span>
+                </div>
+              ))
+            )}
           </div>
         </section>
 

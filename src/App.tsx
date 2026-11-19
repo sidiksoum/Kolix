@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import { AuthProvider } from './context/AuthContext';
+import { RealtimeProvider } from './context/RealtimeContext';
 import { OrdersProvider } from './context/OrdersContext';
 import { StockProvider } from './context/StockContext';
 import { WalletProvider } from './context/WalletContext';
@@ -12,27 +13,29 @@ export function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <OrdersProvider>
-          <StockProvider>
-            <WalletProvider>
-              <StoreProvider>
-                <AppRoutes />
-                <Toaster
-                  position="top-right"
-                  richColors
-                  closeButton
-                  toastOptions={{
-                    style: {
-                      borderRadius: '16px',
-                      fontFamily: 'inherit',
-                      fontWeight: 600
-                    }
-                  }}
-                />
-              </StoreProvider>
-            </WalletProvider>
-          </StockProvider>
-        </OrdersProvider>
+        <RealtimeProvider>
+          <OrdersProvider>
+            <StockProvider>
+              <WalletProvider>
+                <StoreProvider>
+                  <AppRoutes />
+                  <Toaster
+                    position="top-right"
+                    richColors
+                    closeButton
+                    toastOptions={{
+                      style: {
+                        borderRadius: '16px',
+                        fontFamily: 'inherit',
+                        fontWeight: 600
+                      }
+                    }}
+                  />
+                </StoreProvider>
+              </WalletProvider>
+            </StockProvider>
+          </OrdersProvider>
+        </RealtimeProvider>
       </AuthProvider>
     </BrowserRouter>
   );

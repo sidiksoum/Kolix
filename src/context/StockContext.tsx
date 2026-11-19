@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { InventoryItem, StockAlert, StockKpis } from '../types/inventory';
 import { inventoryApi } from '../api/inventory.api';
+import { useRealtime } from './RealtimeContext';
 import { toast } from 'sonner';
 
 interface StockContextType {
@@ -17,15 +18,16 @@ interface StockContextType {
 const StockContext = createContext<StockContextType | undefined>(undefined);
 
 export const StockProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { subscribe } = useRealtime();
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const [kpis, setKpis] = useState<StockKpis | null>(null);
   const [alerts, setAlerts] = useState<StockAlert[]>([]);
   const [threshold, setThreshold] = useState<number>(5);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  const refreshStock = async () => {
+  const refreshStock = useCallback(async (showSpinner = true) => {
     try {
-      setIsLoading(true);
+      if (showSpinner) setIsLoading(true);
       const [items, stats, alertItems] = await Promise.all([
         inventoryApi.getAll(),
         inventoryApi.getKpis(),
@@ -40,11 +42,30 @@ export const StockProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    refreshStock();
-  }, []);
+    refreshStock(true);
+  }, [refreshStock]);
+
+  // Écoute des mises à jour temps réel
+  useEffect(() => {
+    const onRealtimeUpdate = () => {
+      refreshStock(false);
+    };
+
+    const unsubStock = subscribe('STOCK_UPDATED', onRealtimeUpdate);
+    const unsubOrder = subscribe('ORDER_CREATED', onRealtimeUpdate);
+    const unsubStatus = subscribe('ORDER_STATUS_CHANGED', onRealtimeUpdate);
+    const unsubDashboard = subscribe('DASHBOARD_UPDATE', onRealtimeUpdate);
+
+    return () => {
+      unsubStock();
+      unsubOrder();
+      unsubStatus();
+      unsubDashboard();
+    };
+  }, [subscribe, refreshStock]);
 
   const updateQuantity = async (id: string, delta: number) => {
     try {

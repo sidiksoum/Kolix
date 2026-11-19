@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   Download, 
   Plus, 
@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { accountingApi, AccountingTransaction, AccountingDashboard } from '../../api/accounting.api';
+import { useRealtime } from '../../context/RealtimeContext';
 
 interface Transaction {
   id: string;
@@ -39,6 +40,7 @@ const MONTHS_LIST = [
 ];
 
 export const ComptabilitePage: React.FC = () => {
+  const { subscribe } = useRealtime();
   const [selectedMonthIndex, setSelectedMonthIndex] = useState(5); // Octobre 2026
   const selectedMonth = MONTHS_LIST[selectedMonthIndex] || 'Octobre 2026';
   const [filterType, setFilterType] = useState<'all' | 'Vente' | 'Charge'>('all');
@@ -75,9 +77,9 @@ export const ComptabilitePage: React.FC = () => {
   // Monthly Bars calculation
   const [monthsData, setMonthsData] = useState<Array<{ label: string; ca: number; ch: number }>>([]);
 
-  const loadAccounting = async () => {
+  const loadAccounting = useCallback(async (showSpinner = true) => {
     try {
-      setIsLoading(true);
+      if (showSpinner) setIsLoading(true);
       const data = await accountingApi.getDashboard(selectedMonth);
       if (data) {
         if (typeof data.momo_revenue === 'number') setMomo(data.momo_revenue);
@@ -104,11 +106,28 @@ export const ComptabilitePage: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [selectedMonth]);
 
   useEffect(() => {
-    loadAccounting();
-  }, [selectedMonth]);
+    loadAccounting(true);
+  }, [loadAccounting]);
+
+  // Écoute des mises à jour temps réel
+  useEffect(() => {
+    const onRealtimeUpdate = () => {
+      loadAccounting(false);
+    };
+
+    const unsubAccounting = subscribe('ACCOUNTING_UPDATED', onRealtimeUpdate);
+    const unsubStatus = subscribe('ORDER_STATUS_CHANGED', onRealtimeUpdate);
+    const unsubDashboard = subscribe('DASHBOARD_UPDATE', onRealtimeUpdate);
+
+    return () => {
+      unsubAccounting();
+      unsubStatus();
+      unsubDashboard();
+    };
+  }, [subscribe, loadAccounting]);
 
   const fmt = (n: number) => String(Math.round(Math.abs(n))).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
 

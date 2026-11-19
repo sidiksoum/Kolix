@@ -1,31 +1,32 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   Download, 
   FileSpreadsheet, 
   TrendingUp, 
   CheckCircle2, 
-  X,
-  HelpCircle,
-  ArrowRight,
-  Sparkles,
-  Loader2
+  X, 
+  HelpCircle, 
+  ArrowRight, 
+  Sparkles, 
+  Loader2 
 } from 'lucide-react';
 import { analyticsApi, AnalyticsReportData } from '../../api/analytics.api';
+import { useRealtime } from '../../context/RealtimeContext';
 
 type PeriodType = '7' | '30' | '90' | '365';
 type GrainType = 'jour' | 'semaine' | 'mois';
 
 export const AnalyticsPage: React.FC = () => {
+  const { subscribe } = useRealtime();
   const [period, setPeriod] = useState<PeriodType>('30');
   const [grain, setGrain] = useState<GrainType>('semaine');
   const [toast, setToast] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [reportData, setReportData] = useState<AnalyticsReportData | null>(null);
 
   const fmt = (n: number) => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
   const pc = (a: number, b: number) => (b ? (a / b * 100) : 0).toFixed(1).replace('.', ',').replace(',0', '') + ' %';
 
-  const factors: Record<PeriodType, number> = { '7': 0.24, '30': 1, '90': 3, '365': 11.5 };
   const labels: Record<PeriodType, string> = {
     '7': 'sur les 7 derniers jours',
     '30': 'sur les 30 derniers jours',
@@ -33,135 +34,49 @@ export const AnalyticsPage: React.FC = () => {
     '365': 'sur les 12 derniers mois'
   };
 
-  const k = factors[period];
-  const S = (n: number) => Math.round(n * k);
-
-  useEffect(() => {
-    let isMounted = true;
-    const fetchReports = async () => {
-      setLoading(true);
-      try {
-        const res = await analyticsApi.getReports(period, grain);
-        if (isMounted && res) {
-          setReportData(res);
-        }
-      } catch (err) {
-        console.warn('Analytics report fetch error:', err);
-      } finally {
-        if (isMounted) setLoading(false);
+  const fetchReports = useCallback(async (showSpinner = false) => {
+    if (showSpinner) setLoading(true);
+    try {
+      const res = await analyticsApi.getReports(period, grain);
+      if (res) {
+        setReportData(res);
       }
-    };
-    fetchReports();
-    return () => { isMounted = false; };
+    } catch (err) {
+      console.warn('Analytics report fetch error:', err);
+    } finally {
+      setLoading(false);
+    }
   }, [period, grain]);
 
-  // Fallback Funnel
-  const defaultFunnel: [string, number][] = [
-    ['Visites boutique', 29400],
-    ['Vues fiche produit', 18200],
-    ['Formulaires ouverts', 2450],
-    ['Commandes reçues', 790],
-    ['Commandes livrées', 505]
-  ];
+  useEffect(() => {
+    fetchReports(true);
+  }, [fetchReports]);
 
-  const funnelItems = reportData?.funnel && reportData.funnel.length === 5 
-    ? reportData.funnel 
-    : defaultFunnel.map(([label, v], idx) => ({
-        label,
-        value: fmt(S(v)),
-        raw: S(v),
-        step: idx === 0 ? '' : `→ ${pc(v, defaultFunnel[idx - 1][1])}`
-      }));
+  // Écoute des mises à jour temps réel
+  useEffect(() => {
+    const onRealtimeUpdate = () => {
+      fetchReports(false);
+    };
 
-  // Fallback Statuses
-  const defaultStatuses: [string, string, number, string][] = [
-    ['Livrée', 'Taux de livraison', 505, '#241D5E'],
-    ['En cours', 'En cours', 70, '#6C4CF1'],
-    ['Annulée', 'Taux d’annulation', 63, '#B4AFC4'],
-    ['Reportée', 'Taux de report', 55, '#E0A33A'],
-    ['Injoignable', 'Taux d’injoignables', 61, '#8B869C'],
-    ['Contestée', 'Taux de contestation', 36, '#E3807A']
-  ];
+    const unsubDashboard = subscribe('DASHBOARD_UPDATE', onRealtimeUpdate);
+    const unsubOrder = subscribe('ORDER_CREATED', onRealtimeUpdate);
+    const unsubStatus = subscribe('ORDER_STATUS_CHANGED', onRealtimeUpdate);
 
-  const displayStatuses = reportData?.statuses && reportData.statuses.length === 6
-    ? reportData.statuses.map(s => ({
-        name: s.name,
-        rateLabel: s.rateLabel,
-        count: s.count,
-        countRaw: s.rawCount,
-        pct: s.pct,
-        color: s.color
-      }))
-    : defaultStatuses.map(([name, rateLabel, n, color]) => ({
-        name,
-        rateLabel,
-        count: fmt(S(n)),
-        countRaw: S(n),
-        pct: pc(n, 790),
-        color
-      }));
+    return () => {
+      unsubDashboard();
+      unsubOrder();
+      unsubStatus();
+    };
+  }, [subscribe, fetchReports]);
 
-  const totalStatusOrders = displayStatuses.reduce((acc, curr) => acc + curr.countRaw, 0);
-
-  // Time Series
-  const defaultSeries: Record<GrainType, [string, number][]> = {
-    jour: [['Lun', 8], ['Mar', 10], ['Mer', 7], ['Jeu', 11], ['Ven', 10], ['Sam', 13], ['Dim', 9]],
-    semaine: [['S35', 52], ['S36', 57], ['S37', 55], ['S38', 63], ['S39', 70], ['S40', 66], ['S41', 74], ['S42', 68]],
-    mois: [['Mai', 182], ['Juin', 197], ['Juil.', 214], ['Août', 240], ['Sept.', 281], ['Oct.', 205]]
-  };
-
-  const displayTimeBars = reportData?.timeBars && reportData.timeBars.length > 0
-    ? reportData.timeBars
-    : defaultSeries[grain].map(([label, n]) => ({ label, n, heightPercent: 0 }));
-
+  // Données réelles directes
+  const funnelItems = reportData?.funnel || [];
+  const displayStatuses = reportData?.statuses || [];
+  const totalStatusOrders = displayStatuses.reduce((acc, curr) => acc + curr.rawCount, 0);
+  const displayTimeBars = reportData?.timeBars || [];
   const maxBar = Math.max(...displayTimeBars.map(x => x.n), 1);
-
-  // Fallback Products
-  const defaultProducts: [string, number, number, number][] = [
-    ['Montre élégante', 120, 17500, 0.71],
-    ['Sac à main chic', 88, 15000, 0.68],
-    ['Robe élégante', 40, 19000, 0.58],
-    ['Baskets tendance', 76, 12000, 0.62],
-    ['Sérum éclat 30 ml', 70, 9500, 0.74],
-    ['Chemise homme', 48, 10000, 0.66],
-    ['Pagne wax 6 yards', 38, 7500, 0.70],
-    ['Autres produits', 25, 8000, 0.60]
-  ];
-  const caTotFallback = defaultProducts.reduce((a, p) => a + p[1] * p[2], 0);
-
-  const displayProducts = reportData?.products && reportData.products.length > 0
-    ? reportData.products
-    : defaultProducts.map(([name, u, price, r]) => ({
-        name,
-        units: S(u),
-        ca: fmt(S(u * price)) + ' F',
-        caRaw: S(u * price),
-        sharePercent: Math.round((u * price / caTotFallback) * 100),
-        rate: Math.round(r * 100) + ' %',
-        rateRaw: r
-      }));
-
-  // Fallback Zones
-  const defaultZones: [string, number, number][] = [
-    ['Abidjan', 470, 322],
-    ['Bouaké', 95, 52],
-    ['Yamoussoukro', 70, 45],
-    ['San-Pédro', 58, 36],
-    ['Korhogo', 52, 27],
-    ['Daloa', 45, 23]
-  ];
-  const avgCAFallback = caTotFallback / 505;
-
-  const displayZones = reportData?.zones && reportData.zones.length > 0
-    ? reportData.zones
-    : defaultZones.map(([name, o, d]) => ({
-        name,
-        orders: S(o),
-        done: S(d),
-        ca: fmt(S(d * avgCAFallback)) + ' F',
-        rate: Math.round(d / o * 100) + ' %',
-        rateRaw: d / o
-      }));
+  const displayProducts = reportData?.products || [];
+  const displayZones = reportData?.zones || [];
 
   const getRateBadge = (r: number) => {
     if (r >= 0.68) return 'bg-[#E3F4EC] text-[#1E5E3F]';
@@ -226,6 +141,15 @@ export const AnalyticsPage: React.FC = () => {
   const handleExportPDF = () => {
     window.print();
   };
+
+  if (loading && !reportData) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[450px] gap-3">
+        <Loader2 className="w-8 h-8 animate-spin text-[#6C4CF1]" />
+        <span className="text-sm font-semibold text-[#5E5A70]">Chargement des données analytiques...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-12 font-sans animate-fade-in">
@@ -305,13 +229,13 @@ export const AnalyticsPage: React.FC = () => {
           <div className="flex items-center gap-8">
             <div className="text-right">
               <span className="text-2xl font-black text-[#3F25A8] block leading-none">
-                {reportData?.cartAbandonment ? reportData.cartAbandonment : pc(790, 2450)}
+                {reportData?.cartAbandonment || '0 %'}
               </span>
               <span className="text-xs text-[#5E5A70] font-semibold mt-1 block">Formulaire ouvert → commande</span>
             </div>
             <div className="text-right">
               <span className="text-2xl font-black text-[#16131F] block leading-none">
-                {reportData?.globalConversion ? reportData.globalConversion : pc(790, 29400)}
+                {reportData?.globalConversion || '0 %'}
               </span>
               <span className="text-xs text-[#5E5A70] font-semibold mt-1 block">Visite → commande</span>
             </div>
@@ -321,8 +245,8 @@ export const AnalyticsPage: React.FC = () => {
         {/* Funnel chart columns */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 items-end pt-4">
           {funnelItems.map((item, idx) => {
-            const rawMax = funnelItems[0]?.raw || 29400;
-            const heightPct = Math.max(8, Math.sqrt(item.raw / rawMax) * 100);
+            const rawMax = funnelItems[0]?.raw || 1;
+            const heightPct = rawMax > 0 ? Math.max(8, Math.sqrt(item.raw / rawMax) * 100) : 8;
             const barBg = idx === 3 ? 'bg-[#6C4CF1]' : idx === 4 ? 'bg-[#241D5E]' : 'bg-[#B9AAFF]';
 
             return (
@@ -356,7 +280,7 @@ export const AnalyticsPage: React.FC = () => {
             {/* Segmented Bar */}
             <div className="h-4 rounded-full overflow-hidden flex bg-gray-100 shadow-inner">
               {displayStatuses.map(s => {
-                const segPct = totalStatusOrders > 0 ? (s.countRaw / totalStatusOrders) * 100 : 16.6;
+                const segPct = totalStatusOrders > 0 ? (s.rawCount / totalStatusOrders) * 100 : 16.6;
                 return (
                   <div 
                     key={s.name}
@@ -478,33 +402,41 @@ export const AnalyticsPage: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#F0EDFB]">
-                  {displayProducts.map((p) => {
-                    return (
-                      <tr key={p.name} className="hover:bg-[#FAF9FE]/50 transition-colors">
-                        <td className="py-3.5 px-6 font-bold text-[#16131F]">{p.name}</td>
-                        <td className="py-3.5 px-3 text-right text-[#3A3647] font-semibold">{fmt(p.units)}</td>
-                        <td className="py-3.5 px-3 min-w-[120px]">
-                          <div className="flex items-center gap-2">
-                            <div className="flex-1 h-2 bg-[#F0EDFB] rounded-full overflow-hidden">
-                              <div 
-                                style={{ width: `${p.sharePercent}%` }} 
-                                className="h-full bg-[#6C4CF1] rounded-full"
-                              />
+                  {displayProducts.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="py-8 text-center text-xs text-[#8B869C] font-semibold">
+                        Aucun produit vendu pour cette période.
+                      </td>
+                    </tr>
+                  ) : (
+                    displayProducts.map((p) => {
+                      return (
+                        <tr key={p.name} className="hover:bg-[#FAF9FE]/50 transition-colors">
+                          <td className="py-3.5 px-6 font-bold text-[#16131F]">{p.name}</td>
+                          <td className="py-3.5 px-3 text-right text-[#3A3647] font-semibold">{fmt(p.units)}</td>
+                          <td className="py-3.5 px-3 min-w-[120px]">
+                            <div className="flex items-center gap-2">
+                              <div className="flex-1 h-2 bg-[#F0EDFB] rounded-full overflow-hidden">
+                                <div 
+                                  style={{ width: `${p.sharePercent}%` }} 
+                                  className="h-full bg-[#6C4CF1] rounded-full"
+                                />
+                              </div>
+                              <span className="text-xs font-bold text-[#5E5A70] w-9 text-right">{p.sharePercent} %</span>
                             </div>
-                            <span className="text-xs font-bold text-[#5E5A70] w-9 text-right">{p.sharePercent} %</span>
-                          </div>
-                        </td>
-                        <td className="py-3.5 px-3 text-right font-black text-[#16131F] whitespace-nowrap">
-                          {p.ca}
-                        </td>
-                        <td className="py-3.5 px-6 text-right">
-                          <span className={`inline-block text-xs font-bold rounded-lg px-2.5 py-1 ${getRateBadge(p.rateRaw)}`}>
-                            {p.rate}
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  })}
+                          </td>
+                          <td className="py-3.5 px-3 text-right font-black text-[#16131F] whitespace-nowrap">
+                            {p.ca}
+                          </td>
+                          <td className="py-3.5 px-6 text-right">
+                            <span className={`inline-block text-xs font-bold rounded-lg px-2.5 py-1 ${getRateBadge(p.rateRaw)}`}>
+                              {p.rate}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
                 </tbody>
               </table>
             </div>
@@ -532,23 +464,31 @@ export const AnalyticsPage: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#F0EDFB]">
-                  {displayZones.map((z) => {
-                    return (
-                      <tr key={z.name} className="hover:bg-[#FAF9FE]/50 transition-colors">
-                        <td className="py-3.5 px-6 font-bold text-[#16131F]">{z.name}</td>
-                        <td className="py-3.5 px-3 text-right text-[#3A3647] font-semibold">{fmt(z.orders)}</td>
-                        <td className="py-3.5 px-3 text-right text-[#3A3647] font-semibold">{fmt(z.done)}</td>
-                        <td className="py-3.5 px-3 text-right font-black text-[#16131F] whitespace-nowrap">
-                          {z.ca}
-                        </td>
-                        <td className="py-3.5 px-6 text-right">
-                          <span className={`inline-block text-xs font-bold rounded-lg px-2.5 py-1 ${getRateBadge(z.rateRaw)}`}>
-                            {z.rate}
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  })}
+                  {displayZones.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="py-8 text-center text-xs text-[#8B869C] font-semibold">
+                        Aucune vente par zone pour cette période.
+                      </td>
+                    </tr>
+                  ) : (
+                    displayZones.map((z) => {
+                      return (
+                        <tr key={z.name} className="hover:bg-[#FAF9FE]/50 transition-colors">
+                          <td className="py-3.5 px-6 font-bold text-[#16131F]">{z.name}</td>
+                          <td className="py-3.5 px-3 text-right text-[#3A3647] font-semibold">{fmt(z.orders)}</td>
+                          <td className="py-3.5 px-3 text-right text-[#3A3647] font-semibold">{fmt(z.done)}</td>
+                          <td className="py-3.5 px-3 text-right font-black text-[#16131F] whitespace-nowrap">
+                            {z.ca}
+                          </td>
+                          <td className="py-3.5 px-6 text-right">
+                            <span className={`inline-block text-xs font-bold rounded-lg px-2.5 py-1 ${getRateBadge(z.rateRaw)}`}>
+                              {z.rate}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
                 </tbody>
               </table>
             </div>
