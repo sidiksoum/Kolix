@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { PeriodType } from '../../types/common';
 import { analyticsApi } from '../../api/analytics.api';
@@ -17,8 +18,36 @@ import { cn } from '../../utils/cn';
 
 export const AccueilPage: React.FC = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [period, setPeriod] = useState<PeriodType>('mois');
   const [data, setData] = useState<DashboardAnalytics | null>(null);
+
+  // Redirection automatique pour les collaborateurs dont le propriétaire n'a pas coché "Accueil"
+  useEffect(() => {
+    if (user && user.permissions && !user.permissions.includes('*') && !user.permissions.includes('Accueil')) {
+      const allowed = user.permissions;
+      const targetMap: Record<string, string> = {
+        'Commandes': '/commandes',
+        'Stock': '/stock',
+        'Boutique': '/boutique',
+        'Produits': '/produits',
+        'Comptabilité': '/comptabilite',
+        'Portefeuille': '/portefeuille',
+        'Client': '/clients',
+        'WhatsApp Marketing': '/whatsapp',
+        'Analytics': '/analytics',
+        'Utilisateurs': '/utilisateurs',
+        'Paramètres': '/parametres',
+      };
+      for (const m of allowed) {
+        if (targetMap[m]) {
+          navigate(targetMap[m], { replace: true });
+          return;
+        }
+      }
+      navigate('/commandes', { replace: true });
+    }
+  }, [user, navigate]);
 
   useEffect(() => {
     analyticsApi.getDashboard(period).then(setData);

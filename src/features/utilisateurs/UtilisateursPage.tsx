@@ -267,7 +267,7 @@ export const UtilisateursPage: React.FC = () => {
       } else {
         // Backend create
         let generatedId = `u_${Date.now()}`;
-        const pwdToSave = formPassword.trim() || 'Kolix@2026!';
+        const pwdToSave = formPassword.trim() || 'kolix2026!';
         try {
           const created = await usersApi.addCollaborator({
             name: cleanName,
@@ -280,7 +280,7 @@ export const UtilisateursPage: React.FC = () => {
           if (created?.id) generatedId = String(created.id);
         } catch (apiErr: any) {
           console.warn('addCollaborator backend error', apiErr);
-          // Keep local fallback so UI remains responsive
+          toast.error(apiErr.message || "Erreur de synchronisation backend");
         }
 
         const newUser: Collaborator = {
@@ -592,7 +592,7 @@ export const UtilisateursPage: React.FC = () => {
                     type="text"
                     value={formPassword}
                     onChange={e => setFormPassword(e.target.value)}
-                    placeholder={editingId ? 'Laisser vide pour ne pas modifier' : 'Ex: Kolix@2026!'}
+                    placeholder={editingId ? 'Laisser vide pour ne pas modifier' : 'Ex: kolix2026!'}
                     required={!editingId}
                     className="w-full border border-[#E2DCF8] rounded-xl px-3.5 py-2.5 text-sm font-bold text-[#16131F] focus:outline-none focus:ring-2 focus:ring-[#6C4CF1]/30 font-mono"
                   />

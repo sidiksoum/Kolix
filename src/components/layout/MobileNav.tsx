@@ -1,20 +1,33 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { Home, ShoppingBag, Layers, Wallet, Store } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 import { cn } from '../../utils/cn';
 
 export const MobileNav: React.FC = () => {
+  const { user } = useAuth();
   const items = [
-    { label: 'Accueil', path: '/', icon: Home },
+    { label: 'Accueil', path: '/dashboard', icon: Home },
     { label: 'Commandes', path: '/commandes', icon: ShoppingBag },
     { label: 'Boutique', path: '/boutique', icon: Store },
     { label: 'Stock', path: '/stock', icon: Layers },
     { label: 'Portefeuille', path: '/portefeuille', icon: Wallet },
   ];
 
+  const userPerms = user?.permissions || ['*'];
+  const isOwner = user?.role === 'Propriétaire' || userPerms.includes('*');
+
+  const visibleItems = isOwner
+    ? items
+    : items.filter(item => userPerms.includes(item.label));
+
+  if (visibleItems.length <= 1) {
+    return null;
+  }
+
   return (
     <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-[#241D5E]/95 backdrop-blur-md text-white border-t border-white/10 px-4 py-2 z-30 flex justify-around items-center">
-      {items.map((item) => {
+      {visibleItems.map((item) => {
         const Icon = item.icon;
         return (
           <NavLink

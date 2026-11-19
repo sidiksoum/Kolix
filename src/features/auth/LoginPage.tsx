@@ -21,7 +21,7 @@ const flagMap: Record<string, string> = {
 
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, user } = useAuth();
   const [view, setView] = useState<LoginView>('login');
   const [mode, setMode] = useState<LoginMode>('email');
   const [dial, setDial] = useState('+225');
@@ -395,8 +395,34 @@ export const LoginPage: React.FC = () => {
 
               <button
                 type="button"
-                onClick={() => navigate('/dashboard')}
-                className="w-full py-3.5 bg-[#6C4CF1] text-white font-extrabold rounded-2xl text-sm sm:text-base shadow-lg shadow-[#6C4CF1]/30 hover:bg-[#5B3FD6] active:scale-95 transition-all flex items-center justify-center gap-2"
+                onClick={() => {
+                  const perms = user?.permissions || [];
+                  if (perms.length > 0 && !perms.includes('*') && !perms.includes('Accueil')) {
+                    const targetMap: Record<string, string> = {
+                      'Commandes': '/commandes',
+                      'Stock': '/stock',
+                      'Boutique': '/boutique',
+                      'Produits': '/produits',
+                      'Comptabilité': '/comptabilite',
+                      'Portefeuille': '/portefeuille',
+                      'Client': '/clients',
+                      'WhatsApp Marketing': '/whatsapp',
+                      'Analytics': '/analytics',
+                      'Utilisateurs': '/utilisateurs',
+                      'Paramètres': '/parametres',
+                    };
+                    for (const m of perms) {
+                      if (targetMap[m]) {
+                        navigate(targetMap[m]);
+                        return;
+                      }
+                    }
+                    navigate('/commandes');
+                  } else {
+                    navigate('/dashboard');
+                  }
+                }}
+                className="w-full py-3.5 bg-[#6C4CF1] text-white font-extrabold rounded-2xl text-sm sm:text-base shadow-lg shadow-[#6C4CF1]/30 hover:bg-[#5B3FD6] active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
                 <span>Ouvrir mon tableau de bord</span>
                 <ArrowRight className="w-4 h-4" />
