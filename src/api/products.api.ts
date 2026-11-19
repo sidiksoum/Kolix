@@ -1,7 +1,14 @@
 import { apiClient } from './client';
 import { API_ENDPOINTS } from './endpoints';
 import { Product, ProductStatus, CreateProductDto } from '../types/product';
-import { INITIAL_PRODUCTS } from './mockData';
+
+// Clear any stale mock data in localStorage
+try {
+  const saved = localStorage.getItem('kolix_products');
+  if (saved && saved.includes('Écouteurs Sans Fil Pro')) {
+    localStorage.removeItem('kolix_products');
+  }
+} catch {}
 
 function normalizeProduct(raw: any): Product {
   return {
@@ -28,9 +35,14 @@ function normalizeProduct(raw: any): Product {
 let productsCache: Product[] = (() => {
   const saved = localStorage.getItem('kolix_products');
   if (saved) {
-    try { return JSON.parse(saved); } catch {}
+    try {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed) && !parsed.some(p => p.name.includes('Écouteurs Sans Fil'))) {
+        return parsed;
+      }
+    } catch {}
   }
-  return [...INITIAL_PRODUCTS];
+  return [];
 })();
 
 function persist() {
@@ -42,13 +54,10 @@ export const productsApi = {
     try {
       const res = await apiClient.get<any>(API_ENDPOINTS.PRODUCTS.BASE);
       const list = Array.isArray(res.data) ? res.data : (Array.isArray(res) ? res : []);
-      if (list.length > 0) {
-        const normalized = list.map(normalizeProduct);
-        productsCache = normalized;
-        persist();
-        return normalized;
-      }
-      return [...productsCache];
+      const normalized = list.map(normalizeProduct);
+      productsCache = normalized;
+      persist();
+      return normalized;
     } catch (err) {
       console.warn('API getAll fallback to cache:', err);
       return [...productsCache];

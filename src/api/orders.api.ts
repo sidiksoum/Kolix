@@ -1,15 +1,26 @@
 import { apiClient } from './client';
 import { API_ENDPOINTS } from './endpoints';
 import { Order, OrderStatus, CreateOrderDto } from '../types/order';
-import { INITIAL_ORDERS } from './mockData';
 
-// In-memory / localStorage cache for realistic interactivity
+// Clear any stale mock data in localStorage
+try {
+  const saved = localStorage.getItem('kolix_orders');
+  if (saved && (saved.includes('Amadou Diallo') || saved.includes('KX-1048') && saved.includes('Écouteurs'))) {
+    localStorage.removeItem('kolix_orders');
+  }
+} catch {}
+
 let ordersCache: Order[] = (() => {
   const saved = localStorage.getItem('kolix_orders');
   if (saved) {
-    try { return JSON.parse(saved); } catch {}
+    try {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed) && !parsed.some(o => o.client === 'Amadou Diallo')) {
+        return parsed;
+      }
+    } catch {}
   }
-  return [...INITIAL_ORDERS];
+  return [];
 })();
 
 function persist() {
@@ -26,6 +37,12 @@ function mapBackendOrderToFrontend(item: any): Order {
       })
     : item.date || 'Aujourd’hui';
 
+  const productTitle = item.product_name 
+    || item.offer_label 
+    || item.items?.[0]?.product_name 
+    || item.product 
+    || 'Produit Kolix';
+
   return {
     id: item.id || item.order_id || `KX-${Math.floor(1000 + Math.random() * 9000)}`,
     date: item.date || dateStr,
@@ -33,7 +50,7 @@ function mapBackendOrderToFrontend(item: any): Order {
     phone: item.client_phone || item.phone || '',
     city: item.city || 'Abidjan',
     place: item.delivery_place || item.place || '',
-    product: item.product_name || item.offer_label || item.items?.[0]?.product_name || item.product || 'Produit Kolix',
+    product: productTitle,
     amount: Number(item.total_amount ?? item.amount ?? 0),
     status: (item.status as OrderStatus) || 'En cours',
     note: item.note || '—',
@@ -54,14 +71,11 @@ export const ordersApi = {
     try {
       const res = await apiClient.get<any>(API_ENDPOINTS.ORDERS.BASE);
       const items = res?.data || res;
-      if (Array.isArray(items) && items.length > 0) {
+      if (Array.isArray(items)) {
         const mapped = items.map(mapBackendOrderToFrontend);
-        // Merge mapped with cache for seamless offline/demo preview
-        const idSet = new Set(mapped.map(m => m.id));
-        const merged = [...mapped, ...ordersCache.filter(c => !idSet.has(c.id))];
-        ordersCache = merged;
+        ordersCache = mapped;
         persist();
-        return merged;
+        return mapped;
       }
       return [...ordersCache];
     } catch {
@@ -114,7 +128,6 @@ export const ordersApi = {
 
   async confirmPayment(id: string, method: 'Espèces' | 'Mobile Money · Wave' | 'Mobile Money · Orange'): Promise<Order> {
     try {
-      // Transition to Livrée which triggers payment in backend
       await apiClient.patch<any>(API_ENDPOINTS.ORDERS.UPDATE_STATUS(id), { status: 'Livrée' });
     } catch {
       // Graceful fallback
@@ -163,16 +176,14 @@ export const ordersApi = {
 
     let backendData: any = null;
     try {
-      // Try merchant authenticated route first
       const res = await apiClient.post<any>(API_ENDPOINTS.ORDERS.BASE, payload);
       backendData = res?.data || res;
     } catch {
       try {
-        // Fallback to public checkout route
         const pubRes = await apiClient.post<any>('/api/v1/public/orders/checkout', payload);
         backendData = pubRes?.data || pubRes;
       } catch {
-        // Offline / simulated fallback
+        // Offline
       }
     }
 

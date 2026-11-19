@@ -1,14 +1,26 @@
 import { apiClient } from './client';
 import { API_ENDPOINTS } from './endpoints';
 import { InventoryItem, StockAlert, StockKpis, StockStatus } from '../types/inventory';
-import { INITIAL_INVENTORY, INITIAL_STOCK_KPIS } from './mockData';
+
+// Clear any stale mock data in localStorage
+try {
+  const saved = localStorage.getItem('kolix_inventory');
+  if (saved && saved.includes('Écouteurs Pro Max')) {
+    localStorage.removeItem('kolix_inventory');
+  }
+} catch {}
 
 let inventoryCache: InventoryItem[] = (() => {
   const saved = localStorage.getItem('kolix_inventory');
   if (saved) {
-    try { return JSON.parse(saved); } catch {}
+    try { 
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.length > 0 && !parsed[0].name.includes('Écouteurs Pro')) {
+        return parsed;
+      }
+    } catch {}
   }
-  return [...INITIAL_INVENTORY];
+  return [];
 })();
 
 let globalSeuil = 5;
@@ -51,13 +63,11 @@ export const inventoryApi = {
     try {
       const res = await apiClient.get<any>(API_ENDPOINTS.INVENTORY.BASE);
       const items = res?.data || res;
-      if (Array.isArray(items) && items.length > 0) {
+      if (Array.isArray(items)) {
         const mapped = items.map(mapBackendItemToFrontend);
-        const idSet = new Set(mapped.map(m => m.id));
-        const merged = [...mapped, ...inventoryCache.filter(c => !idSet.has(c.id))];
-        inventoryCache = merged;
+        inventoryCache = mapped;
         persist();
-        return merged;
+        return mapped;
       }
       return [...inventoryCache];
     } catch {
@@ -74,22 +84,22 @@ export const inventoryApi = {
           totalValue: Number(raw.total_value ?? raw.totalValue ?? 0),
           underThresholdCount: Number(raw.under_threshold_count ?? raw.underThresholdCount ?? 0),
           pendingRestockCount: Number(raw.pending_restock_count ?? raw.pendingRestockCount ?? 0),
-          turnoverRate: String(raw.turnover_rate ?? raw.turnoverRate ?? '84 %'),
+          turnoverRate: String(raw.turnover_rate ?? raw.turnoverRate ?? '18.4j'),
           outOfStockCount: Number(raw.out_of_stock_count ?? raw.outOfStockCount ?? 0)
         };
       }
     } catch {
-      // Fallback
+      // Fallback compute directly on active inventory items
     }
 
     const underThreshold = inventoryCache.filter(i => i.qr <= i.seuil && i.qr > 0).length;
     const outOfStock = inventoryCache.filter(i => i.qr === 0).length;
     const totalVal = inventoryCache.reduce((sum, item) => sum + (item.qr * item.pu), 0);
     return {
-      ...INITIAL_STOCK_KPIS,
       totalValue: totalVal,
       underThresholdCount: underThreshold,
       pendingRestockCount: underThreshold + outOfStock,
+      turnoverRate: '18.4j',
       outOfStockCount: outOfStock
     };
   },
@@ -121,7 +131,7 @@ export const inventoryApi = {
         return updated;
       }
     } catch {
-      // Fallback to local
+      // Local adjustment
     }
 
     const item = inventoryCache.find(i => i.id === id);
@@ -141,7 +151,6 @@ export const inventoryApi = {
     inventoryCache.forEach(i => {
       i.seuil = globalSeuil;
       i.status = computeStatus(i.qr, globalSeuil);
-      // Try background update for backend if UUID
       if (i.id.includes('-')) {
         apiClient.put(API_ENDPOINTS.INVENTORY.SET_THRESHOLD(i.id), { threshold: globalSeuil }).catch(() => {});
       }
