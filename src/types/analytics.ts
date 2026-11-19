@@ -57,4 +57,5 @@ export interface DashboardAnalytics {
   zones: ZoneSalesItem[];
   topProducts: TopProductItem[];
   calendarDays: CalendarDayItem[];
+  calendarMonth?: string;
 }

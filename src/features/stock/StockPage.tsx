@@ -130,7 +130,7 @@ export const StockPage: React.FC = () => {
             <TrendingUp className="w-5 h-5" />
           </span>
           <span className="text-2xl font-extrabold text-[#241D5E]">
-            {kpis?.turnoverRate || '84 %'}
+            {kpis?.turnoverRate || '—'}
           </span>
           <span className="text-xs text-[#5E5A70] font-bold">Taux de rotation</span>
         </div>

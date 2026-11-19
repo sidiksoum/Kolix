@@ -90,7 +90,8 @@ export const analyticsApi = {
             : fallback.topProducts,
           calendarDays: (Array.isArray(serverData.calendarDays) && serverData.calendarDays.length > 0)
             ? serverData.calendarDays
-            : fallback.calendarDays
+            : fallback.calendarDays,
+          calendarMonth: serverData.calendarMonth || serverData.calendar_month || 'Novembre 2026'
         };
       }
       return fallback;

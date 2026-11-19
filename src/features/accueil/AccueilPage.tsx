@@ -382,7 +382,7 @@ export const AccueilPage: React.FC = () => {
               <CalendarIcon className="w-5 h-5 text-[#6C4CF1]" />
               <h2 className="text-lg font-extrabold text-[#241D5E]">Livraisons</h2>
             </div>
-            <span className="text-xs font-bold text-[#5E5A70]">Octobre 2026</span>
+            <span className="text-xs font-bold text-[#5E5A70]">{data.calendarMonth || 'Novembre 2026'}</span>
           </div>
 
           {/* Weekdays */}

@@ -84,7 +84,7 @@ export const inventoryApi = {
           totalValue: Number(raw.total_value ?? raw.totalValue ?? 0),
           underThresholdCount: Number(raw.under_threshold_count ?? raw.underThresholdCount ?? 0),
           pendingRestockCount: Number(raw.pending_restock_count ?? raw.pendingRestockCount ?? 0),
-          turnoverRate: String(raw.turnover_rate ?? raw.turnoverRate ?? '18.4j'),
+          turnoverRate: String(raw.turnover_rate ?? raw.turnoverRate ?? '—'),
           outOfStockCount: Number(raw.out_of_stock_count ?? raw.outOfStockCount ?? 0)
         };
       }
@@ -95,11 +95,13 @@ export const inventoryApi = {
     const underThreshold = inventoryCache.filter(i => i.qr <= i.seuil && i.qr > 0).length;
     const outOfStock = inventoryCache.filter(i => i.qr === 0).length;
     const totalVal = inventoryCache.reduce((sum, item) => sum + (item.qr * item.pu), 0);
+    const totalUnits = inventoryCache.reduce((sum, item) => sum + item.qr, 0);
+    const estTurnover = totalUnits > 0 ? `${(totalUnits / 1.5).toFixed(1)}j` : '0j';
     return {
       totalValue: totalVal,
       underThresholdCount: underThreshold,
       pendingRestockCount: underThreshold + outOfStock,
-      turnoverRate: '18.4j',
+      turnoverRate: estTurnover,
       outOfStockCount: outOfStock
     };
   },

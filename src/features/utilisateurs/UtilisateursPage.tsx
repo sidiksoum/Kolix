@@ -62,46 +62,7 @@ const ROLE_COLORS: Record<string, { bg: string; text: string }> = {
 export const UtilisateursPage: React.FC = () => {
   const MAX_SEATS = 5;
 
-  const [users, setUsers] = useState<Collaborator[]>([
-    {
-      id: 'u0',
-      name: 'Souleymane Sanogo',
-      role: 'Propriétaire',
-      phone: '07 •• •• 00 01',
-      email: 'souleymane@styleelegance.ci',
-      mods: 'all',
-      status: 'Actif',
-      owner: true
-    },
-    {
-      id: 'u1',
-      name: 'Awa Koné',
-      role: 'Gestionnaire de commandes',
-      phone: '07 45 12 88 30',
-      email: 'awa.kone@styleelegance.ci',
-      mods: ['Accueil', 'Produits', 'Commandes', 'Stock', 'Client'],
-      status: 'Actif'
-    },
-    {
-      id: 'u2',
-      name: 'Ibrahim Touré',
-      role: 'Livreur',
-      phone: '05 62 19 40 77',
-      email: '—',
-      mods: ['Commandes'],
-      status: 'Actif'
-    },
-    {
-      id: 'u3',
-      name: 'Clarisse Yao',
-      role: 'Comptable',
-      phone: '01 23 56 71 09',
-      email: 'c.yao@styleelegance.ci',
-      mods: ['Comptabilité', 'Portefeuille', 'Analytics'],
-      status: 'Invitation envoyée'
-    }
-  ]);
-
+  const [users, setUsers] = useState<Collaborator[]>([]);
   const [isLoadingList, setIsLoadingList] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -110,20 +71,20 @@ export const UtilisateursPage: React.FC = () => {
     setIsLoadingList(true);
     try {
       const data = await usersApi.getCollaborators();
-      if (data && data.length > 0) {
+      if (Array.isArray(data)) {
         setUsers(data.map(c => ({
           id: String(c.id),
           name: c.name,
           role: c.role,
           phone: c.phone || '—',
           email: c.email || '—',
-          mods: c.permissions || [],
+          mods: c.permissions?.includes('*') ? 'all' : (c.permissions || []),
           status: (c.status as any) || 'Actif',
-          owner: c.is_owner
+          owner: !!c.is_owner
         })));
       }
     } catch {
-      // Keep existing users if not logged in or backend down
+      // Backend error fallback
     } finally {
       setIsLoadingList(false);
     }
@@ -246,30 +207,13 @@ export const UtilisateursPage: React.FC = () => {
         } catch {
           // Dev fallback
         }
-
-        setUsers(prev =>
-          prev.map(u => {
-            if (u.id === editingId) {
-              return {
-                ...u,
-                name: cleanName,
-                role: formRole,
-                mods: activeMods,
-                email: formEmail.trim() || u.email,
-                phone: formPhone.trim() || u.phone,
-                status: formSuspended ? 'Suspendu' : u.status === 'Suspendu' ? 'Actif' : u.status
-              };
-            }
-            return u;
-          })
-        );
+        await refreshUsers();
         toast.success('Permissions et accès du collaborateur mis à jour.');
       } else {
         // Backend create
-        let generatedId = `u_${Date.now()}`;
         const pwdToSave = formPassword.trim() || 'kolix2026!';
         try {
-          const created = await usersApi.addCollaborator({
+          await usersApi.addCollaborator({
             name: cleanName,
             phone: cleanPhone,
             email: cleanEmail,
@@ -277,23 +221,13 @@ export const UtilisateursPage: React.FC = () => {
             permissions: activeMods,
             password: pwdToSave
           });
-          if (created?.id) generatedId = String(created.id);
+          toast.success(`Accès collaborateur créé pour ${cleanName} ! Mot de passe : ${pwdToSave}`);
         } catch (apiErr: any) {
           console.warn('addCollaborator backend error', apiErr);
           toast.error(apiErr.message || "Erreur de synchronisation backend");
         }
 
-        const newUser: Collaborator = {
-          id: generatedId,
-          name: cleanName,
-          role: formRole,
-          phone: formPhone.trim() || cleanPhone,
-          email: formEmail.trim() || cleanEmail,
-          mods: activeMods,
-          status: 'Actif'
-        };
-        setUsers(prev => [...prev, newUser]);
-        toast.success(`Accès collaborateur créé pour ${cleanName} ! Mot de passe : ${pwdToSave}`);
+        await refreshUsers();
       }
 
       setFormOpen(false);
@@ -309,12 +243,12 @@ export const UtilisateursPage: React.FC = () => {
     const target = users.find(u => u.id === deleteTargetId);
     try {
       await usersApi.deleteCollaborator(deleteTargetId);
+      toast.success(`L'accès de ${target?.name || 'l’utilisateur'} a été supprimé.`);
     } catch {
       // Local fallback
     }
-    setUsers(prev => prev.filter(u => u.id !== deleteTargetId));
+    await refreshUsers();
     setDeleteTargetId(null);
-    toast.success(`L'accès de ${target?.name || 'l’utilisateur'} a été supprimé.`);
   };
 
   const targetUserToDelete = users.find(u => u.id === deleteTargetId);
@@ -409,7 +343,23 @@ export const UtilisateursPage: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-[#F0EDFB]">
-              {users.map(u => {
+              {isLoadingList ? (
+                <tr>
+                  <td colSpan={6} className="py-12 text-center text-sm font-semibold text-[#5E5A70]">
+                    <div className="flex items-center justify-center gap-2">
+                      <Loader2 className="w-5 h-5 animate-spin text-[#6C4CF1]" />
+                      Chargement des membres de l'équipe...
+                    </div>
+                  </td>
+                </tr>
+              ) : users.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="py-12 text-center text-sm font-semibold text-[#5E5A70]">
+                    Aucun utilisateur trouvé pour cette boutique.
+                  </td>
+                </tr>
+              ) : (
+                users.map(u => {
                 const colorTone = ROLE_COLORS[u.role] || ROLE_COLORS['Autre'];
                 const statusBadgeStyle = 
                   u.status === 'Actif'
@@ -501,7 +451,7 @@ export const UtilisateursPage: React.FC = () => {
                     </td>
                   </tr>
                 );
-              })}
+              }))}
             </tbody>
           </table>
         </div>
