@@ -47,6 +47,11 @@ export const API_ENDPOINTS = {
     ZONES: '/api/v1/analytics/zones',
     TOP_PRODUCTS: '/api/v1/analytics/top-products',
   },
+  ACCOUNTING: {
+    DASHBOARD: (month?: string) => `/api/v1/accounting/dashboard${month ? `?month=${encodeURIComponent(month)}` : ''}`,
+    CHARGES: '/api/v1/accounting/charges',
+    DELETE_CHARGE: (id: string) => `/api/v1/accounting/charges/${id}`,
+  },
   AI: {
     CHAT: '/api/v1/ai/chat',
   }

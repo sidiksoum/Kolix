@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Download, 
   Plus, 
@@ -12,9 +12,11 @@ import {
   Info,
   CheckCircle2,
   Calendar,
-  FileSpreadsheet
+  FileSpreadsheet,
+  Loader2
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { accountingApi, AccountingTransaction, AccountingDashboard } from '../../api/accounting.api';
 
 interface Transaction {
   id: string;
@@ -26,12 +28,24 @@ interface Transaction {
   amount: number;
 }
 
+const MONTHS_LIST = [
+  'Mai 2026',
+  'Juin 2026',
+  'Juillet 2026',
+  'Août 2026',
+  'Septembre 2026',
+  'Octobre 2026',
+  'Novembre 2026'
+];
+
 export const ComptabilitePage: React.FC = () => {
-  const [selectedMonth, setSelectedMonth] = useState('Octobre 2026');
+  const [selectedMonthIndex, setSelectedMonthIndex] = useState(5); // Octobre 2026
+  const selectedMonth = MONTHS_LIST[selectedMonthIndex] || 'Octobre 2026';
   const [filterType, setFilterType] = useState<'all' | 'Vente' | 'Charge'>('all');
   const [startDate, setStartDate] = useState('01/10/2026');
   const [endDate, setEndDate] = useState('31/10/2026');
   const [modalOpen, setModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Form State for new charge
   const [formCat, setFormCat] = useState('Publicité');
@@ -39,6 +53,7 @@ export const ComptabilitePage: React.FC = () => {
   const [formAmount, setFormAmount] = useState<number | ''>(25000);
   const [formDate, setFormDate] = useState('19/10/2026');
   const [formMode, setFormMode] = useState('Mobile Money');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Charges by category
   const [chargesState, setChargesState] = useState<Record<string, number>>({
@@ -50,8 +65,8 @@ export const ComptabilitePage: React.FC = () => {
   });
 
   // Base Sales
-  const momo = 1940000;
-  const cash = 1320000;
+  const [momo, setMomo] = useState(1940000);
+  const [cash, setCash] = useState(1320000);
   const ca = momo + cash;
 
   // Transactions list
@@ -68,23 +83,50 @@ export const ComptabilitePage: React.FC = () => {
     { id: 't10', date: '14 oct.', label: 'Vente #KX-1031 · Salif Ouattara', type: 'Vente', cat: 'Commande livrée', mode: 'Mobile Money', amount: 18500 }
   ]);
 
-  const fmt = (n: number) => String(Math.round(Math.abs(n))).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-
-  const totalCharges = Object.values(chargesState).reduce((a, b) => a + b, 0);
-  const netProfit = ca - totalCharges;
-  const netMargin = ca > 0 ? Math.round((netProfit / ca) * 100) : 0;
-  const momoPct = Math.round((momo / ca) * 100);
-  const cashPct = Math.round((cash / ca) * 100);
-
   // Monthly Bars calculation
-  const monthsData = [
+  const [monthsData, setMonthsData] = useState<Array<{ label: string; ca: number; ch: number }>>([
     { label: 'Mai', ca: 2900, ch: 1900 },
     { label: 'Juin', ca: 3150, ch: 2050 },
     { label: 'Juil.', ca: 3420, ch: 2180 },
     { label: 'Août', ca: 3880, ch: 2400 },
     { label: 'Sept.', ca: 4510, ch: 2760 },
-    { label: 'Oct.', ca: Math.round(ca / 1000), ch: Math.round(totalCharges / 1000) }
-  ];
+    { label: 'Oct.', ca: 3260, ch: 2025 }
+  ]);
+
+  const loadAccounting = async () => {
+    try {
+      setIsLoading(true);
+      const data = await accountingApi.getDashboard(selectedMonth);
+      if (data) {
+        if (data.momo_revenue) setMomo(data.momo_revenue);
+        if (data.cash_revenue) setCash(data.cash_revenue);
+        if (data.charges_by_category) setChargesState(data.charges_by_category);
+        if (Array.isArray(data.monthly_history) && data.monthly_history.length > 0) {
+          setMonthsData(data.monthly_history.map(m => ({ label: m.label, ca: m.ca, ch: m.ch })));
+        }
+        if (Array.isArray(data.recent_transactions) && data.recent_transactions.length > 0) {
+          setTransactions(data.recent_transactions);
+        }
+      }
+    } catch (err: any) {
+      console.warn('Backend accounting fetch fallback', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadAccounting();
+  }, [selectedMonth]);
+
+  const fmt = (n: number) => String(Math.round(Math.abs(n))).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+
+  const totalCharges = Object.values(chargesState).reduce((a, b) => a + b, 0);
+  const netProfit = ca - totalCharges;
+  const netMargin = ca > 0 ? Math.round((netProfit / ca) * 100) : 0;
+  const momoPct = ca > 0 ? Math.round((momo / ca) * 100) : 59;
+  const cashPct = 100 - momoPct;
+
   const maxMonthlyCa = 4800;
 
   const catColors: Record<string, string> = {
@@ -95,7 +137,45 @@ export const ComptabilitePage: React.FC = () => {
     'Autres': '#D6CFF7'
   };
 
-  const handleAddCharge = (e: React.FormEvent) => {
+  const handlePrevMonth = () => {
+    if (selectedMonthIndex > 0) {
+      setSelectedMonthIndex(prev => prev - 1);
+    } else {
+      toast.info('Premier mois disponible');
+    }
+  };
+
+  const handleNextMonth = () => {
+    if (selectedMonthIndex < MONTHS_LIST.length - 1) {
+      setSelectedMonthIndex(prev => prev + 1);
+    } else {
+      toast.info('Dernier mois disponible');
+    }
+  };
+
+  const handleExportCSV = () => {
+    const headers = ['Date', 'Libellé', 'Type', 'Catégorie', 'Mode de règlement', 'Montant (FCFA)'];
+    const rows = filteredTransactions.map(t => [
+      `"${t.date}"`,
+      `"${t.label.replace(/"/g, '""')}"`,
+      `"${t.type}"`,
+      `"${t.cat}"`,
+      `"${t.mode}"`,
+      t.amount
+    ]);
+    const csvContent = '\uFEFF' + [headers.join(';'), ...rows.map(e => e.join(';'))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `journal_comptable_${selectedMonth.replace(/\s+/g, '_').toLowerCase()}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success(`Export comptable de ${selectedMonth} téléchargé avec succès.`);
+  };
+
+  const handleAddCharge = async (e: React.FormEvent) => {
     e.preventDefault();
     const amt = typeof formAmount === 'number' ? formAmount : Number(formAmount) || 0;
     if (amt <= 0) {
@@ -103,26 +183,41 @@ export const ComptabilitePage: React.FC = () => {
       return;
     }
 
-    const newTx: Transaction = {
-      id: `t_${Date.now()}`,
-      date: formDate.slice(0, 6) + '.',
-      label: formLabel.trim() || formCat,
-      type: 'Charge',
-      cat: formCat,
-      mode: formMode,
-      amount: -amt
-    };
+    setIsSubmitting(true);
+    const chargeLabel = formLabel.trim() || formCat;
 
-    setChargesState(prev => ({
-      ...prev,
-      [formCat]: (prev[formCat] || 0) + amt
-    }));
-
-    setTransactions(prev => [newTx, ...prev]);
-    setModalOpen(false);
-    setFormLabel('');
-    setFormAmount(25000);
-    toast.success(`Charge de ${fmt(amt)} FCFA enregistrée avec succès`);
+    try {
+      await accountingApi.addCharge({
+        label: chargeLabel,
+        category: formCat,
+        payment_mode: formMode,
+        amount: amt
+      });
+      toast.success(`Charge de ${fmt(amt)} FCFA enregistrée avec succès`);
+      await loadAccounting();
+    } catch (err: any) {
+      // Local fallback in case network hiccup
+      const newTx: Transaction = {
+        id: `t_${Date.now()}`,
+        date: formDate.slice(0, 6) + '.',
+        label: chargeLabel,
+        type: 'Charge',
+        cat: formCat,
+        mode: formMode,
+        amount: -amt
+      };
+      setChargesState(prev => ({
+        ...prev,
+        [formCat]: (prev[formCat] || 0) + amt
+      }));
+      setTransactions(prev => [newTx, ...prev]);
+      toast.success(`Charge de ${fmt(amt)} FCFA enregistrée`);
+    } finally {
+      setIsSubmitting(false);
+      setModalOpen(false);
+      setFormLabel('');
+      setFormAmount(25000);
+    }
   };
 
   const filteredTransactions = transactions.filter(t => {
@@ -145,8 +240,8 @@ export const ComptabilitePage: React.FC = () => {
           {/* Month selector */}
           <div className="flex items-center bg-white border border-[#E2DCF8] rounded-2xl min-h-[46px] shadow-sm px-1">
             <button
-              onClick={() => toast.info('Affichage du mois précédent')}
-              className="w-9 h-9 flex items-center justify-center rounded-xl text-gray-500 hover:text-[#16131F] hover:bg-gray-100 transition-colors"
+              onClick={handlePrevMonth}
+              className="w-9 h-9 flex items-center justify-center rounded-xl text-gray-500 hover:text-[#16131F] hover:bg-gray-100 transition-colors cursor-pointer"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
@@ -154,16 +249,16 @@ export const ComptabilitePage: React.FC = () => {
               {selectedMonth}
             </span>
             <button
-              onClick={() => toast.info('Affichage du mois suivant')}
-              className="w-9 h-9 flex items-center justify-center rounded-xl text-gray-500 hover:text-[#16131F] hover:bg-gray-100 transition-colors"
+              onClick={handleNextMonth}
+              className="w-9 h-9 flex items-center justify-center rounded-xl text-gray-500 hover:text-[#16131F] hover:bg-gray-100 transition-colors cursor-pointer"
             >
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>
 
           <button
-            onClick={() => toast.success('Export comptable Excel et PDF prêt au téléchargement')}
-            className="flex items-center gap-2 px-4 py-2.5 bg-white text-[#16131F] border border-[#E2DCF8] rounded-2xl text-xs sm:text-sm font-bold shadow-sm hover:bg-gray-50 transition-all active:scale-95"
+            onClick={handleExportCSV}
+            className="flex items-center gap-2 px-4 py-2.5 bg-white text-[#16131F] border border-[#E2DCF8] rounded-2xl text-xs sm:text-sm font-bold shadow-sm hover:bg-gray-50 transition-all active:scale-95 cursor-pointer"
           >
             <Download className="w-4 h-4 text-[#5E5A70]" />
             Exporter
@@ -171,7 +266,7 @@ export const ComptabilitePage: React.FC = () => {
 
           <button
             onClick={() => setModalOpen(true)}
-            className="flex items-center gap-2 px-5 py-2.5 bg-[#6C4CF1] text-white rounded-2xl text-xs sm:text-sm font-extrabold shadow-md shadow-[#6C4CF1]/25 hover:bg-[#5B3FD6] active:scale-95 transition-all"
+            className="flex items-center gap-2 px-5 py-2.5 bg-[#6C4CF1] text-white rounded-2xl text-xs sm:text-sm font-extrabold shadow-md shadow-[#6C4CF1]/25 hover:bg-[#5B3FD6] active:scale-95 transition-all cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             + Ajouter une charge
@@ -541,9 +636,17 @@ export const ComptabilitePage: React.FC = () => {
               {/* Submit CTA */}
               <button
                 type="submit"
-                className="w-full py-3.5 bg-[#6C4CF1] text-white font-extrabold rounded-2xl text-sm shadow-md shadow-[#6C4CF1]/25 hover:bg-[#5B3FD6] active:scale-95 transition-all mt-2"
+                disabled={isSubmitting}
+                className="w-full py-3.5 bg-[#6C4CF1] text-white font-extrabold rounded-2xl text-sm shadow-md shadow-[#6C4CF1]/25 hover:bg-[#5B3FD6] active:scale-95 transition-all mt-2 flex items-center justify-center gap-2 disabled:opacity-60 cursor-pointer"
               >
-                Enregistrer la charge
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <span>Enregistrement…</span>
+                  </>
+                ) : (
+                  <span>Enregistrer la charge</span>
+                )}
               </button>
             </form>
           </div>

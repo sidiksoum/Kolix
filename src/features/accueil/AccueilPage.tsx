@@ -150,7 +150,9 @@ export const AccueilPage: React.FC = () => {
                   kpi.isPositive ? 'bg-[#F4F1FE] text-[#3F25A8]' : 'bg-[#FCE3E0] text-[#8A2414]'
                 )}
               >
-                {kpi.isPositive ? '↗ ' : '↘ '} {kpi.trend}
+                {kpi.trend.startsWith('↗') || kpi.trend.startsWith('↘')
+                  ? kpi.trend
+                  : `${kpi.isPositive ? '↗ ' : '↘ '} ${kpi.trend}`}
               </span>
             </div>
             <div className="flex flex-col gap-1">

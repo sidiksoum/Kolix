@@ -362,13 +362,13 @@ export const MOCK_DASHBOARD_DATA: Record<string, DashboardAnalytics> = {
   mois: {
     period: 'mois',
     periodLabel: '12 derniers mois',
-    conversionRate: '86 %',
+    conversionRate: '59 %',
     kpis: [
-      { id: 'ca', label: 'Chiffre d’affaires (FCFA)', value: '34 470 000', rawValue: 34470000, trend: '+18,6 %', isPositive: true, iconName: 'DollarSign', iconBg: '#E9E3FD', iconFg: '#4B2FC9' },
+      { id: 'ca', label: 'Chiffre d’affaires (FCFA)', value: '34 070 000', rawValue: 34070000, trend: '+18,6 %', isPositive: true, iconName: 'DollarSign', iconBg: '#E9E3FD', iconFg: '#4B2FC9' },
       { id: 'visites', label: 'Visites boutique', value: '132 500', rawValue: 132500, trend: '+15,2 %', isPositive: true, iconName: 'Eye', iconBg: '#E3EEFF', iconFg: '#1F4FA8' },
       { id: 'commandes', label: 'Commandes reçues', value: '3 640', rawValue: 3640, trend: '+16,9 %', isPositive: true, iconName: 'ShoppingBag', iconBg: '#FFEBDD', iconFg: '#8A3D0A' },
-      { id: 'ventes', label: 'Ventes effectives', value: '2 124', rawValue: 2124, trend: '+17,4 %', isPositive: true, iconName: 'CheckCircle2', iconBg: '#E9E3FD', iconFg: '#4B2FC9' },
-      { id: 'conversion', label: 'Taux de conversion', value: '86 %', rawValue: 86, trend: '+1,3 pt', isPositive: true, iconName: 'TrendingUp', iconBg: '#E3EEFF', iconFg: '#1F4FA8' },
+      { id: 'ventes', label: 'Ventes effectives', value: '2 147', rawValue: 2147, trend: '+17,4 %', isPositive: true, iconName: 'CheckCircle2', iconBg: '#E9E3FD', iconFg: '#4B2FC9' },
+      { id: 'conversion', label: 'Taux de conversion', value: '59 %', rawValue: 59, trend: '+1,3 pt', isPositive: true, iconName: 'TrendingUp', iconBg: '#E3EEFF', iconFg: '#1F4FA8' },
     ],
     chartData: [
       { label: 'Nov.', ca: 1850000, ventes: 118, formattedCa: '1,8 M' },
