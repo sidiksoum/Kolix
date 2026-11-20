@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useStore } from '../../context/StoreContext';
 import { useAuth } from '../../context/AuthContext';
+import { useRealtime } from '../../context/RealtimeContext';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
 import { 
@@ -33,6 +34,7 @@ import { cn } from '../../utils/cn';
 import { MerchantStore } from '../../types/store';
 import { Product } from '../../types/product';
 import { productsApi } from '../../api/products.api';
+import { ProductCreateModal } from '../../components/products/ProductCreateModal';
 
 export const BoutiquePage: React.FC = () => {
   const navigate = useNavigate();
@@ -51,8 +53,10 @@ export const BoutiquePage: React.FC = () => {
     updateCustomColor,
     saveCustomization,
     moveSection,
+    refreshStoreData,
     isLoading
   } = useStore();
+  const { subscribe } = useRealtime();
 
   const [activeTab, setActiveTab] = useState<'shops' | 'templates' | 'editor' | 'domains'>('shops');
   const [selectedStore, setSelectedStore] = useState<MerchantStore | null>(activeStore || stores[0] || null);
@@ -78,13 +82,6 @@ export const BoutiquePage: React.FC = () => {
 
   // Modal: Add Product to selected store
   const [showAddProductModal, setShowAddProductModal] = useState<boolean>(false);
-  const [newProdName, setNewProdName] = useState<string>('');
-  const [newProdCategory, setNewProdCategory] = useState<string>('Accessoires & Gadgets');
-  const [newProdPrice, setNewProdPrice] = useState<string>('15000');
-  const [newProdOldPrice, setNewProdOldPrice] = useState<string>('25000');
-  const [newProdStock, setNewProdStock] = useState<string>('20');
-  const [newProdDesc, setNewProdDesc] = useState<string>('');
-  const [isSubmittingProd, setIsSubmittingProd] = useState<boolean>(false);
 
   useEffect(() => {
     if (activeStore) {
@@ -102,6 +99,26 @@ export const BoutiquePage: React.FC = () => {
       loadStoreProducts(selectedStore.id);
     }
   }, [selectedStore?.id]);
+
+  // Écoute des événements temps réel via WebSocket pour rafraîchir boutiques et produits
+  useEffect(() => {
+    const onRealtimeUpdate = () => {
+      refreshStoreData();
+      if (selectedStore?.id) {
+        loadStoreProducts(selectedStore.id);
+      }
+    };
+
+    const unsubStore = subscribe('STORE_UPDATED', onRealtimeUpdate);
+    const unsubProduct = subscribe('PRODUCT_CREATED', onRealtimeUpdate);
+    const unsubOrder = subscribe('ORDER_CREATED', onRealtimeUpdate);
+
+    return () => {
+      unsubStore();
+      unsubProduct();
+      unsubOrder();
+    };
+  }, [subscribe, refreshStoreData, selectedStore?.id]);
 
   const currentProducts: Product[] = selectedStore ? (storeProducts[selectedStore.id] || []) : [];
 
@@ -162,36 +179,7 @@ export const BoutiquePage: React.FC = () => {
     }
   };
 
-  const handleCreateProductSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedStore) return;
-    if (!newProdName.trim() || !newProdPrice) {
-      toast.error('Veuillez renseigner le nom et le prix du produit');
-      return;
-    }
-    try {
-      setIsSubmittingProd(true);
-      await productsApi.create({
-        name: newProdName.trim(),
-        category: newProdCategory,
-        price: parseFloat(newProdPrice),
-        price_old: newProdOldPrice ? parseFloat(newProdOldPrice) : undefined,
-        stock_quantity: parseInt(newProdStock) || 0,
-        description: newProdDesc.trim() || undefined,
-        shop_id: selectedStore.id
-      } as any);
 
-      toast.success(`Produit "${newProdName}" ajouté à ${selectedStore.name} !`);
-      await loadStoreProducts(selectedStore.id);
-      setShowAddProductModal(false);
-      setNewProdName('');
-      setNewProdDesc('');
-    } catch (err: any) {
-      toast.error(err.message || 'Erreur lors de l’ajout du produit');
-    } finally {
-      setIsSubmittingProd(false);
-    }
-  };
 
   // Raw templates list from reference screen
   const rawTemplatesList = [
@@ -206,6 +194,15 @@ export const BoutiquePage: React.FC = () => {
     { id: 'p-home-1', name: 'Habitat Confort', niche: 'Maison et électroménager', style: 'Sobre', color: '#2F7A5B', free: false },
     { id: 'p-wellness-1', name: 'Vitalis Nature', niche: 'Compléments et bien-être', style: 'Moderne', color: '#4E7F2A', free: false },
   ];
+
+  if (isLoading && stores.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] gap-3">
+        <div className="w-10 h-10 border-4 border-[#6C4CF1] border-t-transparent rounded-full animate-spin" />
+        <span className="text-sm font-semibold text-[#5E5A70]">Chargement de votre univers boutique...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-6 animate-in fade-in duration-300">
@@ -1197,119 +1194,17 @@ export const BoutiquePage: React.FC = () => {
       )}
 
       {/* ========================================================================= */}
-      {/* MODAL: AJOUTER UN PRODUIT À LA BOUTIQUE SÉLECTIONNÉE */}
-      {/* ========================================================================= */}
-      {showAddProductModal && selectedStore && (
-        <div className="fixed inset-0 z-50 bg-[#16131F]/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-[#E2DCF8] flex flex-col gap-5 animate-in zoom-in-95 duration-150">
-            <div className="flex justify-between items-start">
-              <div>
-                <h3 className="text-xl font-black text-[#16131F]">Ajouter un produit</h3>
-                <p className="text-xs text-[#5E5A70] mt-0.5">
-                  Le produit sera directement rattaché à <strong>{selectedStore.name}</strong>.
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setShowAddProductModal(false)}
-                className="w-8 h-8 rounded-full bg-[#FAF8FF] text-[#5E5A70] hover:text-[#16131F] flex items-center justify-center"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <form onSubmit={handleCreateProductSubmit} className="flex flex-col gap-4">
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-bold text-[#16131F]">Nom du produit *</label>
-                <input
-                  type="text"
-                  required
-                  value={newProdName}
-                  onChange={(e) => setNewProdName(e.target.value)}
-                  placeholder="Ex: Sérum Éclat 30 ml, Montre X2..."
-                  className="rounded-2xl border border-[#E2DCF8] px-4 py-2.5 text-sm font-semibold text-[#16131F] bg-[#FAF8FF]"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold text-[#16131F]">Catégorie</label>
-                  <input
-                    type="text"
-                    value={newProdCategory}
-                    onChange={(e) => setNewProdCategory(e.target.value)}
-                    className="rounded-2xl border border-[#E2DCF8] px-3 py-2 text-xs font-semibold text-[#16131F] bg-[#FAF8FF]"
-                  />
-                </div>
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold text-[#16131F]">Stock disponible</label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={newProdStock}
-                    onChange={(e) => setNewProdStock(e.target.value)}
-                    className="rounded-2xl border border-[#E2DCF8] px-3 py-2 text-xs font-semibold text-[#16131F] bg-[#FAF8FF]"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold text-[#16131F]">Prix de vente (FCFA) *</label>
-                  <input
-                    type="number"
-                    required
-                    min="100"
-                    value={newProdPrice}
-                    onChange={(e) => setNewProdPrice(e.target.value)}
-                    className="rounded-2xl border border-[#E2DCF8] px-3 py-2 text-xs font-semibold text-[#16131F] bg-[#FAF8FF]"
-                  />
-                </div>
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold text-[#16131F]">Prix barré / promo (FCFA)</label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={newProdOldPrice}
-                    onChange={(e) => setNewProdOldPrice(e.target.value)}
-                    className="rounded-2xl border border-[#E2DCF8] px-3 py-2 text-xs font-semibold text-[#16131F] bg-[#FAF8FF]"
-                  />
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-bold text-[#16131F]">Description courte</label>
-                <textarea
-                  rows={2}
-                  value={newProdDesc}
-                  onChange={(e) => setNewProdDesc(e.target.value)}
-                  placeholder="Points forts du produit, livraison gratuite..."
-                  className="rounded-2xl border border-[#E2DCF8] px-4 py-2 text-xs font-medium text-[#16131F] bg-[#FAF8FF]"
-                />
-              </div>
-
-              <div className="pt-2 flex justify-end gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setShowAddProductModal(false)}
-                  className="rounded-2xl"
-                >
-                  Annuler
-                </Button>
-                <Button
-                  type="submit"
-                  variant="primary"
-                  disabled={isSubmittingProd}
-                  className="rounded-2xl font-extrabold"
-                >
-                  {isSubmittingProd ? 'Ajout en cours...' : 'Ajouter le produit'}
-                </Button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      {/* MODAL: AJOUTER UN PRODUIT COMPLET (Standard Shopify + 3 images MinIO) */}
+      <ProductCreateModal
+        isOpen={showAddProductModal}
+        onClose={() => setShowAddProductModal(false)}
+        onSuccess={() => {
+          if (selectedStore) {
+            loadStoreProducts(selectedStore.id);
+          }
+        }}
+        defaultShopId={selectedStore?.id || activeStore?.id}
+      />
     </div>
   );
 };

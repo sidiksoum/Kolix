@@ -469,41 +469,52 @@ export const ProductPage: React.FC = () => {
 
             {/* Slide renderer */}
             <div className="w-full h-full flex items-center justify-center">
-              {slides[currentSlide].render}
+              {(slides[currentSlide] || slides[0])?.render}
             </div>
 
-            <button
-              onClick={prevSlide}
-              aria-label="Photo précédente"
-              className="absolute left-3 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white text-[#1D1430] text-2xl font-bold flex items-center justify-center shadow-md hover:bg-gray-50 transition-transform active:scale-95 cursor-pointer z-10"
-            >
-              ‹
-            </button>
-            <button
-              onClick={nextSlide}
-              aria-label="Photo suivante"
-              className="absolute right-3 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white text-[#1D1430] text-2xl font-bold flex items-center justify-center shadow-md hover:bg-gray-50 transition-transform active:scale-95 cursor-pointer z-10"
-            >
-              ›
-            </button>
+            {slides.length > 1 && (
+              <>
+                <button
+                  type="button"
+                  onClick={prevSlide}
+                  aria-label="Photo précédente"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/90 backdrop-blur-xs text-[#1D1430] text-2xl font-bold flex items-center justify-center shadow-md hover:bg-white transition-transform active:scale-95 cursor-pointer z-10"
+                >
+                  ‹
+                </button>
+                <button
+                  type="button"
+                  onClick={nextSlide}
+                  aria-label="Photo suivante"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/90 backdrop-blur-xs text-[#1D1430] text-2xl font-bold flex items-center justify-center shadow-md hover:bg-white transition-transform active:scale-95 cursor-pointer z-10"
+                >
+                  ›
+                </button>
+                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-[#1D1430]/70 backdrop-blur-xs text-white text-[11px] font-bold px-2.5 py-1 rounded-full z-10 shadow-xs">
+                  {currentSlide + 1} / {slides.length}
+                </div>
+              </>
+            )}
           </div>
 
-          {/* Thumbs */}
-          <div className="grid grid-cols-4 gap-3 mt-3">
-            {slides.map((s, idx) => (
-              <button
-                key={s.id}
-                type="button"
-                onClick={() => setCurrentSlide(idx)}
-                aria-label={`Voir la photo ${idx + 1}`}
-                className={`border-2 rounded-[14px] bg-[#F1ECFC] p-0 aspect-square overflow-hidden cursor-pointer transition-all ${
-                  currentSlide === idx ? 'border-[#6B3FD4] ring-2 ring-[#6B3FD4]/30' : 'border-transparent opacity-70 hover:opacity-100'
-                }`}
-              >
-                {s.render}
-              </button>
-            ))}
-          </div>
+          {/* Thumbs / Défilement vignettes */}
+          {slides.length > 1 && (
+            <div className={`grid gap-3 mt-3 ${slides.length === 2 ? 'grid-cols-2' : slides.length === 3 ? 'grid-cols-3' : 'grid-cols-4'}`}>
+              {slides.map((s, idx) => (
+                <button
+                  key={s.id}
+                  type="button"
+                  onClick={() => setCurrentSlide(idx)}
+                  aria-label={`Voir la photo ${idx + 1}`}
+                  className={`border-2 rounded-[14px] bg-[#F1ECFC] p-0 aspect-square overflow-hidden cursor-pointer transition-all ${
+                    currentSlide === idx ? 'border-[#6B3FD4] ring-2 ring-[#6B3FD4]/30 scale-[1.02]' : 'border-transparent opacity-70 hover:opacity-100'
+                  }`}
+                >
+                  {s.render}
+                </button>
+              ))}
+            </div>
+          )}
         </section>
 
         {/* Product Infos & Order Form */}

@@ -34,7 +34,9 @@ export const CommandesPage: React.FC = () => {
     setActiveTab,
     updateOrderStatus,
     confirmPayment,
-    createOrder
+    createOrder,
+    refreshOrders,
+    isLoading
   } = useOrders();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -124,6 +126,15 @@ export const CommandesPage: React.FC = () => {
     setNewPlace('');
     setNewNote('');
   };
+
+  if (isLoading && orders.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] gap-3">
+        <div className="w-10 h-10 border-4 border-[#6C4CF1] border-t-transparent rounded-full animate-spin" />
+        <span className="text-sm font-semibold text-[#5E5A70]">Chargement de vos commandes...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-5 animate-in fade-in duration-300">

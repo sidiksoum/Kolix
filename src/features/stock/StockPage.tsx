@@ -28,7 +28,8 @@ export const StockPage: React.FC = () => {
     alerts,
     threshold,
     updateQuantity,
-    updateThreshold
+    updateThreshold,
+    isLoading
   } = useStock();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -59,6 +60,15 @@ export const StockPage: React.FC = () => {
     setSelectedItemForUpdate(null);
     setRestockAmount('10');
   };
+
+  if (isLoading && inventory.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] gap-3">
+        <div className="w-10 h-10 border-4 border-[#6C4CF1] border-t-transparent rounded-full animate-spin" />
+        <span className="text-sm font-semibold text-[#5E5A70]">Chargement de votre stock...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-6 animate-in fade-in duration-300">

@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useOrders } from '../../context/OrdersContext';
+import { useRealtime } from '../../context/RealtimeContext';
 import { clientsApi, ClientItem } from '../../api/clients.api';
 import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
@@ -9,33 +10,45 @@ import { formatFCFA } from '../../utils/formatters';
 
 export const ClientsPage: React.FC = () => {
   const { orders } = useOrders();
+  const { subscribe } = useRealtime();
   const [search, setSearch] = useState('');
   const [apiClients, setApiClients] = useState<ClientItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
 
+  const fetchClients = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const data = await clientsApi.getAll(search.trim() || undefined);
+      setApiClients(data);
+    } catch {
+      // Fallback to local
+    } finally {
+      setIsLoading(false);
+    }
+  }, [search]);
+
   useEffect(() => {
-    let active = true;
-    const fetchClients = async () => {
-      setIsLoading(true);
-      try {
-        const data = await clientsApi.getAll(search.trim() || undefined);
-        if (active) {
-          setApiClients(data);
-        }
-      } catch {
-        // Fallback to local
-      } finally {
-        if (active) setIsLoading(false);
-      }
+    const timer = setTimeout(fetchClients, 300);
+    return () => clearTimeout(timer);
+  }, [fetchClients]);
+
+  // Écoute temps réel
+  useEffect(() => {
+    const onRealtimeUpdate = () => {
+      fetchClients();
     };
 
-    const timer = setTimeout(fetchClients, 300);
+    const unsubOrder = subscribe('ORDER_CREATED', onRealtimeUpdate);
+    const unsubStatus = subscribe('ORDER_STATUS_CHANGED', onRealtimeUpdate);
+    const unsubDashboard = subscribe('DASHBOARD_UPDATE', onRealtimeUpdate);
+
     return () => {
-      active = false;
-      clearTimeout(timer);
+      unsubOrder();
+      unsubStatus();
+      unsubDashboard();
     };
-  }, [search]);
+  }, [subscribe, fetchClients]);
 
   // Merge backend CRM clients with orders (orders from product sheet / manual creation)
   const clientMap = new Map<string, {
@@ -97,6 +110,15 @@ export const ClientsPage: React.FC = () => {
       setIsExporting(false);
     }
   };
+
+  if (isLoading && clients.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] gap-3">
+        <div className="w-10 h-10 border-4 border-[#6C4CF1] border-t-transparent rounded-full animate-spin" />
+        <span className="text-sm font-semibold text-[#5E5A70]">Chargement de votre répertoire clients...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-6 animate-in fade-in duration-300">

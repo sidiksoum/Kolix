@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { Order, OrderStatus, CreateOrderDto } from '../types/order';
 import { ordersApi } from '../api/orders.api';
+import { useRealtime } from './RealtimeContext';
 import { toast } from 'sonner';
 import confetti from 'canvas-confetti';
 
@@ -14,21 +15,22 @@ interface OrdersContextType {
   updateOrderStatus: (id: string, status: OrderStatus) => Promise<void>;
   confirmPayment: (id: string, method: 'Espèces' | 'Mobile Money · Wave' | 'Mobile Money · Orange') => Promise<void>;
   createOrder: (dto: CreateOrderDto) => Promise<Order>;
-  refreshOrders: () => Promise<void>;
+  refreshOrders: (showSpinner?: boolean) => Promise<void>;
   isLoading: boolean;
 }
 
 const OrdersContext = createContext<OrdersContextType | undefined>(undefined);
 
 export const OrdersProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { subscribe } = useRealtime();
   const [orders, setOrders] = useState<Order[]>([]);
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>('KX-1048');
   const [activeTab, setActiveTab] = useState<string>('all');
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  const refreshOrders = async () => {
+  const refreshOrders = useCallback(async (showSpinner = true) => {
     try {
-      setIsLoading(true);
+      if (showSpinner) setIsLoading(true);
       const data = await ordersApi.getAll();
       setOrders(data);
     } catch {
@@ -36,11 +38,28 @@ export const OrdersProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    refreshOrders();
-  }, []);
+    refreshOrders(true);
+  }, [refreshOrders]);
+
+  // Écoute des mises à jour temps réel via WebSocket
+  useEffect(() => {
+    const onRealtimeUpdate = () => {
+      refreshOrders(false);
+    };
+
+    const unsubOrderCreated = subscribe('ORDER_CREATED', onRealtimeUpdate);
+    const unsubStatusChanged = subscribe('ORDER_STATUS_CHANGED', onRealtimeUpdate);
+    const unsubDashboard = subscribe('DASHBOARD_UPDATE', onRealtimeUpdate);
+
+    return () => {
+      unsubOrderCreated();
+      unsubStatusChanged();
+      unsubDashboard();
+    };
+  }, [subscribe, refreshOrders]);
 
   const selectedOrder = orders.find(o => o.id === selectedOrderId) || null;
 

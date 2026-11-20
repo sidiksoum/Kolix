@@ -121,6 +121,35 @@ class ApiClient {
   delete<T>(endpoint: string) {
     return this.request<T>(endpoint, { method: 'DELETE' });
   }
+
+  async uploadFile<T>(endpoint: string, file: File): Promise<T> {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const headers: Record<string, string> = {};
+    if (this.token) {
+      headers['Authorization'] = `Bearer ${this.token}`;
+    }
+
+    const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+    const fullUrl = endpoint.startsWith('http') ? endpoint : `${BASE_URL}${cleanEndpoint}`;
+    const response = await fetch(fullUrl, {
+      method: 'POST',
+      headers,
+      body: formData,
+    });
+
+    if (!response.ok) {
+      let errDetail = response.statusText;
+      try {
+        const json = await response.json();
+        if (json?.message) errDetail = json.message;
+      } catch {}
+      throw new ApiError(response.status, `Échec du téléversement : ${errDetail}`);
+    }
+
+    return (await response.json()) as T;
+  }
 }
 
 export const apiClient = new ApiClient();
