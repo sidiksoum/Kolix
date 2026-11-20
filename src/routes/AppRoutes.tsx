@@ -18,6 +18,8 @@ import { PartenairePage } from '../features/partenaire/PartenairePage';
 import { UtilisateursPage } from '../features/utilisateurs/UtilisateursPage';
 import { ParametresPage } from '../features/parametres/ParametresPage';
 import { ProductPage } from '../features/shop/ProductPage';
+import { AdminLoginPage } from '../features/admin/AdminLoginPage';
+import { KolixAdminPage } from '../features/admin/KolixAdminPage';
 
 export const AppRoutes: React.FC = () => {
   return (
@@ -28,6 +30,11 @@ export const AppRoutes: React.FC = () => {
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/boutique-en-ligne" element={<ProductPage />} />
       <Route path="/shop" element={<ProductPage />} />
+
+      {/* Admin Dedicated Pages */}
+      <Route path="/admin/login" element={<AdminLoginPage />} />
+      <Route path="/admin" element={<KolixAdminPage />} />
+      <Route path="/admin/dashboard" element={<Navigate to="/admin" replace />} />
 
       {/* Authenticated / Dashboard Pages */}
       <Route element={<Layout />}>

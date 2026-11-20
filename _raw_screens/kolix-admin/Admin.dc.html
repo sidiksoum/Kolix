@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Kolix Admin</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+@font-face{font-family:'Moanslight';src:url(/_blob/35093497bd3e814b42acc6f4a70023ae) format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Moanslight';src:url(/_blob/63d1caaa9e7fc661bd2da5a21a386ab3) format('woff2');font-weight:500;font-display:swap}
+@font-face{font-family:'Moanslight';src:url(/_blob/1417851992904ebecf06fc22e4eebc1d) format('woff2');font-weight:600;font-display:swap}
+@font-face{font-family:'Moanslight';src:url(/_blob/8dda07b6d931a7056a927088c9fa8f37) format('woff2');font-weight:700 900;font-display:swap}
+body{margin:0}
+a{color:#5A3BD8}a:hover{color:#3F25A8}
+</style>
+</helmet>
+<div style="font-family: 'Moanslight', 'Helvetica Neue', sans-serif; color: #16131F; background: #F7F5FE; min-height: 100vh; display: flex; flex-wrap: wrap; position: relative">
+
+<nav aria-label="Administration" style="flex: 1 1 240px; max-width: 100%; background: #16131F; color: #FFFFFF; padding: 26px 16px; box-sizing: border-box; display: flex; flex-direction: column; gap: 24px">
+<div style="display: flex; align-items: center; gap: 10px; padding-left: 8px">
+<span style="width: 40px; height: 40px; border-radius: 12px; background: {{accent}}; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700">K</span>
+<span style="display: flex; flex-direction: column"><span style="font-size: 24px; font-weight: 700; line-height: 1">Kolix</span><span style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: #F5C800">ADMINISTRATION</span></span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 2px; font-size: 15px">
+<sc-for list="{{nav}}" as="n" hint-placeholder-count="5">
+<button onClick="{{n.pick}}" aria-current="{{n.current}}" style="{{n.style}}">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{n.icon}}"></path></svg>
+<span style="flex: 1; text-align: left">{{n.label}}</span>
+<sc-if value="{{n.hasBadge}}" hint-placeholder-val="{{ false }}"><span style="font-size: 11px; font-weight: 700; background: #F5C800; color: #16131F; border-radius: 20px; padding: 2px 8px">{{n.badge}}</span></sc-if>
+</button>
+</sc-for>
+</div>
+<div style="margin-top: auto; border-top: 1px solid #2E2A3D; padding-top: 16px; display: flex; align-items: center; gap: 10px">
+<span style="width: 38px; height: 38px; border-radius: 19px; background: #2E2A3D; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700">SS</span>
+<span style="display: flex; flex-direction: column"><span style="font-size: 14px; font-weight: 700">Souleymane Sanogo</span><span style="font-size: 12px; color: #BDB5E8">Super administrateur</span></span>
+</div>
+</nav>
+
+<div style="flex: 999 1 600px; min-width: 0; display: flex; flex-direction: column">
+<header style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; padding: 16px 32px; background: #FFFFFF; border-bottom: 1px solid #EEEAFB">
+<label style="flex: 0 1 520px; display: flex; align-items: center; gap: 10px; background: #F4F1FE; border-radius: 24px; padding: 0 18px; min-height: 46px">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5E5A70" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Rechercher</span>
+<input type="search" placeholder="Rechercher un marchand, un téléphone, un partenaire…" style="flex: 1; font: inherit; font-size: 14px; border: 0; background: transparent; color: #16131F; min-height: 44px">
+</label>
+<span style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: #1E5E3F; background: #E3F4EC; border-radius: 20px; padding: 8px 14px"><span style="width: 8px; height: 8px; border-radius: 4px; background: #2E9E6A"></span>Tous les services opérationnels</span>
+</header>
+
+<main style="padding: 24px 32px 40px; display: flex; flex-direction: column; gap: 18px">
+
+<sc-if value="{{hasToast}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; align-items: center; gap: 10px; background: #241D5E; color: #FFFFFF; border-radius: 14px; padding: 12px 16px; font-size: 14px; font-weight: 600"><span style="flex: 1">{{toast}}</span><button onClick="{{closeToast}}" style="font: inherit; background: transparent; border: 0; color: #FFFFFF; font-weight: 700; cursor: pointer; min-height: 36px">Fermer</button></div>
+</sc-if>
+
+<sc-if value="{{secOverview}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-direction: column; gap: 18px">
+<div style="display: flex; flex-direction: column; gap: 4px"><h1 style="margin: 0; font-size: 30px; font-weight: 700">Vue d’ensemble</h1><span style="font-size: 14px; color: #5E5A70">L’état de la plateforme Kolix, toutes boutiques confondues.</span></div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px">
+<sc-for list="{{kpis}}" as="k" hint-placeholder-count="6">
+<div style="{{k.card}}"><span style="{{k.labelStyle}}">{{k.label}}</span><span style="font-size: 26px; font-weight: 700; white-space: nowrap">{{k.value}}</span><span style="{{k.noteStyle}}">{{k.note}}</span></div>
+</sc-for>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 16px">
+<section style="flex: 2 1 460px; background: #FFFFFF; border-radius: 18px; padding: 20px 22px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 6px 20px rgba(108,76,241,0.06)">
+<h2 style="margin: 0; font-size: 17px; font-weight: 700">Nouvelles inscriptions · 6 derniers mois</h2>
+<div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 14px; height: 200px; align-items: end; border-bottom: 1px solid #E2DCF8">
+<sc-for list="{{signups}}" as="s" hint-placeholder-count="6"><div style="display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end"><span style="font-size: 12px; font-weight: 700">{{s.n}}</span><span style="{{s.bar}}"></span></div></sc-for>
+</div>
+<div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 14px"><sc-for list="{{signups}}" as="s" hint-placeholder-count="6"><span style="text-align: center; font-size: 12px; color: #5E5A70">{{s.label}}</span></sc-for></div>
+</section>
+<section style="flex: 1 1 300px; background: #FFFFFF; border-radius: 18px; padding: 20px 22px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 6px 20px rgba(108,76,241,0.06)">
+<h2 style="margin: 0; font-size: 17px; font-weight: 700">Abonnés payants par plan</h2>
+<sc-for list="{{planSplit}}" as="p" hint-placeholder-count="4">
+<div style="display: flex; flex-direction: column; gap: 6px"><div style="display: flex; justify-content: space-between; font-size: 14px"><span style="font-weight: 600">{{p.name}}</span><span><strong>{{p.n}}</strong> · {{p.mrr}}</span></div><div style="height: 8px; background: #F0EDFB; border-radius: 4px; overflow: hidden"><div style="{{p.bar}}"></div></div></div>
+</sc-for>
+</section>
+</div>
+<section style="background: #FFFFFF; border-radius: 18px; padding: 20px 22px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 6px 20px rgba(108,76,241,0.06)">
+<h2 style="margin: 0 0 4px; font-size: 17px; font-weight: 700">À traiter</h2>
+<sc-for list="{{todo}}" as="t" hint-placeholder-count="4">
+<button onClick="{{t.go}}" style="font: inherit; display: flex; align-items: center; gap: 12px; background: transparent; border: 0; border-top: 1px solid #F0EDFB; padding: 12px 0; min-height: 52px; cursor: pointer; text-align: left; color: #16131F; font-size: 14px">
+<span style="{{t.dot}}">{{t.n}}</span><span style="flex: 1">{{t.label}}</span><span style="color: #5E5A70">Ouvrir ›</span>
+</button>
+</sc-for>
+</section>
+</div>
+</sc-if>
+
+<sc-if value="{{secMerchants}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px"><div style="display: flex; flex-direction: column; gap: 4px"><h1 style="margin: 0; font-size: 30px; font-weight: 700">Marchands</h1><span style="font-size: 14px; color: #5E5A70">{{mCount}}</span></div><button onClick="{{exportM}}" style="font: inherit; font-size: 14px; font-weight: 700; background: #FFFFFF; border: 1px solid #E2DCF8; border-radius: 12px; padding: 0 16px; min-height: 46px; cursor: pointer">Exporter (CSV)</button></div>
+<div style="display: flex; flex-wrap: wrap; gap: 6px"><sc-for list="{{mChips}}" as="c" hint-placeholder-count="5"><button onClick="{{c.pick}}" aria-pressed="{{c.pressed}}" style="{{c.style}}">{{c.label}}</button></sc-for></div>
+<div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start">
+<section style="flex: 999 1 640px; min-width: 0; background: #FFFFFF; border-radius: 18px; box-shadow: 0 6px 20px rgba(108,76,241,0.06); overflow: hidden">
+<div style="overflow-x: auto"><table style="width: 100%; border-collapse: collapse; font-size: 14px; min-width: 860px">
+<thead><tr style="text-align: left; color: #5E5A70; font-size: 12px; background: #FAF9FE"><th style="padding: 12px 8px 12px 18px; font-weight: 700">Boutique</th><th style="padding: 12px 8px; font-weight: 700">Pays</th><th style="padding: 12px 8px; font-weight: 700">Plan</th><th style="padding: 12px 8px; font-weight: 700">Statut</th><th style="padding: 12px 8px; font-weight: 700">Inscription</th><th style="padding: 12px 8px; font-weight: 700; text-align: right">Commandes (30 j)</th><th style="padding: 12px 18px 12px 8px; font-weight: 700; text-align: right">Actions</th></tr></thead>
+<tbody>
+<sc-for list="{{merchants}}" as="m" hint-placeholder-count="10">
+<tr style="{{m.rowStyle}}">
+<td style="padding: 12px 8px 12px 18px"><div style="font-weight: 700">{{m.shop}}</div><div style="font-size: 12px; color: #5E5A70">{{m.owner}} · {{m.phone}}</div></td>
+<td style="padding: 12px 8px">{{m.country}}</td>
+<td style="padding: 12px 8px"><span style="{{m.planStyle}}">{{m.plan}}</span></td>
+<td style="padding: 12px 8px"><span style="{{m.statusStyle}}">{{m.status}}</span></td>
+<td style="padding: 12px 8px; color: #3A3647; white-space: nowrap">{{m.since}}</td>
+<td style="padding: 12px 8px; text-align: right; font-weight: 700">{{m.orders}}</td>
+<td style="padding: 12px 18px 12px 8px; text-align: right; white-space: nowrap"><button onClick="{{m.open}}" style="font: inherit; font-size: 13px; font-weight: 700; background: #16131F; color: #FFFFFF; border: 0; border-radius: 10px; padding: 0 12px; min-height: 38px; cursor: pointer">Gérer</button></td>
+</tr>
+</sc-for>
+</tbody></table></div>
+</section>
+
+<sc-if value="{{hasSel}}" hint-placeholder-val="{{ true }}">
+<aside aria-label="Fiche marchand" style="flex: 1 1 320px; min-width: 0; background: #FFFFFF; border-radius: 18px; padding: 20px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 12px 34px rgba(36,29,94,0.12)">
+<div style="display: flex; justify-content: space-between; gap: 10px"><span style="display: flex; flex-direction: column; gap: 3px"><span style="font-size: 20px; font-weight: 700">{{sel.shop}}</span><span style="font-size: 13px; color: #5E5A70">{{sel.domain}}</span></span><button onClick="{{closeSel}}" aria-label="Fermer" style="width: 40px; height: 40px; border-radius: 20px; border: 0; background: #F4F1FE; cursor: pointer; font-size: 16px; flex: none">✕</button></div>
+<div style="display: flex; gap: 6px; flex-wrap: wrap"><span style="{{sel.planStyle}}">{{sel.plan}}</span><span style="{{sel.statusStyle}}">{{sel.status}}</span></div>
+<div style="background: #F7F5FE; border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 8px; font-size: 13px">
+<div style="display: flex; justify-content: space-between"><span style="color: #5E5A70">Propriétaire</span><strong>{{sel.owner}}</strong></div>
+<div style="display: flex; justify-content: space-between"><span style="color: #5E5A70">Téléphone</span><strong>{{sel.phone}}</strong></div>
+<div style="display: flex; justify-content: space-between"><span style="color: #5E5A70">Pays</span><strong>{{sel.country}}</strong></div>
+<div style="display: flex; justify-content: space-between"><span style="color: #5E5A70">Boutiques</span><strong>{{sel.shops}}</strong></div>
+<div style="display: flex; justify-content: space-between"><span style="color: #5E5A70">Commandes (30 j)</span><strong>{{sel.orders}}</strong></div>
+<div style="display: flex; justify-content: space-between"><span style="color: #5E5A70">Partenaire référent</span><strong>{{sel.ref}}</strong></div>
+</div>
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; font-weight: 700; color: #5E5A70">Changer de plan
+<select value="{{sel.plan}}" onChange="{{changePlan}}" style="font: inherit; font-size: 14px; border: 1px solid #E2DCF8; border-radius: 12px; padding: 0 12px; min-height: 46px; background: #FFFFFF; color: #16131F"><option>Start</option><option>Grow</option><option>Pro</option><option>Empire</option></select></label>
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px">
+<button onClick="{{extendTrial}}" style="font: inherit; font-size: 13px; font-weight: 700; background: #F4F1FE; color: #3F25A8; border: 0; border-radius: 12px; min-height: 44px; cursor: pointer">Prolonger l’essai (+7 j)</button>
+<button onClick="{{impersonate}}" style="font: inherit; font-size: 13px; font-weight: 700; background: #F4F1FE; color: #3F25A8; border: 0; border-radius: 12px; min-height: 44px; cursor: pointer">Voir son espace</button>
+</div>
+<button onClick="{{toggleSuspend}}" style="{{suspendStyle}}">{{suspendLabel}}</button>
+<button onClick="{{askDelete}}" style="font: inherit; font-size: 13px; font-weight: 700; background: transparent; color: #A3202F; border: 1px solid #F2C4C9; border-radius: 12px; min-height: 44px; cursor: pointer">Supprimer le compte</button>
+<span style="font-size: 11px; color: #5E5A70">Chaque action est enregistrée dans le journal d’activité.</span>
+</aside>
+</sc-if>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{secPartners}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; flex-direction: column; gap: 4px"><h1 style="margin: 0; font-size: 30px; font-weight: 700">Partenaires</h1><span style="font-size: 14px; color: #5E5A70">Créez des liens d’affiliation par catégorie et suivez les commissions.</span></div>
+<div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start">
+<section style="flex: 1 1 340px; background: #FFFFFF; border-radius: 18px; padding: 20px 22px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 6px 20px rgba(108,76,241,0.06)">
+<h2 style="margin: 0; font-size: 17px; font-weight: 700">Générer un lien d’affiliation</h2>
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; font-weight: 700; color: #5E5A70">Nom du partenaire<input type="text" value="{{pf.name}}" onChange="{{setPName}}" placeholder="Ex. Amina Traoré" style="font: inherit; font-size: 14px; border: 1px solid #E2DCF8; border-radius: 12px; padding: 0 12px; min-height: 46px; color: #16131F"></label>
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; font-weight: 700; color: #5E5A70">Catégorie<select value="{{pf.cat}}" onChange="{{setPCat}}" style="font: inherit; font-size: 14px; border: 1px solid #E2DCF8; border-radius: 12px; padding: 0 12px; min-height: 46px; background: #FFFFFF; color: #16131F"><sc-for list="{{catNames}}" as="c" hint-placeholder-count="3"><option value="{{c}}">{{c}}</option></sc-for></select></label>
+<div style="display: flex; justify-content: space-between; font-size: 13px; background: #F7F5FE; border-radius: 12px; padding: 10px 12px"><span style="color: #5E5A70">Commission de la catégorie</span><strong>{{pf.rate}}</strong></div>
+<button onClick="{{genLink}}" style="font: inherit; font-size: 14px; font-weight: 700; background: {{accent}}; color: #FFFFFF; border: 0; border-radius: 12px; min-height: 48px; cursor: pointer">Générer le lien et le code</button>
+<sc-if value="{{hasGen}}" hint-placeholder-val="{{ false }}">
+<div style="border: 2px dashed #B9AAFF; border-radius: 14px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; font-size: 13px"><span style="color: #5E5A70">Lien créé</span><strong style="font-size: 15px">{{gen.link}}</strong><span>Code promo : <strong>{{gen.code}}</strong></span></div>
+</sc-if>
+</section>
+<section style="flex: 2 1 520px; min-width: 0; background: #FFFFFF; border-radius: 18px; box-shadow: 0 6px 20px rgba(108,76,241,0.06); overflow: hidden">
+<div style="overflow-x: auto"><table style="width: 100%; border-collapse: collapse; font-size: 14px; min-width: 640px">
+<thead><tr style="text-align: left; color: #5E5A70; font-size: 12px; background: #FAF9FE"><th style="padding: 12px 8px 12px 18px; font-weight: 700">Partenaire</th><th style="padding: 12px 8px; font-weight: 700">Catégorie</th><th style="padding: 12px 8px; font-weight: 700">Code</th><th style="padding: 12px 8px; font-weight: 700; text-align: right">Inscrits</th><th style="padding: 12px 8px; font-weight: 700; text-align: right">Abonnés</th><th style="padding: 12px 18px 12px 8px; font-weight: 700; text-align: right">Commission due</th></tr></thead>
+<tbody><sc-for list="{{partners}}" as="p" hint-placeholder-count="4"><tr style="border-top: 1px solid #F0EDFB"><td style="padding: 12px 8px 12px 18px; font-weight: 700">{{p.name}}</td><td style="padding: 12px 8px; color: #3A3647">{{p.cat}}</td><td style="padding: 12px 8px"><span style="font-size: 12px; font-weight: 700; background: #F4F1FE; color: #3F25A8; border-radius: 8px; padding: 4px 8px">{{p.code}}</span></td><td style="padding: 12px 8px; text-align: right">{{p.signups}}</td><td style="padding: 12px 8px; text-align: right">{{p.subs}}</td><td style="padding: 12px 18px 12px 8px; text-align: right; font-weight: 700; white-space: nowrap">{{p.due}}</td></tr></sc-for></tbody>
+</table></div>
+</section>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{secWithdraw}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; flex-direction: column; gap: 4px"><h1 style="margin: 0; font-size: 30px; font-weight: 700">Retraits à valider</h1><span style="font-size: 14px; color: #5E5A70">Demandes de retrait des Portefeuilles Kolix (marchands et partenaires).</span></div>
+<section style="background: #FFFFFF; border-radius: 18px; box-shadow: 0 6px 20px rgba(108,76,241,0.06); overflow: hidden">
+<div style="overflow-x: auto"><table style="width: 100%; border-collapse: collapse; font-size: 14px; min-width: 760px">
+<thead><tr style="text-align: left; color: #5E5A70; font-size: 12px; background: #FAF9FE"><th style="padding: 12px 8px 12px 18px; font-weight: 700">Demandeur</th><th style="padding: 12px 8px; font-weight: 700">Vers</th><th style="padding: 12px 8px; font-weight: 700">Demandé le</th><th style="padding: 12px 8px; font-weight: 700; text-align: right">Montant</th><th style="padding: 12px 8px; font-weight: 700">Statut</th><th style="padding: 12px 18px 12px 8px; font-weight: 700; text-align: right">Actions</th></tr></thead>
+<tbody><sc-for list="{{withdrawals}}" as="w" hint-placeholder-count="5"><tr style="border-top: 1px solid #F0EDFB">
+<td style="padding: 12px 8px 12px 18px"><div style="font-weight: 700">{{w.who}}</div><div style="font-size: 12px; color: #5E5A70">{{w.kind}}</div></td>
+<td style="padding: 12px 8px; color: #3A3647">{{w.dest}}</td><td style="padding: 12px 8px; color: #3A3647; white-space: nowrap">{{w.date}}</td>
+<td style="padding: 12px 8px; text-align: right; font-weight: 700; white-space: nowrap">{{w.amount}}</td>
+<td style="padding: 12px 8px"><span style="{{w.statusStyle}}">{{w.status}}</span></td>
+<td style="padding: 12px 18px 12px 8px; text-align: right; white-space: nowrap"><sc-if value="{{w.pending}}" hint-placeholder-val="{{ true }}"><button onClick="{{w.approve}}" style="font: inherit; font-size: 13px; font-weight: 700; background: #1E5E3F; color: #FFFFFF; border: 0; border-radius: 10px; padding: 0 12px; min-height: 38px; cursor: pointer">Valider</button> <button onClick="{{w.reject}}" style="font: inherit; font-size: 13px; font-weight: 700; background: transparent; color: #A3202F; border: 1px solid #F2C4C9; border-radius: 10px; padding: 0 12px; min-height: 38px; cursor: pointer">Rejeter</button></sc-if></td>
+</tr></sc-for></tbody>
+</table></div>
+</section>
+</div>
+</sc-if>
+
+<sc-if value="{{secLog}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; flex-direction: column; gap: 4px"><h1 style="margin: 0; font-size: 30px; font-weight: 700">Journal d’activité</h1><span style="font-size: 14px; color: #5E5A70">Toutes les actions des administrateurs, pour la traçabilité.</span></div>
+<section style="background: #FFFFFF; border-radius: 18px; padding: 8px 22px; box-shadow: 0 6px 20px rgba(108,76,241,0.06)">
+<sc-for list="{{log}}" as="l" hint-placeholder-count="6"><div style="display: flex; gap: 14px; padding: 14px 0; border-bottom: 1px solid #F0EDFB; font-size: 14px"><span style="width: 110px; flex: none; color: #5E5A70; font-size: 13px">{{l.when}}</span><span style="flex: 1"><strong>{{l.who}}</strong> {{l.what}}</span></div></sc-for>
+</section>
+</div>
+</sc-if>
+
+</main>
+</div>
+
+<sc-if value="{{confirmOpen}}" hint-placeholder-val="{{ false }}">
+<div style="position: fixed; inset: 0; z-index: 20; background: rgba(22,19,31,0.6); display: flex; align-items: center; justify-content: center; padding: 24px">
+<div role="alertdialog" aria-modal="true" aria-label="Supprimer le compte" style="background: #FFFFFF; border-radius: 22px; width: 440px; max-width: 100%; padding: 24px; display: flex; flex-direction: column; gap: 14px">
+<h2 style="margin: 0; font-size: 20px; font-weight: 700">Supprimer {{sel.shop}} ?</h2>
+<p style="margin: 0; font-size: 14px; color: #3A3647; line-height: 1.5">Le compte, ses boutiques, produits et clients seront supprimés définitivement. Le solde du Portefeuille doit être à zéro. Tapez <strong>SUPPRIMER</strong> pour confirmer.</p>
+<label style="display: flex"><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Confirmation</span><input type="text" value="{{confirmText}}" onChange="{{setConfirm}}" style="flex: 1; font: inherit; font-size: 15px; font-weight: 700; border: 1.5px solid #E2DCF8; border-radius: 12px; padding: 0 12px; min-height: 48px; color: #16131F"></label>
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px">
+<button onClick="{{cancelDelete}}" style="font: inherit; font-size: 14px; font-weight: 700; background: #F4F1FE; color: #3F25A8; border: 0; border-radius: 12px; min-height: 48px; cursor: pointer">Annuler</button>
+<button onClick="{{doDelete}}" disabled="{{cantDelete}}" style="{{deleteStyle}}">Supprimer définitivement</button>
+</div>
+</div>
+</div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#6C4CF1","options":["#6C4CF1","#7C5CFA","#5A3BD8"]},"$preview":{"width":1440,"height":1100}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {
+      sec: 'merchants', chip: 'all', sel: 'm1', confirm: false, confirmText: '', toast: null,
+      pf: { name: '', cat: 'Formateurs e-commerce' }, gen: null,
+      merchants: [
+        { id: 'm1', shop: 'Style & Élégance', domain: 'styleelegance.kolix.shop', owner: 'Aya Kouassi', phone: '+225 07 08 •• •• 48', country: 'Côte d’Ivoire', plan: 'Grow', status: 'Actif', since: '12 juin 2026', orders: 412, shops: 2, ref: 'Amina T. (AMINA10)' },
+        { id: 'm2', shop: 'Tech Express CI', domain: 'techexpress.ci', owner: 'Moussa Diarra', phone: '+225 05 45 •• •• 21', country: 'Côte d’Ivoire', plan: 'Pro', status: 'Actif', since: '3 avr. 2026', orders: 286, shops: 1, ref: 'Amina T. (AMINA10)' },
+        { id: 'm3', shop: 'Dakar Beauté', domain: 'dakarbeaute.kolix.shop', owner: 'Fatou Ndiaye', phone: '+221 77 •• •• 18', country: 'Sénégal', plan: 'Start', status: 'Essai', since: '14 nov. 2026', orders: 9, shops: 1, ref: '—' },
+        { id: 'm4', shop: 'Yao Distribution', domain: 'yaodistribution.com', owner: 'Konan Yao', phone: '+225 07 72 •• •• 64', country: 'Côte d’Ivoire', plan: 'Empire', status: 'Actif', since: '18 août 2026', orders: 1340, shops: 3, ref: 'Kader B. (KADER5)' },
+        { id: 'm5', shop: 'Bamako Wax', domain: 'bamakowax.kolix.shop', owner: 'Mariam Traoré', phone: '+223 76 •• •• 39', country: 'Mali', plan: 'Grow', status: 'Impayé', since: '2 juin 2026', orders: 54, shops: 1, ref: '—' },
+        { id: 'm6', shop: 'Lomé Gadgets', domain: 'lomegadgets.kolix.shop', owner: 'Kodjo Amegah', phone: '+228 90 •• •• 05', country: 'Togo', plan: 'Start', status: 'Suspendu', since: '9 sept. 2026', orders: 0, shops: 1, ref: '—' },
+        { id: 'm7', shop: 'Ouaga Mode', domain: 'ouagamode.kolix.shop', owner: 'Salif Ouédraogo', phone: '+226 70 •• •• 82', country: 'Burkina Faso', plan: 'Pro', status: 'Actif', since: '21 juil. 2026', orders: 198, shops: 1, ref: 'Amina T. (AMINA10)' },
+        { id: 'm8', shop: 'Douala Kids', domain: 'doualakids.kolix.shop', owner: 'Esther Mbarga', phone: '+237 6 •• •• 44', country: 'Cameroun', plan: 'Grow', status: 'Essai', since: '16 nov. 2026', orders: 4, shops: 1, ref: 'Kader B. (KADER5)' }
+      ],
+      withdrawals: [
+        { id: 'w1', who: 'Yao Distribution', kind: 'Marchand · Empire', dest: 'Compte bancaire •••• 4417', date: '19 nov. · 09:12', amount: 1250000, status: 'En attente' },
+        { id: 'w2', who: 'Style & Élégance', kind: 'Marchand · Grow', dest: 'Wave 07 •• •• 12 48', date: '19 nov. · 08:40', amount: 200000, status: 'En attente' },
+        { id: 'w3', who: 'Amina T.', kind: 'Partenaire', dest: 'Orange Money 07 •• •• 90 31', date: '18 nov. · 17:05', amount: 28000, status: 'En attente' },
+        { id: 'w4', who: 'Ouaga Mode', kind: 'Marchand · Pro', dest: 'Orange Money 70 •• •• 82', date: '18 nov. · 11:20', amount: 340000, status: 'En attente' },
+        { id: 'w5', who: 'Tech Express CI', kind: 'Marchand · Pro', dest: 'MTN MoMo 05 •• •• 33 10', date: '17 nov. · 15:44', amount: 410000, status: 'Payé' }
+      ],
+      partners: [
+        { name: 'Amina T.', cat: 'Formateurs e-commerce', code: 'AMINA10', signups: 10, subs: 7, due: 28000 },
+        { name: 'Kader B.', cat: 'Influenceurs', code: 'KADER5', signups: 24, subs: 11, due: 46000 },
+        { name: 'Agence Pixel', cat: 'Agences marketing', code: 'PIXEL25', signups: 6, subs: 5, due: 21000 }
+      ],
+      log: [
+        { when: '19 nov. · 10:02', who: 'Souleymane S.', what: 'a prolongé l’essai de Douala Kids de 7 jours' },
+        { when: '18 nov. · 16:30', who: 'Souleymane S.', what: 'a suspendu Lomé Gadgets (signalement de fraude)' },
+        { when: '18 nov. · 09:15', who: 'Système', what: 'a relancé Bamako Wax pour un paiement échoué' },
+        { when: '17 nov. · 15:50', who: 'Souleymane S.', what: 'a validé le retrait de 410 000 FCFA de Tech Express CI' }
+      ]
+    };
+  }
+  renderVals() {
+    const accent = this.props.accent ?? '#6C4CF1';
+    const st = this.state;
+    const fmt = n => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    const now = () => '19 nov. · ' + new Date().toTimeString().slice(0, 5);
+    const addLog = (what, extra) => this.setState({ ...extra, log: [{ when: now(), who: 'Souleymane S.', what }].concat(this.state.log), toast: what.charAt(0).toUpperCase() + what.slice(1) });
+    const planStyles = { Start: 'background: #ECEAF3; color: #3A3647', Grow: 'background: #EEE9FF; color: #3F25A8', Pro: 'background: #241D5E; color: #FFFFFF', Empire: 'background: #F5C800; color: #16131F' };
+    const statusStyles = { 'Actif': 'background: #E3F4EC; color: #1E5E3F', 'Essai': 'background: #E8EEFB; color: #1F3F8A', 'Impayé': 'background: #FFF0D6; color: #6B4100', 'Suspendu': 'background: #FCE3E0; color: #8A2414' };
+    const badge = s => 'display: inline-block; font-size: 12px; font-weight: 700; border-radius: 8px; padding: 4px 9px; white-space: nowrap; ' + s;
+
+    const pending = st.withdrawals.filter(w => w.status === 'En attente').length;
+    const navDefs = [['overview', 'Vue d’ensemble', 'M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z'], ['merchants', 'Marchands', 'M3 9l1.5-5h15L21 9M3 9h18v11H3zM9 20v-6h6v6'], ['partners', 'Partenaires', 'M16 21v-2a4 4 0 0 0-8 0v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z'], ['withdraw', 'Retraits', 'M3 6h18v13H3zM3 10h18M16 14.5h2', pending], ['log', 'Journal d’activité', 'M4 4h16v16H4zM8 8h8M8 12h8M8 16h5']];
+    const nav = navDefs.map(([id, label, icon, b]) => ({ label, icon, hasBadge: !!b, badge: String(b || ''), current: st.sec === id ? 'page' : 'false', pick: () => this.setState({ sec: id }), style: 'font: inherit; display: flex; align-items: center; gap: 14px; padding: 11px 14px; border-radius: 12px; border: 0; cursor: pointer; color: #FFFFFF; min-height: 46px; ' + (st.sec === id ? 'background: ' + accent + '; font-weight: 700' : 'background: transparent; font-weight: 500') }));
+
+    const paid = st.merchants.filter(m => m.status === 'Actif');
+    const planCounts = { Start: 268, Grow: 214, Pro: 118, Empire: 12 };
+    const prices = { Start: 5000, Grow: 10000, Pro: 15000, Empire: 60000 };
+    const mrr = Object.keys(planCounts).reduce((a, k) => a + planCounts[k] * prices[k], 0);
+    const kc = hero => 'border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 6px; ' + (hero ? 'background: ' + accent + '; color: #FFFFFF' : 'background: #FFFFFF; box-shadow: 0 6px 20px rgba(108,76,241,0.06)');
+    const kpis = [
+      ['Revenu mensuel récurrent', fmt(mrr) + ' FCFA', 'Abonnements actifs', true],
+      ['Marchands inscrits', '1 248', 'Depuis le lancement'],
+      ['Abonnés payants', '612', '49 % des inscrits'],
+      ['En essai gratuit', '184', 'Fin d’essai sous 7 jours'],
+      ['Inscriptions (30 j)', '236', '↗ +14 % vs mois précédent'],
+      ['Essai → payant', '41 %', 'Sur les 90 derniers jours']
+    ].map(([label, value, note, hero]) => ({ label, value, note, card: kc(hero), labelStyle: 'font-size: 13px; font-weight: 600; color: ' + (hero ? '#EDE8FF' : '#5E5A70'), noteStyle: 'font-size: 12px; color: ' + (hero ? '#EDE8FF' : '#5E5A70') }));
+    const su = [['Juin', 98], ['Juil.', 132], ['Août', 161], ['Sept.', 188], ['Oct.', 207], ['Nov.', 236]];
+    const signups = su.map(([label, n], i) => ({ label, n: String(n), bar: 'width: 60%; max-width: 46px; border-radius: 8px 8px 3px 3px; height: ' + Math.round(n / 236 * 160) + 'px; background: ' + (i === su.length - 1 ? accent : '#B9AAFF') }));
+    const planSplit = Object.keys(planCounts).map(k => ({ name: 'Kolix ' + k, n: String(planCounts[k]), mrr: fmt(planCounts[k] * prices[k]) + ' FCFA', bar: 'height: 100%; border-radius: 4px; width: ' + Math.round(planCounts[k] / 268 * 100) + '%; background: ' + (k === 'Empire' ? '#F5C800' : k === 'Pro' ? '#241D5E' : accent) }));
+    const td = (n, bg, fg) => 'min-width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; background: ' + bg + '; color: ' + fg;
+    const todo = [
+      [pending, 'retraits en attente de validation', 'withdraw', '#FFF6CC', '#4D3B00'],
+      [st.merchants.filter(m => m.status === 'Impayé').length, 'abonnement impayé à relancer', 'merchants', '#FFF0D6', '#6B4100'],
+      [st.merchants.filter(m => m.status === 'Essai').length, 'essais qui se terminent cette semaine', 'merchants', '#E8EEFB', '#1F3F8A'],
+      [st.merchants.filter(m => m.status === 'Suspendu').length, 'compte suspendu à réexaminer', 'merchants', '#FCE3E0', '#8A2414']
+    ].map(([n, label, sec, bg, fg]) => ({ n: String(n), label, dot: td(n, bg, fg), go: () => this.setState({ sec }) }));
+
+    const chipDefs = [['all', 'Tous'], ['Actif', 'Actifs'], ['Essai', 'En essai'], ['Impayé', 'Impayés'], ['Suspendu', 'Suspendus']];
+    const mChips = chipDefs.map(([id, label]) => { const on = st.chip === id; const n = id === 'all' ? st.merchants.length : st.merchants.filter(m => m.status === id).length; return { label: label + ' (' + n + ')', pressed: on ? 'true' : 'false', pick: () => this.setState({ chip: id }), style: 'font: inherit; font-size: 13px; border-radius: 20px; padding: 0 14px; min-height: 40px; cursor: pointer; ' + (on ? 'background: #16131F; color: #FFFFFF; font-weight: 700; border: 0' : 'background: #FFFFFF; color: #3A3647; font-weight: 500; border: 1px solid #E2DCF8') }; });
+    const visible = st.chip === 'all' ? st.merchants : st.merchants.filter(m => m.status === st.chip);
+    const merchants = visible.map(m => ({ ...m, orders: fmt(m.orders), planStyle: badge(planStyles[m.plan]), statusStyle: badge(statusStyles[m.status]), open: () => this.setState({ sel: m.id }), rowStyle: 'border-top: 1px solid #F0EDFB; ' + (st.sel === m.id ? 'background: #FAF8FF' : '') }));
+    const selRaw = st.merchants.find(m => m.id === st.sel);
+    const upd = patch => this.state.merchants.map(m => m.id === st.sel ? { ...m, ...patch } : m);
+    const sel = selRaw ? { ...selRaw, orders: fmt(selRaw.orders), shops: String(selRaw.shops), planStyle: badge(planStyles[selRaw.plan]), statusStyle: badge(statusStyles[selRaw.status]) } : { shop: '', domain: '', plan: '', status: '', owner: '', phone: '', country: '', shops: '', orders: '', ref: '', planStyle: '', statusStyle: '' };
+    const suspended = selRaw && selRaw.status === 'Suspendu';
+
+    const cats = { 'Formateurs e-commerce': '20 % pendant 12 mois', 'Influenceurs': '15 % pendant 6 mois', 'Agences marketing': '25 % pendant 12 mois' };
+    const slug = st.pf.name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    const withdrawals = st.withdrawals.map(w => ({ ...w, amount: fmt(w.amount) + ' FCFA', pending: w.status === 'En attente', statusStyle: badge(w.status === 'Payé' ? 'background: #E3F4EC; color: #1E5E3F' : w.status === 'Rejeté' ? 'background: #FCE3E0; color: #8A2414' : 'background: #FFF6CC; color: #4D3B00'), approve: () => addLog('a validé le retrait de ' + fmt(w.amount) + ' FCFA de ' + w.who, { withdrawals: this.state.withdrawals.map(x => x.id === w.id ? { ...x, status: 'Payé' } : x) }), reject: () => addLog('a rejeté le retrait de ' + fmt(w.amount) + ' FCFA de ' + w.who, { withdrawals: this.state.withdrawals.map(x => x.id === w.id ? { ...x, status: 'Rejeté' } : x) }) }));
+
+    return {
+      accent, nav, kpis, signups, planSplit, todo, mChips, merchants, sel, withdrawals,
+      secOverview: st.sec === 'overview', secMerchants: st.sec === 'merchants', secPartners: st.sec === 'partners', secWithdraw: st.sec === 'withdraw', secLog: st.sec === 'log',
+      hasToast: !!st.toast, toast: st.toast || '', closeToast: () => this.setState({ toast: null }),
+      mCount: st.merchants.length + ' comptes affichés · 1 248 au total',
+      exportM: () => this.setState({ toast: 'Export CSV des marchands prêt.' }),
+      hasSel: !!selRaw, closeSel: () => this.setState({ sel: null }),
+      changePlan: e => addLog('a passé ' + selRaw.shop + ' au plan ' + e.target.value, { merchants: upd({ plan: e.target.value }) }),
+      extendTrial: () => addLog('a prolongé l’essai de ' + selRaw.shop + ' de 7 jours', {}),
+      impersonate: () => addLog('a ouvert l’espace de ' + selRaw.shop + ' en lecture seule', {}),
+      suspendLabel: suspended ? 'Réactiver le compte' : 'Suspendre le compte',
+      suspendStyle: 'font: inherit; font-size: 13px; font-weight: 700; border-radius: 12px; min-height: 44px; cursor: pointer; ' + (suspended ? 'background: #1E5E3F; color: #FFFFFF; border: 0' : 'background: #FFF0D6; color: #6B4100; border: 0'),
+      toggleSuspend: () => addLog((suspended ? 'a réactivé ' : 'a suspendu ') + selRaw.shop, { merchants: upd({ status: suspended ? 'Actif' : 'Suspendu' }) }),
+      askDelete: () => this.setState({ confirm: true, confirmText: '' }),
+      confirmOpen: st.confirm && !!selRaw,
+      confirmText: st.confirmText, setConfirm: e => this.setState({ confirmText: e.target.value }),
+      cantDelete: st.confirmText !== 'SUPPRIMER',
+      deleteStyle: 'font: inherit; font-size: 14px; font-weight: 700; border: 0; border-radius: 12px; min-height: 48px; ' + (st.confirmText === 'SUPPRIMER' ? 'background: #A3202F; color: #FFFFFF; cursor: pointer' : 'background: #F2C4C9; color: #FFFFFF; cursor: not-allowed'),
+      cancelDelete: () => this.setState({ confirm: false }),
+      doDelete: () => { if (st.confirmText !== 'SUPPRIMER') return; const name = selRaw.shop; addLog('a supprimé le compte ' + name, { merchants: this.state.merchants.filter(m => m.id !== st.sel), sel: null, confirm: false }); },
+      pf: { ...st.pf, rate: cats[st.pf.cat] }, catNames: Object.keys(cats),
+      setPName: e => this.setState({ pf: { ...this.state.pf, name: e.target.value } }),
+      setPCat: e => this.setState({ pf: { ...this.state.pf, cat: e.target.value } }),
+      genLink: () => { if (!slug) return this.setState({ toast: 'Indiquez le nom du partenaire.' }); const code = slug.slice(0, 6).toUpperCase() + '10'; addLog('a créé le lien partenaire de ' + st.pf.name + ' (' + st.pf.cat + ')', { gen: { link: 'kolix.app/r/' + slug, code }, partners: this.state.partners.concat([{ name: st.pf.name, cat: st.pf.cat, code, signups: 0, subs: 0, due: 0 }]) }); },
+      hasGen: !!st.gen, gen: st.gen || { link: '', code: '' },
+      partners: st.partners.map(p => ({ ...p, signups: String(p.signups), subs: String(p.subs), due: fmt(p.due) + ' FCFA' })),
+      log: st.log
+    };
+  }
+}
+</script>
+</body>
+</html>
