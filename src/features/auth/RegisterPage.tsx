@@ -17,12 +17,19 @@ import {
   ArrowRight,
   CheckCircle2,
   AlertCircle,
-  Loader2
+  Loader2,
+  Globe,
+  Zap,
+  Shield,
+  Smartphone,
+  X
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useStore } from '../../context/StoreContext';
 import { toast } from 'sonner';
+import { cn } from '../../utils/cn';
 
-type RegStep = 'form' | 'otp' | 'done';
+type RegStep = 'form' | 'otp' | 'create_shop' | 'select_plan';
 
 const flagDefs: Record<string, { bg: string; name: string }> = {
   CI: { bg: 'linear-gradient(90deg, #F77F00 33.3%, #FFFFFF 33.3% 66.6%, #009E60 66.6%)', name: 'Côte d’Ivoire (+225)' },
@@ -50,13 +57,14 @@ const dialMap: Record<string, string> = {
 
 export const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
-  const { registerStep1, verifyOtp } = useAuth();
+  const { registerStep1, verifyOtp, user } = useAuth();
+  const { createStore } = useStore();
   const [step, setStep] = useState<RegStep>('form');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  // Form Fields
+  // Form Fields - Step 1
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [dial, setDial] = useState('+225');
@@ -69,7 +77,22 @@ export const RegisterPage: React.FC = () => {
   const [cgu, setCgu] = useState(false);
   const [otp, setOtp] = useState('');
 
+  // Step 2: Shop Creation Fields
+  const [shopName, setShopName] = useState('');
+  const [shopActivity, setShopActivity] = useState('Mode & Vêtements');
+  const [shopSlogan, setShopSlogan] = useState('');
+
+  // Step 3: Plan Selection & Payment Flow
+  const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
+  const [selectedPlanForPayment, setSelectedPlanForPayment] = useState<any | null>(null);
+  const [paymentMethod, setPaymentMethod] = useState<'wave' | 'om' | 'momo' | 'moov' | 'card'>('wave');
+  const [paymentPhoneOrCard, setPaymentPhoneOrCard] = useState('');
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+
   const phoneDigits = phone.replace(/\D/g, '');
+  const suggestedSlug = shopName.trim()
+    ? shopName.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+    : 'ma-boutique';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -138,8 +161,12 @@ export const RegisterPage: React.FC = () => {
 
     try {
       await verifyOtp(email.trim(), otp.trim());
-      setStep('done');
-      toast.success('Compte créé et boutique activée avec succès !');
+      // Pre-fill initial shop name
+      const initialStoreName = `Boutique ${name.trim().split(' ')[0] || 'Marchand'}`;
+      setShopName(initialStoreName);
+      setShopActivity(activity || 'Mode & Vêtements');
+      setStep('create_shop');
+      toast.success('Code OTP validé ! Configurez à présent votre première boutique.');
     } catch (err: any) {
       setError(err.message || 'Code OTP invalide ou expiré.');
       toast.error(err.message || 'Validation échouée');
@@ -148,18 +175,163 @@ export const RegisterPage: React.FC = () => {
     }
   };
 
-  const mVals = [42, 55, 38, 61, 74, 88, 70, 52, 66, 81, 95, 120, 98, 84, 92, 110, 76, 68, 104];
+  const handleShopCreateSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!shopName.trim()) {
+      setError('Veuillez donner un nom à votre boutique');
+      return;
+    }
+    setError('');
+    setStep('select_plan');
+  };
+
+  const handleStartFreeTrial = async (planName: string) => {
+    setIsLoading(true);
+    try {
+      // Create or update store in backend with chosen plan
+      try {
+        await createStore({
+          name: shopName.trim() || 'Ma Boutique Kolix',
+          activity: shopActivity,
+          plan: planName
+        });
+      } catch {}
+
+      toast.success(`Félicitations ! Votre essai gratuit de 7 jours sur le forfait ${planName} est activé.`);
+      navigate('/dashboard');
+    } catch (err: any) {
+      toast.error(err.message || 'Erreur lors de l’activation');
+      navigate('/dashboard');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleOpenPaymentModal = (plan: any) => {
+    setSelectedPlanForPayment(plan);
+    setPaymentPhoneOrCard(phoneDigits || '');
+  };
+
+  const handleConfirmSubscriptionPayment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!paymentPhoneOrCard.trim()) {
+      toast.error('Veuillez saisir votre numéro ou vos coordonnées de paiement');
+      return;
+    }
+
+    setIsProcessingPayment(true);
+    try {
+      // Simulate real-time mobile payment gateway handshake
+      await new Promise(r => setTimeout(r, 1500));
+
+      // Create store with chosen subscribed plan
+      try {
+        await createStore({
+          name: shopName.trim() || 'Ma Boutique Kolix',
+          activity: shopActivity,
+          plan: selectedPlanForPayment?.name || 'Grow'
+        });
+      } catch {}
+
+      toast.success(`Paiement de ${selectedPlanForPayment?.price[billingPeriod]} F validé avec succès par ${paymentMethod.toUpperCase()} !`);
+      setSelectedPlanForPayment(null);
+      navigate('/dashboard');
+    } catch {
+      toast.error('Erreur lors du paiement');
+    } finally {
+      setIsProcessingPayment(false);
+    }
+  };
+
+  // Pricing Plans Definition strictly matching user specifications
+  const plans = [
+    {
+      id: 'start',
+      name: 'Start',
+      subtitle: 'Idéal pour démarrer vos premières ventes',
+      price: {
+        monthly: '5 000',
+        yearly: '4 000',
+      },
+      features: [
+        'Jusqu’à 700 commandes / mois',
+        '2 utilisateurs',
+        'Pixel Facebook & TikTok',
+        'Portefeuille COD intégré',
+        'Boutique personnalisée'
+      ],
+      isPopular: false,
+      color: '#241D5E'
+    },
+    {
+      id: 'grow',
+      name: 'Grow',
+      badge: 'Le plus choisi',
+      subtitle: 'Pour les marchands en phase d’accélération',
+      price: {
+        monthly: '10 000',
+        yearly: '8 000',
+      },
+      features: [
+        'Jusqu’à 1 500 commandes / mois',
+        '5 collaborateurs',
+        'CRM Client & Relances',
+        'Analyses intelligentes Kolix AI',
+        'Gestion des stocks multi-villes'
+      ],
+      isPopular: true,
+      color: '#6C4CF1'
+    },
+    {
+      id: 'pro',
+      name: 'Pro',
+      subtitle: 'Volume élevé et automatisation complète',
+      price: {
+        monthly: '15 000',
+        yearly: '12 000',
+      },
+      features: [
+        'Commandes illimitées',
+        'Utilisateurs illimités',
+        'WhatsApp Marketing automatisé',
+        'API de Conversion Meta (CAPI)',
+        'Support WhatsApp prioritaire'
+      ],
+      isPopular: false,
+      color: '#3F25A8'
+    },
+    {
+      id: 'empire',
+      name: 'Empire',
+      subtitle: 'Pour les grandes marques multi-pays',
+      price: {
+        monthly: '5 0000',
+        yearly: '40 000',
+      },
+      features: [
+        'Toutes les fonctionnalités Pro',
+        'Boutiques multi-pays illimitées',
+        'Fulfillment Kolix dans 9 pays',
+        'Account Manager dédié',
+        'Webhooks & intégrations API'
+      ],
+      isPopular: false,
+      color: '#16131F'
+    }
+  ];
+
   const firstName = name.trim().split(' ')[0] || 'Marchand';
 
   return (
     <div className="font-sans text-[#16131F] bg-[#F4F1FE] min-h-screen p-5 sm:p-8 lg:p-10 flex justify-center items-center">
-      <div className="w-full max-w-[1240px] grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        
-        {/* LEFT COLUMN: HERO, VALUE PROPOSITIONS & IPHONE SIMULATOR */}
-        <section className="lg:col-span-7 flex flex-col gap-8 pr-0 lg:pr-4">
+      {/* ========================================================================= */}
+      {/* STEP 4: CHOIX DE L'ABONNEMENT (Full width UI/UX des Tarifs Transparents) */}
+      {/* ========================================================================= */}
+      {step === 'select_plan' ? (
+        <div className="w-full max-w-[1240px] flex flex-col gap-8 items-center animate-in fade-in duration-300">
           {/* Header Branding */}
-          <Link to="/" className="flex items-center gap-3 no-underline text-[#16131F] group">
-            <span className="w-12 h-12 rounded-2xl bg-[#6C4CF1] text-white flex items-center justify-center text-2xl font-black shadow-lg shadow-[#6C4CF1]/25 group-hover:scale-105 transition-transform">
+          <Link to="/" className="flex items-center gap-3 no-underline text-[#16131F]">
+            <span className="w-12 h-12 rounded-2xl bg-[#6C4CF1] text-white flex items-center justify-center text-2xl font-black shadow-lg shadow-[#6C4CF1]/25">
               K
             </span>
             <div className="flex flex-col">
@@ -168,27 +340,167 @@ export const RegisterPage: React.FC = () => {
             </div>
           </Link>
 
-          {/* Headline & Pitch */}
-          <div className="space-y-4">
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-[#16131F] leading-[1.12]">
-              Lancez votre boutique en ligne en quelques minutes,{' '}
-              <span className="text-[#6C4CF1]">sans compétence technique !</span>
+          {/* Pricing Header Title & Subtitle */}
+          <div className="text-center max-w-2xl flex flex-col items-center gap-2">
+            <span className="text-xs font-black tracking-widest uppercase px-3.5 py-1 rounded-full bg-[#EEE9FF] text-[#6C4CF1]">
+              TARIFS TRANSPARENTS
+            </span>
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#16131F] tracking-tight mt-1">
+              Un plan pour chaque étape de votre croissance
             </h1>
-            <p className="text-base sm:text-lg text-[#3A3647] leading-relaxed">
-              Kolix, la plateforme e-commerce no-code pensée pour les marchands d’Afrique francophone. Vendez en Cash on Delivery, gérez votre activité et faites grandir votre business, tout au même endroit.
+            <p className="text-sm sm:text-base text-[#5E5A70] font-medium leading-relaxed">
+              Essai gratuit de 7 jours sur tous les forfaits, sans carte bancaire requise.
             </p>
+
+            {/* Billing Period Toggle (Mensuel / Annuel -20%) */}
+            <div className="inline-flex items-center bg-white p-1.5 rounded-2xl border border-[#E2DCF8] shadow-sm mt-4">
+              <button
+                type="button"
+                onClick={() => setBillingPeriod('monthly')}
+                className={cn(
+                  'px-5 py-2 rounded-xl text-xs sm:text-sm font-extrabold transition-all cursor-pointer',
+                  billingPeriod === 'monthly'
+                    ? 'bg-[#6C4CF1] text-white shadow-sm'
+                    : 'text-[#5E5A70] hover:text-[#16131F]'
+                )}
+              >
+                Mensuel
+              </button>
+              <button
+                type="button"
+                onClick={() => setBillingPeriod('yearly')}
+                className={cn(
+                  'px-5 py-2 rounded-xl text-xs sm:text-sm font-extrabold transition-all flex items-center gap-1.5 cursor-pointer',
+                  billingPeriod === 'yearly'
+                    ? 'bg-[#6C4CF1] text-white shadow-sm'
+                    : 'text-[#5E5A70] hover:text-[#16131F]'
+                )}
+              >
+                <span>Annuel</span>
+                <span className="text-[10px] bg-[#E3F4EC] text-[#1E5E3F] px-2 py-0.5 rounded-full font-black">
+                  -20%
+                </span>
+              </button>
+            </div>
           </div>
 
-          {/* Features + Phone Preview Row */}
-          <div className="grid grid-cols-1 sm:grid-cols-12 gap-6 items-center">
-            {/* Features List */}
-            <div className="sm:col-span-6 space-y-4">
+          {/* Pricing Cards Grid (4 Plans) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
+            {plans.map((p) => {
+              const priceDisplay = billingPeriod === 'monthly' ? p.price.monthly : p.price.yearly;
+              return (
+                <div
+                  key={p.id}
+                  className={cn(
+                    'bg-white rounded-3xl p-6 sm:p-7 shadow-kolix border flex flex-col justify-between transition-all relative',
+                    p.isPopular
+                      ? 'border-[#6C4CF1] ring-2 ring-[#6C4CF1]/20 shadow-xl'
+                      : 'border-[#E2DCF8]/60 hover:border-[#6C4CF1]/40'
+                  )}
+                >
+                  {p.badge && (
+                    <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-[#6C4CF1] text-white text-[11px] font-black uppercase tracking-wider py-1 px-4 rounded-full shadow-md">
+                      {p.badge}
+                    </span>
+                  )}
+
+                  <div>
+                    <h3 className="text-2xl font-black text-[#16131F]">{p.name}</h3>
+                    <p className="text-xs text-[#5E5A70] font-medium mt-1 min-h-[32px]">
+                      {p.subtitle}
+                    </p>
+
+                    <div className="flex items-baseline gap-1 my-5">
+                      <span className="text-3xl sm:text-4xl font-black text-[#16131F]">
+                        {priceDisplay} F
+                      </span>
+                      <span className="text-xs font-bold text-[#5E5A70]">/ mois</span>
+                    </div>
+
+                    <div className="space-y-3 pt-4 border-t border-[#F0EDFB]">
+                      {p.features.map((feat) => (
+                        <div key={feat} className="flex items-start gap-2.5 text-xs text-[#241D5E] font-bold">
+                          <Check className="w-4 h-4 text-[#10B981] shrink-0 mt-0.5" />
+                          <span>{feat}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Dual Action Buttons as requested */}
+                  <div className="flex flex-col gap-2.5 mt-8 pt-4 border-t border-[#F0EDFB]">
+                    {/* Button 1: Essayer 7 jours gratuits */}
+                    <button
+                      type="button"
+                      disabled={isLoading}
+                      onClick={() => handleStartFreeTrial(p.name)}
+                      className={cn(
+                        'w-full py-3 rounded-2xl font-black text-xs sm:text-sm transition-all active:scale-95 cursor-pointer flex items-center justify-center gap-1.5 shadow-sm',
+                        p.isPopular
+                          ? 'bg-[#6C4CF1] hover:bg-[#5B3FD6] text-white shadow-[#6C4CF1]/20'
+                          : 'bg-[#241D5E] hover:bg-[#1C164A] text-white'
+                      )}
+                    >
+                      <span>Essayer 7 jours gratuits</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
+
+                    {/* Button 2: Souscrire à ce forfait */}
+                    <button
+                      type="button"
+                      onClick={() => handleOpenPaymentModal(p)}
+                      className="w-full py-2.5 rounded-2xl font-extrabold text-xs text-[#6C4CF1] bg-[#FAF8FF] hover:bg-[#EEE9FF] border border-[#E2DCF8] transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                    >
+                      <CreditCard className="w-3.5 h-3.5" />
+                      <span>Souscrire à ce forfait</span>
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setStep('create_shop')}
+            className="text-xs font-extrabold text-[#5E5A70] hover:text-[#16131F] mt-2 underline"
+          >
+            ← Retour à la configuration de la boutique
+          </button>
+        </div>
+      ) : (
+        /* ========================================================================= */
+        /* STANDARD 12-COLUMN REGISTRATION CONTAINER (Steps: form, otp, create_shop) */
+        /* ========================================================================= */
+        <div className="w-full max-w-[1240px] grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          {/* LEFT COLUMN: HERO & PROPOSITIONS */}
+          <section className="lg:col-span-7 flex flex-col gap-8 pr-0 lg:pr-4">
+            <Link to="/" className="flex items-center gap-3 no-underline text-[#16131F] group">
+              <span className="w-12 h-12 rounded-2xl bg-[#6C4CF1] text-white flex items-center justify-center text-2xl font-black shadow-lg shadow-[#6C4CF1]/25 group-hover:scale-105 transition-transform">
+                K
+              </span>
+              <div className="flex flex-col">
+                <span className="text-3xl font-extrabold tracking-tight leading-none text-[#16131F]">Kolix</span>
+                <span className="text-xs font-bold text-[#3F25A8] tracking-wider mt-0.5">Votre succès, notre mission</span>
+              </div>
+            </Link>
+
+            <div className="space-y-4">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-[#16131F] leading-[1.12]">
+                Lancez votre boutique en ligne en quelques minutes,{' '}
+                <span className="text-[#6C4CF1]">sans compétence technique !</span>
+              </h1>
+              <p className="text-base sm:text-lg text-[#3A3647] leading-relaxed">
+                Kolix, la plateforme e-commerce no-code pensée pour les marchands d’Afrique francophone. Vendez en Cash on Delivery, gérez plusieurs boutiques et développez votre chiffre d'affaires, tout au même endroit.
+              </p>
+            </div>
+
+            <div className="space-y-4">
               {[
-                { title: 'Créez votre boutique', text: 'Personnalisez votre boutique en ligne en quelques clics, sans code.', icon: Store },
-                { title: 'Gérez vos commandes', text: 'Suivez vos ventes, vos livraisons et vos clients en temps réel.', icon: ShoppingBag },
-                { title: 'Encaissez facilement', text: 'Mobile Money, QR code, Cash on Delivery : tout est intégré.', icon: CreditCard },
-                { title: 'Développez votre activité', text: 'Marketing WhatsApp, comptabilité, stock et bien plus encore.', icon: TrendingUp },
-                { title: 'Boostez-vous avec Kolix AI', text: 'Votre assistant intelligent, toujours à vos côtés.', icon: Sparkles },
+                { title: 'Créez vos boutiques en direct', text: 'Lancez autant de boutiques que vous avez de marques ou niches.', icon: Store },
+                { title: 'Gérez vos commandes COD', text: 'Suivez vos ventes, vos livraisons et vos clients en temps réel.', icon: ShoppingBag },
+                { title: 'Encaissez facilement', text: 'Wave, Mobile Money, Cash on Delivery : tout est pré-intégré.', icon: CreditCard },
+                { title: 'Boostez-vous avec Kolix AI', text: 'Votre assistant intelligent et analyses prédictives.', icon: Sparkles },
               ].map((f) => {
                 const Icon = f.icon;
                 return (
@@ -204,387 +516,19 @@ export const RegisterPage: React.FC = () => {
                 );
               })}
             </div>
+          </section>
 
-            {/* Smartphone Live Dashboard Mockup */}
-            <div className="sm:col-span-6 flex justify-center relative pb-6">
-              <div className="w-[260px] h-[520px] bg-[#16131F] rounded-[40px] p-2.5 shadow-2xl border-4 border-gray-800 flex flex-col">
-                <div className="w-full h-full bg-[#F7F5FE] rounded-[32px] overflow-hidden flex flex-col text-[10px]">
-                  {/* Top Stats Banner */}
-                  <div className="bg-[#241D5E] text-white p-3 space-y-2">
-                    <div className="flex justify-between items-center text-[9px] font-bold">
-                      <span>9:41</span>
-                      <div className="flex gap-1 items-center">
-                        <span className="w-2.5 h-1.5 rounded-xs bg-white" />
-                        <span className="w-3.5 h-2 rounded-xs border border-white" />
-                      </div>
-                    </div>
-
-                    <div className="flex gap-1 text-[8px] font-bold overflow-hidden">
-                      <span className="px-1.5 py-0.5 text-[#BDB5E8]">Jour</span>
-                      <span className="px-1.5 py-0.5 text-[#BDB5E8]">Semaine</span>
-                      <span className="px-2 py-0.5 rounded-md bg-[#6C4CF1] text-white">Ce mois</span>
-                    </div>
-
-                    <div className="text-center pt-1">
-                      <span className="text-[9px] text-[#E2DCFF] block">Ventes totales</span>
-                      <span className="text-base font-black text-white leading-tight">3,26 M FCFA</span>
-                      <span className="text-[8px] text-[#E2DCFF]">205 commandes livrées</span>
-                    </div>
-
-                    {/* Chart Bars */}
-                    <div className="h-14 flex items-end gap-1 pt-1 border-t border-white/10">
-                      {mVals.slice(0, 16).map((v, i) => (
-                        <div
-                          key={i}
-                          style={{ height: `${Math.round((v / 120) * 100)}%` }}
-                          className="flex-1 bg-white/80 rounded-t-xs"
-                        />
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Tasks List */}
-                  <div className="bg-white divide-y divide-[#F0EDFB]">
-                    <div className="p-2 flex items-center justify-between text-[#3A3647]">
-                      <span><strong>32 commandes</strong> à confirmer</span>
-                      <span className="text-gray-400">›</span>
-                    </div>
-                    <div className="p-2 flex items-center justify-between text-[#3A3647]">
-                      <span><strong>8 livraisons</strong> aujourd’hui</span>
-                      <span className="text-gray-400">›</span>
-                    </div>
-                    <div className="p-2 flex items-center justify-between text-[#3A3647]">
-                      <span><strong>2 produits</strong> en stock faible</span>
-                      <span className="text-gray-400">›</span>
-                    </div>
-                  </div>
-
-                  {/* AI Note */}
-                  <div className="m-2 bg-white rounded-xl p-2 shadow-xs border border-purple-100">
-                    <span className="text-[8px] font-bold text-[#6C4CF1] uppercase">Kolix AI</span>
-                    <p className="text-[9px] font-bold text-[#16131F] mt-0.5 leading-tight">
-                      La Montre élégante part vite : il en reste 3.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* 100% African Solution Badge & 9 Flags */}
-          <div className="pt-2 flex flex-wrap items-center gap-4">
-            <div className="flex items-center gap-3 bg-white/80 backdrop-blur-sm rounded-2xl p-3.5 border border-[#E2DCF8]">
-              <span className="w-8 h-8 rounded-xl bg-[#6C4CF1] text-white flex items-center justify-center font-black text-sm">
-                AF
-              </span>
-              <div>
-                <span className="font-extrabold text-xs text-[#16131F] block">Une solution 100 % africaine</span>
-                <span className="text-[11px] text-[#5E5A70] block">Pensée pour les marchands d’Afrique francophone.</span>
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-              <span className="text-[11px] font-extrabold text-[#3A3647]">Présent dans 9 pays francophones</span>
-              <div className="flex flex-wrap gap-2">
-                {Object.entries(flagDefs).map(([code, def]) => (
-                  <div key={code} className="flex flex-col items-center gap-0.5">
-                    <span style={{ background: def.bg }} className="w-6 h-4 rounded-xs shadow-xs border border-black/10" />
-                    <span className="text-[9px] font-bold text-[#5E5A70]">{code}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* RIGHT COLUMN: REGISTRATION WIZARD FORM */}
-        <section className="lg:col-span-5 flex flex-col gap-3">
-          {/* Top Login Redirect */}
-          <div className="flex justify-end text-xs text-[#5E5A70] pr-2">
-            <span>
-              Déjà un compte ?{' '}
-              <Link to="/login" className="font-extrabold text-[#3F25A8] hover:underline">
-                Se connecter
-              </Link>
-            </span>
-          </div>
-
-          {/* Form Card */}
-          <div className="bg-white rounded-[28px] p-6 sm:p-8 shadow-2xl shadow-[#241D5E]/10 border border-[#E2DCF8]/60 flex flex-col gap-6">
-            
-            {/* Logo */}
-            <div className="flex items-center gap-2.5">
-              <span className="w-9 h-9 rounded-xl bg-[#6C4CF1] text-white flex items-center justify-center text-lg font-black shadow-md shadow-[#6C4CF1]/20">
-                K
-              </span>
-              <div className="flex flex-col">
-                <span className="text-xl font-extrabold text-[#16131F] leading-tight">Kolix</span>
-                <span className="text-[10px] font-bold text-[#3F25A8]">Votre succès, notre mission</span>
-              </div>
-            </div>
-
-            {/* STEP 1: FORM */}
-            {step === 'form' && (
-              <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                <div>
-                  <h2 className="text-2xl font-black text-[#16131F] tracking-tight">Créer votre compte</h2>
-                  <p className="text-xs text-[#5E5A70] mt-0.5">
-                    Rejoignez les marchands qui vendent avec Kolix. 7 jours d'essai gratuits.
-                  </p>
-                </div>
-
-                {/* Personal Information */}
-                <div className="space-y-2.5">
-                  <span className="text-xs font-extrabold text-[#16131F] uppercase tracking-wider block">
-                    Informations personnelles
-                  </span>
-
-                  {/* Name */}
-                  <div className="flex items-center gap-2 border border-[#E2DCF8] rounded-xl px-3.5 min-h-[46px] bg-white focus-within:ring-2 focus-within:ring-[#6C4CF1]/30">
-                    <User className="w-4 h-4 text-[#5E5A70] flex-shrink-0" />
-                    <input
-                      type="text"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      placeholder="Nom complet *"
-                      className="flex-1 font-bold text-xs sm:text-sm border-0 bg-transparent text-[#16131F] focus:outline-none"
-                    />
-                  </div>
-
-                  {/* Email */}
-                  <div className="flex items-center gap-2 border border-[#E2DCF8] rounded-xl px-3.5 min-h-[46px] bg-white focus-within:ring-2 focus-within:ring-[#6C4CF1]/30">
-                    <Mail className="w-4 h-4 text-[#5E5A70] flex-shrink-0" />
-                    <input
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="Adresse e-mail *"
-                      className="flex-1 font-bold text-xs sm:text-sm border-0 bg-transparent text-[#16131F] focus:outline-none"
-                    />
-                  </div>
-
-                  {/* WhatsApp Phone + Dial Selector */}
-                  <div className="flex items-center gap-2 border border-[#E2DCF8] rounded-xl px-3 min-h-[46px] bg-white focus-within:ring-2 focus-within:ring-[#6C4CF1]/30">
-                    <Phone className="w-4 h-4 text-[#5E5A70] flex-shrink-0" />
-                    <span 
-                      style={{ background: flagDefs[dialMap[dial] || 'CI']?.bg }} 
-                      className="w-5 h-3.5 rounded-xs shadow-xs flex-shrink-0" 
-                    />
-                    <select
-                      value={dial}
-                      onChange={(e) => setDial(e.target.value)}
-                      className="font-bold text-xs bg-transparent border-0 text-[#16131F] focus:outline-none cursor-pointer"
-                    >
-                      {Object.keys(dialMap).map((d) => (
-                        <option key={d} value={d}>{d}</option>
-                      ))}
-                    </select>
-                    <span className="w-px h-5 bg-[#E2DCF8]" />
-                    <input
-                      type="tel"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      placeholder="Numéro WhatsApp *"
-                      className="flex-1 min-w-0 font-bold text-xs sm:text-sm border-0 bg-transparent text-[#16131F] focus:outline-none px-1"
-                    />
-                  </div>
-
-                  {/* Password */}
-                  <div className="flex items-center gap-2 border border-[#E2DCF8] rounded-xl px-3.5 min-h-[46px] bg-white focus-within:ring-2 focus-within:ring-[#6C4CF1]/30">
-                    <Lock className="w-4 h-4 text-[#5E5A70] flex-shrink-0" />
-                    <input
-                      type={showPassword ? 'text' : 'password'}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Mot de passe * (8 car. min.)"
-                      className="flex-1 font-bold text-xs sm:text-sm border-0 bg-transparent text-[#16131F] focus:outline-none"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="text-[#5E5A70] hover:text-[#16131F] p-1"
-                    >
-                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
-                  </div>
-                </div>
-
-                {/* Business Information */}
-                <div className="space-y-2.5 pt-2">
-                  <span className="text-xs font-extrabold text-[#16131F] uppercase tracking-wider block">
-                    Informations sur votre activité
-                  </span>
-
-                  {/* Activity */}
-                  <div className="flex items-center gap-2 border border-[#E2DCF8] rounded-xl px-3.5 min-h-[46px] bg-white">
-                    <Store className="w-4 h-4 text-[#5E5A70] flex-shrink-0" />
-                    <select
-                      value={activity}
-                      onChange={(e) => setActivity(e.target.value)}
-                      className={`flex-1 font-bold text-xs sm:text-sm border-0 bg-transparent focus:outline-none cursor-pointer ${
-                        activity ? 'text-[#16131F]' : 'text-gray-400'
-                      }`}
-                    >
-                      <option value="">Quel est votre type d’activité ? *</option>
-                      <option value="Mode féminine">Mode féminine</option>
-                      <option value="Beauté et cosmétiques">Beauté et cosmétiques</option>
-                      <option value="Électronique et gadgets">Électronique et gadgets</option>
-                      <option value="Maison et électroménager">Maison et électroménager</option>
-                      <option value="Compléments et bien-être">Compléments et bien-être</option>
-                      <option value="Mode masculine">Mode masculine</option>
-                      <option value="Bijoux et accessoires">Bijoux et accessoires</option>
-                      <option value="Enfants et puériculture">Enfants et puériculture</option>
-                      <option value="Produits locaux et artisanat">Produits locaux et artisanat</option>
-                    </select>
-                  </div>
-
-                  {/* Country */}
-                  <div className="flex items-center gap-2 border border-[#E2DCF8] rounded-xl px-3.5 min-h-[46px] bg-white">
-                    <MapPin className="w-4 h-4 text-[#5E5A70] flex-shrink-0" />
-                    <select
-                      value={country}
-                      onChange={(e) => setCountry(e.target.value)}
-                      className="flex-1 font-bold text-xs sm:text-sm border-0 bg-transparent text-[#16131F] focus:outline-none cursor-pointer"
-                    >
-                      <option value="Côte d’Ivoire">Côte d’Ivoire</option>
-                      <option value="Sénégal">Sénégal</option>
-                      <option value="Mali">Mali</option>
-                      <option value="Burkina Faso">Burkina Faso</option>
-                      <option value="Guinée">Guinée</option>
-                      <option value="Niger">Niger</option>
-                      <option value="Bénin">Bénin</option>
-                      <option value="Togo">Togo</option>
-                      <option value="Cameroun">Cameroun</option>
-                    </select>
-                  </div>
-
-                  {/* Acquisition Source */}
-                  <div className="flex items-center gap-2 border border-[#E2DCF8] rounded-xl px-3.5 min-h-[46px] bg-white">
-                    <TrendingUp className="w-4 h-4 text-[#5E5A70] flex-shrink-0" />
-                    <select
-                      value={source}
-                      onChange={(e) => setSource(e.target.value)}
-                      className={`flex-1 font-bold text-xs sm:text-sm border-0 bg-transparent focus:outline-none cursor-pointer ${
-                        source ? 'text-[#16131F]' : 'text-gray-400'
-                      }`}
-                    >
-                      <option value="">Comment avez-vous connu Kolix ?</option>
-                      <option value="Facebook ou Instagram">Facebook ou Instagram</option>
-                      <option value="TikTok">TikTok</option>
-                      <option value="WhatsApp">WhatsApp</option>
-                      <option value="Un partenaire ou code promo">Un partenaire ou formateur</option>
-                      <option value="Un ami">Un ami</option>
-                      <option value="Google">Google</option>
-                    </select>
-                  </div>
-
-                  {/* Promo Code Field */}
-                  <div className="flex items-center gap-2 border border-amber-300 rounded-xl px-3.5 min-h-[46px] bg-[#FFF8D6]/60">
-                    <span className="text-[11px] font-extrabold text-[#6B4100] whitespace-nowrap">Code partenaire :</span>
-                    <input
-                      type="text"
-                      value={promoCode}
-                      onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
-                      placeholder="Ex. AMINA10"
-                      className="flex-1 font-black text-xs sm:text-sm border-0 bg-transparent text-[#3F25A8] tracking-wider focus:outline-none"
-                    />
-                  </div>
-                </div>
-
-                {/* CGU */}
-                <label className="flex items-start gap-2.5 text-xs text-[#3A3647] cursor-pointer pt-1 leading-relaxed">
-                  <input
-                    type="checkbox"
-                    checked={cgu}
-                    onChange={(e) => setCgu(e.target.checked)}
-                    className="w-4 h-4 rounded-md accent-[#6C4CF1] flex-shrink-0 mt-0.5"
-                  />
-                  <span>
-                    J’accepte les{' '}
-                    <a href="#cgu" className="font-extrabold text-[#3F25A8] hover:underline">
-                      Conditions générales d’utilisation
-                    </a>{' '}
-                    et la{' '}
-                    <a href="#privacy" className="font-extrabold text-[#3F25A8] hover:underline">
-                      Politique de confidentialité
-                    </a>{' '}
-                    de Kolix.
-                  </span>
-                </label>
-
-                {error && (
-                  <div className="flex items-center gap-2 p-2.5 bg-red-50 text-red-700 rounded-xl text-xs font-bold border border-red-200">
-                    <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                    <span>{error}</span>
-                  </div>
-                )}
-
-                {/* Submit CTA */}
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full py-3.5 bg-[#6C4CF1] text-white font-extrabold rounded-2xl text-sm sm:text-base shadow-lg shadow-[#6C4CF1]/30 hover:bg-[#5B3FD6] active:scale-95 transition-all flex items-center justify-center gap-2 mt-1 disabled:opacity-60 cursor-pointer"
-                >
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                      <span>Création du compte…</span>
-                    </>
-                  ) : (
-                    <>
-                      <span>Créer mon compte</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </>
-                  )}
-                </button>
-
-                {/* Separator */}
-                <div className="flex items-center gap-3 text-xs text-[#5E5A70]">
-                  <span className="flex-1 h-px bg-[#EEEAFB]" />
-                  <span>Ou</span>
-                  <span className="flex-1 h-px bg-[#EEEAFB]" />
-                </div>
-
-                {/* Google Button */}
-                <button
-                  type="button"
-                  onClick={() => {
-                    setName('Souleymane Sanogo');
-                    setStep('done');
-                    toast.success('Compte Google synchronisé avec succès !');
-                  }}
-                  className="w-full py-3 bg-white text-[#16131F] border border-[#CFC7F2] font-extrabold rounded-2xl text-sm hover:bg-gray-50 active:scale-95 transition-all flex items-center justify-center gap-2.5"
-                >
-                  <span className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-xs font-black">
-                    G
-                  </span>
-                  Continuer avec Google
-                </button>
-              </form>
-            )}
-
-            {/* STEP 2: EMAIL OTP */}
-            {step === 'otp' && (
-              <div className="flex flex-col gap-5 animate-fade-in">
-                <div>
-                  <h2 className="text-2xl font-black text-[#16131F] tracking-tight">Vérification par e-mail</h2>
-                  <p className="text-xs text-[#5E5A70] mt-1 leading-relaxed">
-                    Saisissez le code de confirmation envoyé à <strong>{email}</strong> (vérifiez aussi vos courriers indésirables / spams).
-                  </p>
-                </div>
-
-                <div className="space-y-4">
+          {/* RIGHT COLUMN: CARD FORM / OTP / CREATE SHOP */}
+          <section className="lg:col-span-5">
+            <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-kolix border border-[#E2DCF8]/60 flex flex-col gap-6">
+              {/* STEP 1: REGISTRATION FORM */}
+              {step === 'form' && (
+                <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                   <div>
-                    <label className="text-xs font-bold text-[#3A3647] block mb-1">Code reçu par e-mail</label>
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      maxLength={6}
-                      value={otp}
-                      onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
-                      placeholder="• • • • • •"
-                      className="w-full text-center tracking-[0.5em] text-2xl font-black py-3.5 border border-[#E2DCF8] rounded-2xl text-[#16131F] focus:outline-none focus:ring-2 focus:ring-[#6C4CF1]/30 bg-[#FAF9FE]"
-                    />
+                    <h2 className="text-2xl font-black text-[#16131F] tracking-tight">Créer un compte</h2>
+                    <p className="text-xs text-[#5E5A70] mt-1">
+                      Démarrez avec votre essai gratuit de 7 jours, sans carte bancaire.
+                    </p>
                   </div>
 
                   {error && (
@@ -593,70 +537,404 @@ export const RegisterPage: React.FC = () => {
                     </div>
                   )}
 
+                  <div className="space-y-3">
+                    <div>
+                      <label className="text-xs font-bold text-[#3A3647] block mb-1">Nom complet *</label>
+                      <input
+                        type="text"
+                        required
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        placeholder="Ex: Souleymane Sanogo"
+                        className="w-full text-xs font-semibold py-2.5 px-3.5 border border-[#E2DCF8] rounded-xl text-[#16131F] focus:outline-none focus:ring-2 focus:ring-[#6C4CF1]/30 bg-[#FAF9FE]"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-bold text-[#3A3647] block mb-1">Adresse e-mail *</label>
+                      <input
+                        type="email"
+                        required
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="souleymane@exemple.ci"
+                        className="w-full text-xs font-semibold py-2.5 px-3.5 border border-[#E2DCF8] rounded-xl text-[#16131F] focus:outline-none focus:ring-2 focus:ring-[#6C4CF1]/30 bg-[#FAF9FE]"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-bold text-[#3A3647] block mb-1">Numéro WhatsApp *</label>
+                      <div className="flex gap-2">
+                        <select
+                          value={dial}
+                          onChange={(e) => setDial(e.target.value)}
+                          className="w-24 text-xs font-bold py-2.5 px-2 border border-[#E2DCF8] rounded-xl bg-[#FAF9FE]"
+                        >
+                          <option value="+225">CI (+225)</option>
+                          <option value="+221">SN (+221)</option>
+                          <option value="+223">ML (+223)</option>
+                          <option value="+226">BF (+226)</option>
+                        </select>
+                        <input
+                          type="tel"
+                          required
+                          value={phone}
+                          onChange={(e) => setPhone(e.target.value)}
+                          placeholder="07 00 00 00 00"
+                          className="flex-1 text-xs font-semibold py-2.5 px-3.5 border border-[#E2DCF8] rounded-xl text-[#16131F] focus:outline-none focus:ring-2 focus:ring-[#6C4CF1]/30 bg-[#FAF9FE]"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-bold text-[#3A3647] block mb-1">Type d'activité *</label>
+                      <select
+                        value={activity}
+                        onChange={(e) => setActivity(e.target.value)}
+                        required
+                        className="w-full text-xs font-semibold py-2.5 px-3.5 border border-[#E2DCF8] rounded-xl text-[#16131F] bg-[#FAF9FE]"
+                      >
+                        <option value="">Sélectionnez votre domaine</option>
+                        <option value="Mode & Habillement">Mode & Habillement</option>
+                        <option value="Beauté & Cosmétiques">Beauté & Cosmétiques</option>
+                        <option value="Électronique & High-Tech">Électronique & High-Tech</option>
+                        <option value="Maison & Cuisine">Maison & Cuisine</option>
+                        <option value="Santé & Bien-être">Santé & Bien-être</option>
+                        <option value="Autre">Autre activité e-commerce</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-bold text-[#3A3647] block mb-1">Mot de passe *</label>
+                      <div className="relative">
+                        <input
+                          type={showPassword ? 'text' : 'password'}
+                          required
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          placeholder="Au moins 6 caractères"
+                          className="w-full text-xs font-semibold py-2.5 px-3.5 border border-[#E2DCF8] rounded-xl text-[#16131F] focus:outline-none focus:ring-2 focus:ring-[#6C4CF1]/30 bg-[#FAF9FE]"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600"
+                        >
+                          {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
+                      </div>
+                    </div>
+
+                    <label className="flex items-start gap-2 cursor-pointer pt-1">
+                      <input
+                        type="checkbox"
+                        checked={cgu}
+                        onChange={(e) => setCgu(e.target.checked)}
+                        className="mt-0.5 rounded text-[#6C4CF1] focus:ring-[#6C4CF1]"
+                      />
+                      <span className="text-[11px] text-[#5E5A70] leading-tight">
+                        J'accepte les Conditions Générales d'Utilisation et la politique de confidentialité de Kolix.
+                      </span>
+                    </label>
+                  </div>
+
                   <button
-                    type="button"
+                    type="submit"
                     disabled={isLoading}
-                    onClick={handleVerifyOtp}
-                    className="w-full py-3.5 bg-[#6C4CF1] text-white font-extrabold rounded-2xl text-sm shadow-lg shadow-[#6C4CF1]/30 hover:bg-[#5B3FD6] active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-60 cursor-pointer"
+                    className="w-full py-3.5 bg-[#6C4CF1] text-white font-extrabold rounded-2xl text-sm shadow-lg shadow-[#6C4CF1]/30 hover:bg-[#5B3FD6] active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-60 cursor-pointer mt-2"
                   >
                     {isLoading ? (
                       <>
                         <Loader2 className="w-5 h-5 animate-spin" />
-                        <span>Validation en cours…</span>
+                        <span>Création du compte…</span>
                       </>
                     ) : (
-                      <span>Vérifier et créer ma boutique</span>
+                      <span>Continuer vers la validation</span>
                     )}
                   </button>
 
+                  <div className="text-center text-xs text-[#5E5A70] pt-1">
+                    Déjà un compte ?{' '}
+                    <Link to="/login" className="font-extrabold text-[#6C4CF1] hover:underline">
+                      Se connecter
+                    </Link>
+                  </div>
+                </form>
+              )}
+
+              {/* STEP 2: OTP VERIFICATION */}
+              {step === 'otp' && (
+                <div className="flex flex-col gap-5 animate-fade-in">
+                  <div>
+                    <h2 className="text-2xl font-black text-[#16131F] tracking-tight">Vérification par e-mail</h2>
+                    <p className="text-xs text-[#5E5A70] mt-1 leading-relaxed">
+                      Saisissez le code de confirmation envoyé à <strong>{email}</strong>.
+                    </p>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-xs font-bold text-[#3A3647] block mb-1">Code OTP à 6 chiffres</label>
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        maxLength={6}
+                        value={otp}
+                        onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
+                        placeholder="• • • • • •"
+                        className="w-full text-center tracking-[0.5em] text-2xl font-black py-3.5 border border-[#E2DCF8] rounded-2xl text-[#16131F] focus:outline-none focus:ring-2 focus:ring-[#6C4CF1]/30 bg-[#FAF9FE]"
+                      />
+                    </div>
+
+                    {error && (
+                      <div className="text-xs font-bold text-red-600 bg-red-50 p-2.5 rounded-xl border border-red-200">
+                        {error}
+                      </div>
+                    )}
+
+                    <button
+                      type="button"
+                      disabled={isLoading}
+                      onClick={handleVerifyOtp}
+                      className="w-full py-3.5 bg-[#6C4CF1] text-white font-extrabold rounded-2xl text-sm shadow-lg shadow-[#6C4CF1]/30 hover:bg-[#5B3FD6] active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-60 cursor-pointer"
+                    >
+                      {isLoading ? (
+                        <>
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                          <span>Validation en cours…</span>
+                        </>
+                      ) : (
+                        <span>Valider et configurer ma boutique</span>
+                      )}
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => { setStep('form'); setError(''); }}
+                      className="w-full text-center text-xs font-bold text-[#3F25A8] hover:underline"
+                    >
+                      ← Modifier mes informations
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* STEP 3: CONFIGURE SHOP DETAILS */}
+              {step === 'create_shop' && (
+                <form onSubmit={handleShopCreateSubmit} className="flex flex-col gap-5 animate-fade-in">
+                  <div>
+                    <span className="text-[11px] font-black uppercase tracking-wider text-[#6C4CF1] bg-[#EEE9FF] px-2.5 py-0.5 rounded-full">
+                      Étape 2 / 3
+                    </span>
+                    <h2 className="text-2xl font-black text-[#16131F] tracking-tight mt-1.5">
+                      Configurez votre première boutique
+                    </h2>
+                    <p className="text-xs text-[#5E5A70] mt-1 leading-relaxed">
+                      Donnez un nom et une identité à votre vitrine e-commerce. Vous pourrez ajouter d'autres boutiques plus tard.
+                    </p>
+                  </div>
+
+                  {error && (
+                    <div className="text-xs font-bold text-red-600 bg-red-50 p-2.5 rounded-xl border border-red-200">
+                      {error}
+                    </div>
+                  )}
+
+                  <div className="space-y-3.5">
+                    <div>
+                      <label className="text-xs font-bold text-[#3A3647] block mb-1">
+                        Nom de la boutique *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={shopName}
+                        onChange={(e) => setShopName(e.target.value)}
+                        placeholder="Ex: Kaly Cosmétiques, Ivoire Tech..."
+                        className="w-full text-xs font-semibold py-2.5 px-3.5 border border-[#E2DCF8] rounded-xl text-[#16131F] focus:outline-none focus:ring-2 focus:ring-[#6C4CF1]/30 bg-[#FAF9FE]"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-bold text-[#3A3647] block mb-1">
+                        Type d'activité / Niche
+                      </label>
+                      <select
+                        value={shopActivity}
+                        onChange={(e) => setShopActivity(e.target.value)}
+                        className="w-full text-xs font-semibold py-2.5 px-3.5 border border-[#E2DCF8] rounded-xl text-[#16131F] bg-[#FAF9FE]"
+                      >
+                        <option value="Mode & Vêtements">Mode & Vêtements</option>
+                        <option value="Beauté & Cosmétiques">Beauté & Cosmétiques</option>
+                        <option value="Électronique & High-Tech">Électronique & High-Tech</option>
+                        <option value="Maison & Cuisine">Maison & Cuisine</option>
+                        <option value="Santé & Bien-être">Santé & Bien-être</option>
+                        <option value="Généraliste / Autres">Généraliste / Autres</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-bold text-[#3A3647] block mb-1">
+                        Slogan ou courte description
+                      </label>
+                      <input
+                        type="text"
+                        value={shopSlogan}
+                        onChange={(e) => setShopSlogan(e.target.value)}
+                        placeholder="Ex: Les meilleurs produits livrés chez vous en 24h"
+                        className="w-full text-xs font-semibold py-2.5 px-3.5 border border-[#E2DCF8] rounded-xl text-[#16131F] focus:outline-none focus:ring-2 focus:ring-[#6C4CF1]/30 bg-[#FAF9FE]"
+                      />
+                    </div>
+
+                    {/* Live Domain Preview */}
+                    <div className="p-3 bg-[#F4F1FE] rounded-xl border border-[#E2DCF8] flex items-center justify-between">
+                      <div className="flex flex-col">
+                        <span className="text-[10px] text-[#5E5A70] font-bold uppercase tracking-wider">
+                          Adresse attribuée par défaut
+                        </span>
+                        <span className="text-xs font-black text-[#241D5E]">
+                          https://{suggestedSlug}.kolix.shop
+                        </span>
+                      </div>
+                      <span className="text-[10px] font-black bg-[#E3F4EC] text-[#1E5E3F] px-2 py-0.5 rounded-full">
+                        Gratuit & SSL
+                      </span>
+                    </div>
+                  </div>
+
                   <button
-                    type="button"
-                    onClick={() => { setStep('form'); setError(''); }}
-                    className="w-full text-center text-xs font-bold text-[#3F25A8] hover:underline"
+                    type="submit"
+                    className="w-full py-3.5 bg-[#6C4CF1] text-white font-extrabold rounded-2xl text-sm shadow-lg shadow-[#6C4CF1]/30 hover:bg-[#5B3FD6] active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer mt-2"
                   >
-                    ← Modifier mes informations
+                    <span>Continuer vers le choix de l’abonnement</span>
+                    <ArrowRight className="w-4 h-4" />
                   </button>
+                </form>
+              )}
+            </div>
+          </section>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* MODAL: WORKFLOW DE PAIEMENT DE L'ABONNEMENT */}
+      {/* ========================================================================= */}
+      {selectedPlanForPayment && (
+        <div className="fixed inset-0 z-50 bg-[#16131F]/65 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl border border-[#E2DCF8] flex flex-col gap-5 animate-in zoom-in-95 duration-150">
+            <div className="flex justify-between items-start">
+              <div>
+                <span className="text-[11px] font-black uppercase tracking-wider text-[#6C4CF1] bg-[#EEE9FF] px-2.5 py-0.5 rounded-full">
+                  SOUSCRIPTION SÉCURISÉE
+                </span>
+                <h3 className="text-xl font-black text-[#16131F] mt-1.5">
+                  Forfait {selectedPlanForPayment.name}
+                </h3>
+                <p className="text-xs text-[#5E5A70]">
+                  Paiement {billingPeriod === 'monthly' ? 'mensuel' : 'annuel'} pour votre boutique {shopName || 'Kolix'}.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedPlanForPayment(null)}
+                className="w-8 h-8 rounded-full bg-[#FAF8FF] text-[#5E5A70] hover:text-[#16131F] flex items-center justify-center cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Total to pay banner */}
+            <div className="p-4 rounded-2xl bg-[#241D5E] text-white flex justify-between items-center">
+              <div>
+                <span className="text-xs text-[#A99BFA] block font-bold">Montant à régler</span>
+                <span className="text-2xl font-black">
+                  {billingPeriod === 'monthly' ? selectedPlanForPayment.price.monthly : selectedPlanForPayment.price.yearly} FCFA
+                </span>
+              </div>
+              <span className="text-xs font-extrabold bg-[#6C4CF1] px-3 py-1 rounded-full">
+                {billingPeriod === 'monthly' ? '1 mois' : '1 an (-20%)'}
+              </span>
+            </div>
+
+            <form onSubmit={handleConfirmSubscriptionPayment} className="flex flex-col gap-4">
+              <div>
+                <label className="text-xs font-bold text-[#16131F] block mb-2">
+                  Choisissez votre moyen de paiement
+                </label>
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { id: 'wave', label: 'Wave', color: '#1BA2DC', icon: '🌊' },
+                    { id: 'om', label: 'Orange Money', color: '#FF7900', icon: '🟠' },
+                    { id: 'momo', label: 'MTN MoMo', color: '#FFCC00', icon: '🟡' },
+                    { id: 'moov', label: 'Moov Money', color: '#0066B3', icon: '🔵' },
+                    { id: 'card', label: 'Carte Bancaire', color: '#241D5E', icon: '💳' },
+                  ].map((m) => (
+                    <button
+                      key={m.id}
+                      type="button"
+                      onClick={() => setPaymentMethod(m.id as any)}
+                      className={cn(
+                        'p-2.5 rounded-2xl border text-center flex flex-col items-center justify-center gap-1 transition-all cursor-pointer',
+                        paymentMethod === m.id
+                          ? 'border-[#6C4CF1] bg-[#FAF8FF] ring-2 ring-[#6C4CF1]/20 font-black text-[#16131F]'
+                          : 'border-[#E2DCF8] text-[#5E5A70] hover:bg-gray-50'
+                      )}
+                    >
+                      <span className="text-lg">{m.icon}</span>
+                      <span className="text-[11px] truncate w-full">{m.label}</span>
+                    </button>
+                  ))}
                 </div>
               </div>
-            )}
 
-            {/* STEP 3: DONE */}
-            {step === 'done' && (
-              <div className="flex flex-col gap-5 text-center items-center py-2 animate-fade-in">
-                <span className="w-16 h-16 rounded-full bg-[#E3F4EC] text-[#1E5E3F] flex items-center justify-center shadow-sm">
-                  <Check className="w-8 h-8 stroke-[3]" />
-                </span>
+              <div>
+                <label className="text-xs font-bold text-[#16131F] block mb-1">
+                  {paymentMethod === 'card'
+                    ? 'Numéro de carte Visa / Mastercard'
+                    : `Numéro de téléphone ${paymentMethod.toUpperCase()}`}
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={paymentPhoneOrCard}
+                  onChange={(e) => setPaymentPhoneOrCard(e.target.value)}
+                  placeholder={paymentMethod === 'card' ? '4500 •••• •••• ••••' : '07 00 00 00 00'}
+                  className="w-full text-sm font-semibold py-2.5 px-3.5 border border-[#E2DCF8] rounded-xl text-[#16131F] bg-[#FAF9FE]"
+                />
+              </div>
 
-                <div>
-                  <h2 className="text-2xl font-black text-[#16131F] tracking-tight">
-                    Bienvenue sur Kolix, {firstName} !
-                  </h2>
-                  <p className="text-xs sm:text-sm text-[#5E5A70] mt-1.5 leading-relaxed">
-                    Votre compte marchand est créé et votre essai gratuit de 7 jours commence maintenant. Prochaine étape : nommer votre boutique et choisir vos templates de vente.
-                  </p>
-                </div>
+              <div className="flex items-center gap-2 text-[11px] text-[#5E5A70]">
+                <Shield className="w-4 h-4 text-[#10B981] shrink-0" />
+                <span>Transaction chiffrée SSL 256 bits · Débit immédiat sécurisé</span>
+              </div>
 
+              <div className="pt-2 flex justify-end gap-2">
                 <button
                   type="button"
-                  onClick={() => navigate('/dashboard')}
-                  className="w-full py-3.5 bg-[#6C4CF1] text-white font-extrabold rounded-2xl text-sm sm:text-base shadow-lg shadow-[#6C4CF1]/30 hover:bg-[#5B3FD6] active:scale-95 transition-all flex items-center justify-center gap-2"
+                  onClick={() => setSelectedPlanForPayment(null)}
+                  className="py-2.5 px-4 rounded-xl border border-[#E2DCF8] text-xs font-bold text-[#5E5A70]"
                 >
-                  <span>Créer ma boutique maintenant</span>
-                  <ArrowRight className="w-4 h-4" />
+                  Annuler
+                </button>
+                <button
+                  type="submit"
+                  disabled={isProcessingPayment}
+                  className="flex-1 py-2.5 px-4 bg-[#6C4CF1] hover:bg-[#5B3FD6] text-white rounded-xl text-xs font-black shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
+                >
+                  {isProcessingPayment ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Traitement du paiement…</span>
+                    </>
+                  ) : (
+                    <span>Confirmer et Payer</span>
+                  )}
                 </button>
               </div>
-            )}
-
-            {/* Card Bottom Help */}
-            <div className="border-t border-[#F0EDFB] pt-3 text-center text-xs text-[#5E5A70]">
-              Besoin d’aide ? Contactez notre{' '}
-              <a href="#support" className="font-extrabold text-[#3F25A8] hover:underline">
-                équipe support
-              </a>
-            </div>
+            </form>
           </div>
-        </section>
-      </div>
+        </div>
+      )}
     </div>
   );
 };

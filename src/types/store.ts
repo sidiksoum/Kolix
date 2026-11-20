@@ -32,14 +32,37 @@ export interface MerchantStore {
   id: string;
   name: string;
   domain: string;
-  templateId: string;
-  templateName: string;
+  custom_domain?: string;
+  customDomain?: string;
+  templateId?: string;
+  templateName?: string;
   productsCount: number;
   ordersCount7d: number;
-  status: 'En ligne' | 'En maintenance';
+  status: 'En ligne' | 'En maintenance' | string;
   isActive: boolean;
   initials: string;
   accentColor: string;
+  plan?: string;
+  maxOrders?: number;
+  ordersCount?: number;
+  logoUrl?: string;
+}
+
+export interface CreateStoreDto {
+  name: string;
+  slug?: string;
+  activity?: string;
+  plan?: string;
+  accent_color?: string;
+  template_id?: string;
+}
+
+export interface UpdateStoreDto {
+  name?: string;
+  custom_domain?: string;
+  accent_color?: string;
+  plan?: string;
+  status?: string;
 }
 
 export interface StoreSectionConfig {

@@ -57,6 +57,7 @@ export interface Product {
 }
 
 export interface CreateProductDto {
+  shop_id?: string;
   name: string;
   price: number;
   priceOld?: number;

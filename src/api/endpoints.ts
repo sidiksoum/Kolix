@@ -37,8 +37,12 @@ export const API_ENDPOINTS = {
     ACCOUNTS: '/api/v1/wallet/accounts',
   },
   STORE: {
+    BASE: '/api/v1/stores',
     TEMPLATES: '/api/v1/stores/templates',
     MY_STORES: '/api/v1/stores/my-stores',
+    CREATE: '/api/v1/stores',
+    DETAIL: (storeId: string) => `/api/v1/stores/${storeId}`,
+    PRODUCTS: (storeId: string) => `/api/v1/stores/${storeId}/products`,
     CUSTOMIZATION: (storeId: string) => `/api/v1/stores/${storeId}/customization`,
     DOMAINS: (storeId: string) => `/api/v1/stores/${storeId}/domains`,
   },

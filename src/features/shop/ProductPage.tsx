@@ -50,7 +50,7 @@ const BlenderGraphic: React.FC<{ bg: string; liquid?: string; extra?: React.Reac
 
 export const ProductPage: React.FC = () => {
   const { createOrder } = useOrders();
-  const { activeTemplate } = useStore();
+  const { activeTemplate, activeStore } = useStore();
   const [searchParams] = useSearchParams();
 
   const productParam = searchParams.get('product') || searchParams.get('p') || searchParams.get('slug');
@@ -78,6 +78,10 @@ export const ProductPage: React.FC = () => {
       }
     } catch {}
   }
+
+  const currentShopName = (productData as any)?.shop_name || activeStore?.name || "Élégance & Tech Abidjan";
+  const currentShopLogo = (productData as any)?.shop_logo || activeStore?.logoUrl || null;
+  const currentShopAccent = activeStore?.accentColor || "#6C4CF1";
 
   const activeProductName = productData?.name || CONFIG.product.name;
   const activeHeadline = productData?.fiche_produit?.headline || productData?.name || "BlendGo, le mixeur qui tient dans votre sac";
@@ -423,8 +427,18 @@ export const ProductPage: React.FC = () => {
 
       {/* Header */}
       <header className="max-w-[1180px] mx-auto px-5 py-4 flex items-center justify-between">
-        <a href="#" className="bricolage font-extrabold text-2xl text-[#1D1430] no-underline tracking-tight">
-          Ma<span className="text-[#6B3FD4]">Boutique</span>
+        <a href="#" className="flex items-center gap-2.5 bricolage font-extrabold text-2xl text-[#1D1430] no-underline tracking-tight">
+          {currentShopLogo ? (
+            <img src={currentShopLogo} alt={currentShopName} className="w-9 h-9 rounded-xl object-cover shadow-sm" />
+          ) : (
+            <span
+              className="w-9 h-9 rounded-xl flex items-center justify-center text-white text-base font-extrabold shadow-sm"
+              style={{ backgroundColor: currentShopAccent }}
+            >
+              {currentShopName.charAt(0).toUpperCase()}
+            </span>
+          )}
+          <span>{currentShopName}</span>
         </a>
         <a
           href={CONFIG.whatsapp ? `https://wa.me/${CONFIG.whatsapp}` : "#orderForm"}
@@ -943,7 +957,7 @@ export const ProductPage: React.FC = () => {
 
       {/* Footer */}
       <footer className="text-center text-xs text-[#6A6080] py-8 px-5 border-t border-[#E3DAF7] pb-24 md:pb-8">
-        © {new Date().getFullYear()} MaBoutique · Boutique propulsée par Kolix
+        © {new Date().getFullYear()} {currentShopName} · Boutique propulsée par Kolix COD
       </footer>
 
       {/* Mobile Sticky CTA Bar */}

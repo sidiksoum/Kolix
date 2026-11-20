@@ -100,7 +100,7 @@ export const productsApi = {
 
   async create(dto: CreateProductDto): Promise<Product> {
     try {
-      const payload = {
+      const payload: any = {
         name: dto.name,
         category: dto.category,
         price: dto.price,
@@ -114,6 +114,9 @@ export const productsApi = {
         images: dto.images || [],
         fiche_produit: dto.fiche_produit || null
       };
+      if (dto.shop_id) {
+        payload.shop_id = dto.shop_id;
+      }
 
       const res = await apiClient.post<any>(API_ENDPOINTS.PRODUCTS.BASE, payload);
       const created = normalizeProduct(res.data || res);

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useStore } from '../../context/StoreContext';
 import { productsApi } from '../../api/products.api';
 import { Product, ProductStatus, FicheProduitData } from '../../types/product';
 import { Button } from '../../components/ui/Button';
@@ -31,6 +32,7 @@ import { cn } from '../../utils/cn';
 
 export const ProduitsPage: React.FC = () => {
   const { user } = useAuth();
+  const { stores, activeStore } = useStore();
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedTab, setSelectedTab] = useState<string>('Tous');
@@ -39,6 +41,9 @@ export const ProduitsPage: React.FC = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [modalActiveTab, setModalActiveTab] = useState<'base' | 'hero' | 'packs' | 'benefits' | 'specs' | 'faq'>('base');
+
+  // Form State - Selected Shop for multi-boutique
+  const [selectedShopId, setSelectedShopId] = useState<string>('');
 
   // Form State - Shopify Core
   const [name, setName] = useState('');
@@ -245,6 +250,7 @@ export const ProduitsPage: React.FC = () => {
       };
 
       await productsApi.create({
+        shop_id: selectedShopId || activeStore?.id || undefined,
         name: name.trim(),
         price: parseInt(price, 10),
         priceOld: priceOld ? parseInt(priceOld, 10) : undefined,
@@ -481,7 +487,7 @@ export const ProduitsPage: React.FC = () => {
                       </td>
                       <td className="py-3 px-3">
                         <Link
-                          to={`/boutique-en-ligne?product=${encodeURIComponent(targetParam)}${user?.currentShop?.id ? `&shop=${encodeURIComponent(user.currentShop.id)}` : ''}`}
+                          to={`/boutique-en-ligne?product=${encodeURIComponent(targetParam)}&shop=${encodeURIComponent(product.shop_id || activeStore?.id || user?.currentShop?.id || '')}`}
                           target="_blank"
                           rel="noreferrer"
                           className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#F4F1FE] hover:bg-[#EAE5FC] text-[#6C4CF1] font-bold text-xs transition-colors border border-[#6C4CF1]/20 shadow-xs"
@@ -622,6 +628,25 @@ export const ProduitsPage: React.FC = () => {
             {/* TAB 1: Base & Pricing */}
             {modalActiveTab === 'base' && (
               <div className="flex flex-col gap-3.5 animate-in fade-in">
+                {stores.length > 0 && (
+                  <div>
+                    <label className="text-xs font-bold text-[#5E5A70] block mb-1">
+                      Boutique de destination *
+                    </label>
+                    <select
+                      value={selectedShopId || activeStore?.id || stores[0]?.id || ''}
+                      onChange={(e) => setSelectedShopId(e.target.value)}
+                      className="w-full min-h-[44px] rounded-2xl bg-[#FAF8FF] border border-[#E2DCF8] px-3.5 text-sm font-bold text-[#241D5E] outline-none focus:border-[#6C4CF1]"
+                    >
+                      {stores.map((st) => (
+                        <option key={st.id} value={st.id}>
+                          {st.name} ({st.domain})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
                 <div>
                   <label className="text-xs font-bold text-[#5E5A70] block mb-1">
                     Nom du produit *
