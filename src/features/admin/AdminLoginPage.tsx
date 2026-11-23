@@ -8,10 +8,11 @@ import { authApi } from '../../api/auth.api';
 export const AdminLoginPage: React.FC = () => {
   const navigate = useNavigate();
 
-  const [identifier, setIdentifier] = useState('admin@kolix.ci');
-  const [password, setPassword] = useState('kolix2026!');
+  const savedAdminIdent = typeof window !== 'undefined' ? (localStorage.getItem('kolix_admin_remembered') || '') : '';
+  const [identifier, setIdentifier] = useState(savedAdminIdent);
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(true);
+  const [rememberMe, setRememberMe] = useState(!!savedAdminIdent);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -56,6 +57,12 @@ export const AdminLoginPage: React.FC = () => {
         } else {
           throw apiErr;
         }
+      }
+
+      if (rememberMe) {
+        localStorage.setItem('kolix_admin_remembered', cleanIdent);
+      } else {
+        localStorage.removeItem('kolix_admin_remembered');
       }
 
       toast.success('Connexion à la console d’administration réussie.');

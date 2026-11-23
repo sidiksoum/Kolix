@@ -37,7 +37,7 @@ export const StockPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [selectedItemForUpdate, setSelectedItemForUpdate] = useState<InventoryItem | null>(null);
-  const [restockAmount, setRestockAmount] = useState<string>('10');
+  const [restockAmount, setRestockAmount] = useState<string>('');
 
   useEffect(() => {
     setPageLoading(true);
@@ -67,7 +67,7 @@ export const StockPage: React.FC = () => {
 
     await updateQuantity(selectedItemForUpdate.id, qty);
     setSelectedItemForUpdate(null);
-    setRestockAmount('10');
+    setRestockAmount('');
   };
 
   if (pageLoading || (isLoading && inventory.length === 0)) {
@@ -378,6 +378,7 @@ export const StockPage: React.FC = () => {
               </label>
               <Input
                 type="number"
+                placeholder="Ex: 10"
                 value={restockAmount}
                 onChange={(e) => setRestockAmount(e.target.value)}
                 required

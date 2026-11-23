@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useAuth } from '../../context/AuthContext';
+import { useStore } from '../../context/StoreContext';
 import { 
   Store, 
   Globe, 
@@ -22,20 +24,22 @@ import { toast } from 'sonner';
 type SectionType = 'general' | 'domain' | 'cod' | 'marketing' | 'notif' | 'account' | 'plan';
 
 export const ParametresPage: React.FC = () => {
+  const { user } = useAuth();
+  const { activeStore } = useStore();
   const [activeSection, setActiveSection] = useState<SectionType>('cod');
   
   // General form state
-  const [shopName, setShopName] = useState('Style & Élégance');
-  const [slogan, setSlogan] = useState('Élégance au quotidien');
-  const [niche, setNiche] = useState('Mode féminine');
+  const [shopName, setShopName] = useState(activeStore?.name || '');
+  const [slogan, setSlogan] = useState('');
+  const [niche, setNiche] = useState('');
   const [country, setCountry] = useState('Côte d’Ivoire');
   const [currency, setCurrency] = useState('FCFA (XOF)');
-  const [shopPhone, setShopPhone] = useState('07 00 00 00 01');
-  const [shopEmail, setShopEmail] = useState('contact@styleelegance.ci');
-  const [shopAddress, setShopAddress] = useState('Cocody Angré, Abidjan');
+  const [shopPhone, setShopPhone] = useState('');
+  const [shopEmail, setShopEmail] = useState(user?.email || '');
+  const [shopAddress, setShopAddress] = useState('');
 
   // Domain state
-  const [domQuery, setDomQuery] = useState('styleelegance');
+  const [domQuery, setDomQuery] = useState(activeStore?.domain ? activeStore.domain.split('.')[0] : '');
   const [domExt, setDomExt] = useState('.ci');
   const [ownedDomains, setOwnedDomains] = useState<string[]>([]);
 
@@ -56,8 +60,8 @@ export const ParametresPage: React.FC = () => {
   );
 
   // Marketing state
-  const [pixelId, setPixelId] = useState('1094839201948271');
-  const [pixelConnected, setPixelConnected] = useState(true);
+  const [pixelId, setPixelId] = useState('');
+  const [pixelConnected, setPixelConnected] = useState(false);
 
   // Notification matrix state
   const [notifs, setNotifs] = useState({
@@ -167,6 +171,7 @@ export const ParametresPage: React.FC = () => {
                     type="text" 
                     value={shopName} 
                     onChange={(e) => setShopName(e.target.value)} 
+                    placeholder="Ex: Style & Élégance"
                     className="w-full border border-[#E2DCF8] rounded-xl px-3.5 py-2.5 text-sm font-bold text-[#16131F]"
                   />
                 </div>
@@ -176,6 +181,7 @@ export const ParametresPage: React.FC = () => {
                     type="text" 
                     value={slogan} 
                     onChange={(e) => setSlogan(e.target.value)} 
+                    placeholder="Ex: Élégance au quotidien"
                     className="w-full border border-[#E2DCF8] rounded-xl px-3.5 py-2.5 text-sm text-[#16131F]"
                   />
                 </div>
@@ -185,6 +191,7 @@ export const ParametresPage: React.FC = () => {
                     type="text" 
                     value={niche} 
                     onChange={(e) => setNiche(e.target.value)} 
+                    placeholder="Ex: Mode féminine"
                     className="w-full border border-[#E2DCF8] rounded-xl px-3.5 py-2.5 text-sm text-[#16131F]"
                   />
                 </div>
@@ -194,6 +201,7 @@ export const ParametresPage: React.FC = () => {
                     type="text" 
                     value={country} 
                     onChange={(e) => setCountry(e.target.value)} 
+                    placeholder="Ex: Côte d’Ivoire"
                     className="w-full border border-[#E2DCF8] rounded-xl px-3.5 py-2.5 text-sm text-[#16131F]"
                   />
                 </div>
@@ -212,6 +220,7 @@ export const ParametresPage: React.FC = () => {
                     type="text" 
                     value={shopPhone} 
                     onChange={(e) => setShopPhone(e.target.value)} 
+                    placeholder="Ex: 07 00 00 00 00"
                     className="w-full border border-[#E2DCF8] rounded-xl px-3.5 py-2.5 text-sm text-[#16131F]"
                   />
                 </div>
@@ -221,6 +230,7 @@ export const ParametresPage: React.FC = () => {
                     type="email" 
                     value={shopEmail} 
                     onChange={(e) => setShopEmail(e.target.value)} 
+                    placeholder="Ex: contact@styleelegance.ci"
                     className="w-full border border-[#E2DCF8] rounded-xl px-3.5 py-2.5 text-sm text-[#16131F]"
                   />
                 </div>
@@ -230,6 +240,7 @@ export const ParametresPage: React.FC = () => {
                     type="text" 
                     value={shopAddress} 
                     onChange={(e) => setShopAddress(e.target.value)} 
+                    placeholder="Ex: Cocody Angré, Abidjan"
                     className="w-full border border-[#E2DCF8] rounded-xl px-3.5 py-2.5 text-sm text-[#16131F]"
                   />
                 </div>
@@ -604,7 +615,7 @@ export const ParametresPage: React.FC = () => {
                     type="text" 
                     value={pixelId} 
                     onChange={(e) => setPixelId(e.target.value)}
-                    placeholder="Identifiant du Pixel (15 à 16 chiffres)"
+                    placeholder="Ex: 1094839201948271"
                     className="flex-1 min-w-[240px] border border-[#E2DCF8] rounded-2xl px-4 py-3 text-sm font-bold text-[#16131F]"
                   />
                   <button

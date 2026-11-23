@@ -52,8 +52,8 @@ export const ComptabilitePage: React.FC = () => {
   // Form State for new charge
   const [formCat, setFormCat] = useState('Publicité');
   const [formLabel, setFormLabel] = useState('');
-  const [formAmount, setFormAmount] = useState<number | ''>(25000);
-  const [formDate, setFormDate] = useState('19/10/2026');
+  const [formAmount, setFormAmount] = useState<number | ''>('');
+  const [formDate, setFormDate] = useState(new Date().toLocaleDateString('fr-FR'));
   const [formMode, setFormMode] = useState('Mobile Money');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -226,7 +226,7 @@ export const ComptabilitePage: React.FC = () => {
       setIsSubmitting(false);
       setModalOpen(false);
       setFormLabel('');
-      setFormAmount(25000);
+      setFormAmount('');
     }
   };
 
@@ -638,6 +638,7 @@ export const ComptabilitePage: React.FC = () => {
                     type="number"
                     value={formAmount}
                     onChange={e => setFormAmount(e.target.value === '' ? '' : Number(e.target.value))}
+                    placeholder="Ex: 25 000"
                     required
                     className="w-full border border-[#E2DCF8] rounded-xl px-3.5 py-2.5 text-sm font-bold text-[#16131F] focus:outline-none focus:ring-2 focus:ring-[#6C4CF1]/30"
                   />
@@ -648,6 +649,7 @@ export const ComptabilitePage: React.FC = () => {
                     type="text"
                     value={formDate}
                     onChange={e => setFormDate(e.target.value)}
+                    placeholder="Ex: 19/10/2026"
                     className="w-full border border-[#E2DCF8] rounded-xl px-3.5 py-2.5 text-sm font-bold text-[#16131F] focus:outline-none"
                   />
                 </div>

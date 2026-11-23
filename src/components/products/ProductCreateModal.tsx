@@ -2,17 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { Modal } from '../ui/Modal';
 import { Input } from '../ui/Input';
 import { Button } from '../ui/Button';
-import { 
-  Package, 
-  Layers, 
-  Sparkles, 
-  Tag, 
-  ShieldCheck, 
-  HelpCircle, 
-  Upload, 
-  X, 
-  Loader2, 
-  Check, 
+import {
+  Package,
+  Layers,
+  Sparkles,
+  Tag,
+  ShieldCheck,
+  HelpCircle,
+  Upload,
+  X,
+  Loader2,
+  Check,
   ImageIcon,
   Plus
 } from 'lucide-react';
@@ -49,10 +49,10 @@ export const ProductCreateModal: React.FC<ProductCreateModalProps> = ({
   const [name, setName] = useState('');
   const [category, setCategory] = useState('Électronique & Maison');
   const [type, setType] = useState('Simple');
-  const [price, setPrice] = useState('15900');
-  const [priceOld, setPriceOld] = useState('25000');
-  const [stockQuantity, setStockQuantity] = useState('14');
-  const [stockMain, setStockMain] = useState('Entrepôt Abidjan');
+  const [price, setPrice] = useState('');
+  const [priceOld, setPriceOld] = useState('');
+  const [stockQuantity, setStockQuantity] = useState('');
+  const [stockMain, setStockMain] = useState('');
   const [hasCountdown, setHasCountdown] = useState(true);
 
   // Images state (up to 3 images)
@@ -63,37 +63,37 @@ export const ProductCreateModal: React.FC<ProductCreateModalProps> = ({
   // Form State - Fiche Produit COD
   const [headline, setHeadline] = useState('');
   const [leadSubtitle, setLeadSubtitle] = useState('');
-  const [stockUrgency, setStockUrgency] = useState('14');
+  const [stockUrgency, setStockUrgency] = useState('');
 
   // Packs State
-  const [offer1Label, setOffer1Label] = useState('1 unité (Mixeur portable)');
-  const [offer1Price, setOffer1Price] = useState('15900');
-  const [offer2Label, setOffer2Label] = useState('Pack Duo (2 mixeurs) - Économisez 3 000 F');
-  const [offer2Price, setOffer2Price] = useState('28900');
-  const [offer3Label, setOffer3Label] = useState('Pack Famille (3 mixeurs)');
-  const [offer3Price, setOffer3Price] = useState('39900');
+  const [offer1Label, setOffer1Label] = useState('');
+  const [offer1Price, setOffer1Price] = useState('');
+  const [offer2Label, setOffer2Label] = useState('');
+  const [offer2Price, setOffer2Price] = useState('');
+  const [offer3Label, setOffer3Label] = useState('');
+  const [offer3Price, setOffer3Price] = useState('');
 
   // Benefits State
-  const [b1Icon, setB1Icon] = useState('⚡');
-  const [b1Title, setB1Title] = useState('Rechargeable USB-C partout');
-  const [b1Desc, setB1Desc] = useState('Rechargez avec n’importe quel chargeur de smartphone en 2 à 3 heures.');
-  const [b2Icon, setB2Icon] = useState('🥭');
-  const [b2Title, setB2Title] = useState('Moteur puissant 22 000 tr/min');
-  const [b2Desc, setB2Desc] = useState('Fruits, glaçons et graines mixés sans effort en moins de 30 secondes.');
-  const [b3Icon, setB3Icon] = useState('🛡️');
-  const [b3Title, setB3Title] = useState('Sécurité intégrée');
-  const [b3Desc, setB3Desc] = useState('Les lames ne tournent pas si le récipient n’est pas parfaitement vissé.');
+  const [b1Icon, setB1Icon] = useState('');
+  const [b1Title, setB1Title] = useState('');
+  const [b1Desc, setB1Desc] = useState('');
+  const [b2Icon, setB2Icon] = useState('');
+  const [b2Title, setB2Title] = useState('');
+  const [b2Desc, setB2Desc] = useState('');
+  const [b3Icon, setB3Icon] = useState('');
+  const [b3Title, setB3Title] = useState('');
+  const [b3Desc, setB3Desc] = useState('');
 
   // Specs & Box State
-  const [specCapacity, setSpecCapacity] = useState('400 ml');
-  const [specBattery, setSpecBattery] = useState('4000 mAh (15 mixages)');
-  const [inTheBox, setInTheBox] = useState('1× Mixeur portable BlendGo, 1× Câble USB-C, 1× Manuel en français');
+  const [specCapacity, setSpecCapacity] = useState('');
+  const [specBattery, setSpecBattery] = useState('');
+  const [inTheBox, setInTheBox] = useState('');
 
   // FAQ State
-  const [faq1Q, setFaq1Q] = useState('Comment se passe le paiement ?');
-  const [faq1A, setFaq1A] = useState('Vous ne payez rien d’avance ! Vous réglez directement en espèces ou par Mobile Money au livreur lors de la remise de votre colis.');
-  const [faq2Q, setFaq2Q] = useState('Quel est le délai de livraison ?');
-  const [faq2A, setFaq2A] = useState('Livraison en 24h à 48h maximum partout à Abidjan et expédition rapide à l’intérieur du pays.');
+  const [faq1Q, setFaq1Q] = useState('');
+  const [faq1A, setFaq1A] = useState('');
+  const [faq2Q, setFaq2Q] = useState('');
+  const [faq2A, setFaq2A] = useState('');
 
   useEffect(() => {
     if (defaultShopId) {
@@ -179,30 +179,30 @@ export const ProductCreateModal: React.FC<ProductCreateModalProps> = ({
         stockUrgency: parseInt(stockUrgency, 10) || 14,
         countdownEnabled: hasCountdown,
         offers: [
-          { qty: 1, label: offer1Label.trim(), price: parseInt(offer1Price, 10) || parseInt(price, 10) },
-          { qty: 2, label: offer2Label.trim(), price: parseInt(offer2Price, 10) || Math.round(parseInt(price, 10) * 1.8), best: true },
-          { qty: 3, label: offer3Label.trim(), price: parseInt(offer3Price, 10) || Math.round(parseInt(price, 10) * 2.5) }
+          { qty: 1, label: offer1Label.trim() || '1 unité', price: parseInt(offer1Price, 10) || parseInt(price, 10) || 0 },
+          ...(offer2Label.trim() || offer2Price ? [{ qty: 2, label: offer2Label.trim() || 'Pack Duo (2 unités)', price: parseInt(offer2Price, 10) || Math.round((parseInt(price, 10) || 0) * 1.8), best: true }] : []),
+          ...(offer3Label.trim() || offer3Price ? [{ qty: 3, label: offer3Label.trim() || 'Pack Famille (3 unités)', price: parseInt(offer3Price, 10) || Math.round((parseInt(price, 10) || 0) * 2.5) }] : [])
         ],
         benefits: [
-          { icon: b1Icon.trim(), title: b1Title.trim(), description: b1Desc.trim() },
-          { icon: b2Icon.trim(), title: b2Title.trim(), description: b2Desc.trim() },
-          { icon: b3Icon.trim(), title: b3Title.trim(), description: b3Desc.trim() }
+          ...(b1Title.trim() ? [{ icon: b1Icon.trim() || '⚡', title: b1Title.trim(), description: b1Desc.trim() }] : []),
+          ...(b2Title.trim() ? [{ icon: b2Icon.trim() || '🥭', title: b2Title.trim(), description: b2Desc.trim() }] : []),
+          ...(b3Title.trim() ? [{ icon: b3Icon.trim() || '🛡️', title: b3Title.trim(), description: b3Desc.trim() }] : [])
         ],
         specs: [
-          { label: 'Capacité', value: specCapacity.trim() },
-          { label: 'Autonomie batterie', value: specBattery.trim() }
+          ...(specCapacity.trim() ? [{ label: 'Capacité', value: specCapacity.trim() }] : []),
+          ...(specBattery.trim() ? [{ label: 'Autonomie batterie', value: specBattery.trim() }] : [])
         ],
         inTheBox: inTheBox.trim(),
         faqs: [
-          { question: faq1Q.trim(), answer: faq1A.trim() },
-          { question: faq2Q.trim(), answer: faq2A.trim() }
+          ...(faq1Q.trim() ? [{ question: faq1Q.trim(), answer: faq1A.trim() }] : []),
+          ...(faq2Q.trim() ? [{ question: faq2Q.trim(), answer: faq2A.trim() }] : [])
         ]
       };
 
       await productsApi.create({
         shop_id: selectedShopId || activeStore?.id || undefined,
         name: name.trim(),
-        price: parseInt(price, 10),
+        price: parseInt(price, 10) || 0,
         priceOld: priceOld ? parseInt(priceOld, 10) : undefined,
         stockQuantity: parseInt(stockQuantity, 10) || 0,
         stockMain,
@@ -219,8 +219,35 @@ export const ProductCreateModal: React.FC<ProductCreateModalProps> = ({
 
       // Reset fields
       setName('');
+      setPrice('');
+      setPriceOld('');
+      setStockQuantity('');
+      setStockMain('');
       setHeadline('');
       setLeadSubtitle('');
+      setStockUrgency('');
+      setOffer1Label('');
+      setOffer1Price('');
+      setOffer2Label('');
+      setOffer2Price('');
+      setOffer3Label('');
+      setOffer3Price('');
+      setB1Icon('');
+      setB1Title('');
+      setB1Desc('');
+      setB2Icon('');
+      setB2Title('');
+      setB2Desc('');
+      setB3Icon('');
+      setB3Title('');
+      setB3Desc('');
+      setSpecCapacity('');
+      setSpecBattery('');
+      setInTheBox('');
+      setFaq1Q('');
+      setFaq1A('');
+      setFaq2Q('');
+      setFaq2A('');
       setUploadedImages([]);
     } catch (err: any) {
       toast.error(err.message || 'Erreur lors de la création du produit');
@@ -365,7 +392,7 @@ export const ProductCreateModal: React.FC<ProductCreateModalProps> = ({
                     {isUploadingImage ? (
                       <div className="flex items-center gap-2 text-xs font-bold text-[#6C4CF1]">
                         <Loader2 className="w-4 h-4 animate-spin" />
-                        <span>Téléversement MinIO en cours…</span>
+                        <span>Téléversement en cours…</span>
                       </div>
                     ) : (
                       <>
@@ -374,7 +401,7 @@ export const ProductCreateModal: React.FC<ProductCreateModalProps> = ({
                           Cliquez pour ajouter une photo ou glissez-déposez ici
                         </span>
                         <span className="text-[10px] text-[#5E5A70]">
-                          PNG, JPG, WebP jusqu’à 8 Mo · Stockage MinIO Cloud
+                          PNG, JPG, WebP jusqu’à 8 Mo
                         </span>
                       </>
                     )}
@@ -470,6 +497,7 @@ export const ProductCreateModal: React.FC<ProductCreateModalProps> = ({
                   </label>
                   <Input
                     type="number"
+                    placeholder="Ex: 50"
                     value={stockQuantity}
                     onChange={(e) => setStockQuantity(e.target.value)}
                     required
@@ -480,6 +508,7 @@ export const ProductCreateModal: React.FC<ProductCreateModalProps> = ({
                     Entrepôt de stockage principal
                   </label>
                   <Input
+                    placeholder="Ex: Entrepôt Abidjan"
                     value={stockMain}
                     onChange={(e) => setStockMain(e.target.value)}
                   />
@@ -533,7 +562,7 @@ export const ProductCreateModal: React.FC<ProductCreateModalProps> = ({
                 </label>
                 <Input
                   type="number"
-                  placeholder="14"
+                  placeholder="Ex: 14"
                   value={stockUrgency}
                   onChange={(e) => setStockUrgency(e.target.value)}
                 />
@@ -550,8 +579,8 @@ export const ProductCreateModal: React.FC<ProductCreateModalProps> = ({
                   Pack 1 : 1 unité
                 </span>
                 <div className="grid grid-cols-2 gap-2">
-                  <Input value={offer1Label} onChange={(e) => setOffer1Label(e.target.value)} placeholder="Libellé" />
-                  <Input type="number" value={offer1Price} onChange={(e) => setOffer1Price(e.target.value)} placeholder="Prix FCFA" />
+                  <Input value={offer1Label} onChange={(e) => setOffer1Label(e.target.value)} placeholder="Ex: 1 unité (Standard)" />
+                  <Input type="number" value={offer1Price} onChange={(e) => setOffer1Price(e.target.value)} placeholder="Ex: 15 900" />
                 </div>
               </div>
 
@@ -561,8 +590,8 @@ export const ProductCreateModal: React.FC<ProductCreateModalProps> = ({
                   Pack 2 : Pack Recommandé (Le plus choisi) ⭐
                 </span>
                 <div className="grid grid-cols-2 gap-2">
-                  <Input value={offer2Label} onChange={(e) => setOffer2Label(e.target.value)} placeholder="Libellé" />
-                  <Input type="number" value={offer2Price} onChange={(e) => setOffer2Price(e.target.value)} placeholder="Prix FCFA" />
+                  <Input value={offer2Label} onChange={(e) => setOffer2Label(e.target.value)} placeholder="Ex: Pack Duo (2 unités) - Économisez 3 000 F" />
+                  <Input type="number" value={offer2Price} onChange={(e) => setOffer2Price(e.target.value)} placeholder="Ex: 28 900" />
                 </div>
               </div>
 
@@ -572,8 +601,8 @@ export const ProductCreateModal: React.FC<ProductCreateModalProps> = ({
                   Pack 3 : Pack Famille / Lot 3
                 </span>
                 <div className="grid grid-cols-2 gap-2">
-                  <Input value={offer3Label} onChange={(e) => setOffer3Label(e.target.value)} placeholder="Libellé" />
-                  <Input type="number" value={offer3Price} onChange={(e) => setOffer3Price(e.target.value)} placeholder="Prix FCFA" />
+                  <Input value={offer3Label} onChange={(e) => setOffer3Label(e.target.value)} placeholder="Ex: Pack Famille (3 unités)" />
+                  <Input type="number" value={offer3Price} onChange={(e) => setOffer3Price(e.target.value)} placeholder="Ex: 39 900" />
                 </div>
               </div>
             </div>
@@ -595,11 +624,12 @@ export const ProductCreateModal: React.FC<ProductCreateModalProps> = ({
                     type="text"
                     value={b.icon}
                     onChange={(e) => b.setIcon(e.target.value)}
+                    placeholder="⚡"
                     className="w-12 text-center text-lg p-2 rounded-xl bg-white border border-[#E2DCF8]"
                   />
                   <div className="flex-1 flex flex-col gap-1.5">
-                    <Input value={b.title} onChange={(e) => b.setTitle(e.target.value)} placeholder="Titre" />
-                    <Input value={b.desc} onChange={(e) => b.setDesc(e.target.value)} placeholder="Explication courte" />
+                    <Input value={b.title} onChange={(e) => b.setTitle(e.target.value)} placeholder="Ex: Titre du bénéfice" />
+                    <Input value={b.desc} onChange={(e) => b.setDesc(e.target.value)} placeholder="Ex: Explication courte du bénéfice" />
                   </div>
                 </div>
               ))}
@@ -612,7 +642,7 @@ export const ProductCreateModal: React.FC<ProductCreateModalProps> = ({
               <div className="grid grid-cols-2 gap-2">
                 <div>
                   <label className="text-xs font-bold text-[#5E5A70] block mb-1">Caractéristique 1</label>
-                  <Input value={specCapacity} onChange={(e) => setSpecCapacity(e.target.value)} placeholder="Ex: Capacité 400ml" />
+                  <Input value={specCapacity} onChange={(e) => setSpecCapacity(e.target.value)} placeholder="Ex: Capacité 400 ml" />
                 </div>
                 <div>
                   <label className="text-xs font-bold text-[#5E5A70] block mb-1">Caractéristique 2</label>
@@ -622,7 +652,7 @@ export const ProductCreateModal: React.FC<ProductCreateModalProps> = ({
 
               <div>
                 <label className="text-xs font-bold text-[#5E5A70] block mb-1">Contenu du coffret livré au client</label>
-                <Input value={inTheBox} onChange={(e) => setInTheBox(e.target.value)} placeholder="1x appareil, 1x câble, 1x manuel" />
+                <Input value={inTheBox} onChange={(e) => setInTheBox(e.target.value)} placeholder="Ex: 1× appareil, 1× câble USB-C, 1× manuel" />
               </div>
             </div>
           )}
@@ -632,10 +662,11 @@ export const ProductCreateModal: React.FC<ProductCreateModalProps> = ({
             <div className="flex flex-col gap-3.5 animate-in fade-in">
               <div className="p-3 rounded-2xl border border-[#E2DCF8] bg-[#FAF8FF] space-y-2">
                 <span className="text-xs font-bold text-[#241D5E]">Question fréquente 1 (Paiement)</span>
-                <Input value={faq1Q} onChange={(e) => setFaq1Q(e.target.value)} />
+                <Input value={faq1Q} onChange={(e) => setFaq1Q(e.target.value)} placeholder="Ex: Comment se passe le paiement ?" />
                 <textarea
                   rows={2}
                   className="w-full rounded-xl bg-white border border-[#E2DCF8] p-2 text-xs font-medium"
+                  placeholder="Ex: Vous ne payez rien d’avance ! Vous réglez directement en espèces ou par Mobile Money au livreur lors de la remise de votre colis."
                   value={faq1A}
                   onChange={(e) => setFaq1A(e.target.value)}
                 />
@@ -643,10 +674,11 @@ export const ProductCreateModal: React.FC<ProductCreateModalProps> = ({
 
               <div className="p-3 rounded-2xl border border-[#E2DCF8] bg-[#FAF8FF] space-y-2">
                 <span className="text-xs font-bold text-[#241D5E]">Question fréquente 2 (Livraison)</span>
-                <Input value={faq2Q} onChange={(e) => setFaq2Q(e.target.value)} />
+                <Input value={faq2Q} onChange={(e) => setFaq2Q(e.target.value)} placeholder="Ex: Quel est le délai de livraison ?" />
                 <textarea
                   rows={2}
                   className="w-full rounded-xl bg-white border border-[#E2DCF8] p-2 text-xs font-medium"
+                  placeholder="Ex: Livraison en 24h à 48h maximum partout à Abidjan et expédition rapide à l’intérieur du pays."
                   value={faq2A}
                   onChange={(e) => setFaq2A(e.target.value)}
                 />

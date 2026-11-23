@@ -62,8 +62,8 @@ export const CommandesPage: React.FC = () => {
   const [newPhone, setNewPhone] = useState('');
   const [newCity, setNewCity] = useState('Cocody');
   const [newPlace, setNewPlace] = useState('');
-  const [newProduct, setNewProduct] = useState('Montre connectée X2');
-  const [newAmount, setNewAmount] = useState('22000');
+  const [newProduct, setNewProduct] = useState('');
+  const [newAmount, setNewAmount] = useState('');
   const [newNote, setNewNote] = useState('');
 
   // Status metadata for tabs & badges
@@ -132,6 +132,8 @@ export const CommandesPage: React.FC = () => {
     setNewClient('');
     setNewPhone('');
     setNewPlace('');
+    setNewProduct('');
+    setNewAmount('');
     setNewNote('');
   };
 
@@ -589,7 +591,7 @@ export const CommandesPage: React.FC = () => {
               <label className="text-xs font-bold text-[#5E5A70] block mb-1">Montant à encaisser (FCFA) *</label>
               <Input
                 type="number"
-                placeholder="22000"
+                placeholder="Ex: 22 000"
                 value={newAmount}
                 onChange={(e) => setNewAmount(e.target.value)}
                 required

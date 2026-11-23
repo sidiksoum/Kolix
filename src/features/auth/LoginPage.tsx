@@ -22,13 +22,14 @@ const flagMap: Record<string, string> = {
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const { login, user } = useAuth();
+  const savedIdentifier = typeof window !== 'undefined' ? (localStorage.getItem('kolix_remembered_identifier') || '') : '';
   const [view, setView] = useState<LoginView>('login');
-  const [mode, setMode] = useState<LoginMode>('email');
+  const [mode, setMode] = useState<LoginMode>(savedIdentifier && !savedIdentifier.includes('@') ? 'phone' : 'email');
   const [dial, setDial] = useState('+225');
-  const [identifier, setIdentifier] = useState('souleymane@kolix.ci');
-  const [password, setPassword] = useState('kolix2026!');
+  const [identifier, setIdentifier] = useState(savedIdentifier);
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [remember, setRemember] = useState(true);
+  const [remember, setRemember] = useState(!!savedIdentifier);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [activeShopInfo, setActiveShopInfo] = useState<{ name: string; domain: string } | null>(null);
@@ -54,6 +55,11 @@ export const LoginPage: React.FC = () => {
     try {
       const fullId = mode === 'phone' && !identifier.startsWith('+') ? `${dial}${identifier.replace(/^0+/, '')}` : identifier.trim();
       const tokens = await login(fullId, password);
+      if (remember) {
+        localStorage.setItem('kolix_remembered_identifier', identifier.trim());
+      } else {
+        localStorage.removeItem('kolix_remembered_identifier');
+      }
       setActiveShopInfo({
         name: tokens.shop_domain ? tokens.shop_domain.split('.')[0] : 'Style & Élégance',
         domain: tokens.shop_domain || 'styleelegance.kolix.ci'
@@ -64,6 +70,11 @@ export const LoginPage: React.FC = () => {
       // Try raw identifier as fallback
       try {
         const tokens = await login(identifier.trim(), password);
+        if (remember) {
+          localStorage.setItem('kolix_remembered_identifier', identifier.trim());
+        } else {
+          localStorage.removeItem('kolix_remembered_identifier');
+        }
         setActiveShopInfo({
           name: tokens.shop_domain ? tokens.shop_domain.split('.')[0] : 'Style & Élégance',
           domain: tokens.shop_domain || 'styleelegance.kolix.ci'
@@ -181,7 +192,7 @@ export const LoginPage: React.FC = () => {
                       type="tel"
                       value={identifier}
                       onChange={(e) => setIdentifier(e.target.value)}
-                      placeholder="Numéro WhatsApp"
+                      placeholder="Ex: 07 00 00 00 00"
                       className="flex-1 min-w-0 font-bold text-sm border-0 bg-transparent text-[#16131F] focus:outline-none px-2"
                     />
                   </div>
@@ -192,7 +203,7 @@ export const LoginPage: React.FC = () => {
                       type="email"
                       value={identifier}
                       onChange={(e) => setIdentifier(e.target.value)}
-                      placeholder="Adresse e-mail du compte"
+                      placeholder="Ex: souleymane@kolix.ci"
                       className="flex-1 min-w-0 font-bold text-sm border-0 bg-transparent text-[#16131F] focus:outline-none"
                     />
                   </div>
@@ -205,7 +216,7 @@ export const LoginPage: React.FC = () => {
                     type={showPassword ? 'text' : 'password'}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Mot de passe"
+                    placeholder="••••••••"
                     className="flex-1 min-w-0 font-bold text-sm border-0 bg-transparent text-[#16131F] focus:outline-none"
                   />
                   <button

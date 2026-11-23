@@ -21,7 +21,7 @@ type TargetType = 'all' | 'product' | 'date' | 'manual';
 type WhenType = 'now' | 'schedule';
 
 export const WhatsAppMarketingPage: React.FC = () => {
-  const [campName, setCampName] = useState('Nouvelle collection d’automne');
+  const [campName, setCampName] = useState('');
   const [target, setTarget] = useState<TargetType>('all');
   const [selectedProduct, setSelectedProduct] = useState('Montre élégante');
   const [dateFilter, setDateFilter] = useState('30');
@@ -156,6 +156,7 @@ export const WhatsAppMarketingPage: React.FC = () => {
                 type="text" 
                 value={campName} 
                 onChange={(e) => setCampName(e.target.value)}
+                placeholder="Ex: Nouvelle collection d'automne"
                 className="font-bold text-sm border border-[#E2DCF8] rounded-xl px-3 py-1.5 text-[#16131F] focus:outline-none focus:ring-2 focus:ring-[#6C4CF1]/30"
               />
             </div>

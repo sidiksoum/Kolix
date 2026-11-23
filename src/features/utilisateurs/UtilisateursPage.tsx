@@ -112,7 +112,7 @@ export const UtilisateursPage: React.FC = () => {
   const [formName, setFormName] = useState('');
   const [formEmail, setFormEmail] = useState('');
   const [formPhone, setFormPhone] = useState('');
-  const [formPassword, setFormPassword] = useState('Kolix@2026!');
+  const [formPassword, setFormPassword] = useState('');
   const [formRole, setFormRole] = useState('Gestionnaire de commandes');
   const [formMods, setFormMods] = useState<string[]>(ROLE_PRESETS['Gestionnaire de commandes']);
   const [formSuspended, setFormSuspended] = useState(false);
@@ -141,7 +141,7 @@ export const UtilisateursPage: React.FC = () => {
     setFormName('');
     setFormEmail('');
     setFormPhone('');
-    setFormPassword('Kolix@2026!');
+    setFormPassword('');
     setFormRole('Gestionnaire de commandes');
     setFormMods([...ROLE_PRESETS['Gestionnaire de commandes']]);
     setFormSuspended(false);
@@ -554,7 +554,7 @@ export const UtilisateursPage: React.FC = () => {
                     type="text"
                     value={formPassword}
                     onChange={e => setFormPassword(e.target.value)}
-                    placeholder={editingId ? 'Laisser vide pour ne pas modifier' : 'Ex: kolix2026!'}
+                    placeholder={editingId ? 'Laisser vide pour ne pas modifier' : 'Ex: MotDePasseSecurise2026!'}
                     required={!editingId}
                     className="w-full border border-[#E2DCF8] rounded-xl px-3.5 py-2.5 text-sm font-bold text-[#16131F] focus:outline-none focus:ring-2 focus:ring-[#6C4CF1]/30 font-mono"
                   />

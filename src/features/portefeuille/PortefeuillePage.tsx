@@ -36,7 +36,7 @@ export const PortefeuillePage: React.FC = () => {
 
   const [pageLoading, setPageLoading] = useState(true);
   const [filterMode, setFilterMode] = useState<string>('all');
-  const [withdrawAmount, setWithdrawAmount] = useState<string>('150000');
+  const [withdrawAmount, setWithdrawAmount] = useState<string>('');
   const [selectedAccountId, setSelectedAccountId] = useState<string>(accounts[0]?.id || 'acc_01');
   const [isAddAccountModalOpen, setIsAddAccountModalOpen] = useState(false);
 
@@ -67,6 +67,7 @@ export const PortefeuillePage: React.FC = () => {
       return;
     }
     await withdrawFunds(amount, selectedAccountId);
+    setWithdrawAmount('');
   };
 
   if (pageLoading || (isLoading && !summary)) {
@@ -430,6 +431,7 @@ export const PortefeuillePage: React.FC = () => {
             </label>
             <Input
               type="number"
+              placeholder="Ex: 50 000"
               value={withdrawAmount}
               onChange={(e) => setWithdrawAmount(e.target.value)}
               max={summary?.digitalBalance || 845000}

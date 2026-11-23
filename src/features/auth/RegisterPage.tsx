@@ -209,7 +209,7 @@ export const RegisterPage: React.FC = () => {
 
   const handleOpenPaymentModal = (plan: any) => {
     setSelectedPlanForPayment(plan);
-    setPaymentPhoneOrCard(phoneDigits || '');
+    setPaymentPhoneOrCard('');
   };
 
   const handleConfirmSubscriptionPayment = async (e: React.FormEvent) => {
@@ -557,7 +557,7 @@ export const RegisterPage: React.FC = () => {
                         required
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        placeholder="souleymane@exemple.ci"
+                        placeholder="Ex: souleymane@exemple.ci"
                         className="w-full text-xs font-semibold py-2.5 px-3.5 border border-[#E2DCF8] rounded-xl text-[#16131F] focus:outline-none focus:ring-2 focus:ring-[#6C4CF1]/30 bg-[#FAF9FE]"
                       />
                     </div>
@@ -580,7 +580,7 @@ export const RegisterPage: React.FC = () => {
                           required
                           value={phone}
                           onChange={(e) => setPhone(e.target.value)}
-                          placeholder="07 00 00 00 00"
+                          placeholder="Ex: 07 00 00 00 00"
                           className="flex-1 text-xs font-semibold py-2.5 px-3.5 border border-[#E2DCF8] rounded-xl text-[#16131F] focus:outline-none focus:ring-2 focus:ring-[#6C4CF1]/30 bg-[#FAF9FE]"
                         />
                       </div>
@@ -612,7 +612,7 @@ export const RegisterPage: React.FC = () => {
                           required
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
-                          placeholder="Au moins 6 caractères"
+                          placeholder="Ex: Au moins 6 caractères"
                           className="w-full text-xs font-semibold py-2.5 px-3.5 border border-[#E2DCF8] rounded-xl text-[#16131F] focus:outline-none focus:ring-2 focus:ring-[#6C4CF1]/30 bg-[#FAF9FE]"
                         />
                         <button
@@ -898,7 +898,7 @@ export const RegisterPage: React.FC = () => {
                   required
                   value={paymentPhoneOrCard}
                   onChange={(e) => setPaymentPhoneOrCard(e.target.value)}
-                  placeholder={paymentMethod === 'card' ? '4500 •••• •••• ••••' : '07 00 00 00 00'}
+                  placeholder={paymentMethod === 'card' ? 'Ex: 4500 •••• •••• ••••' : 'Ex: 07 00 00 00 00'}
                   className="w-full text-sm font-semibold py-2.5 px-3.5 border border-[#E2DCF8] rounded-xl text-[#16131F] bg-[#FAF9FE]"
                 />
               </div>

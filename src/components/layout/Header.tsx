@@ -105,8 +105,8 @@ export const Header: React.FC<{ onOpenMobileMenu?: () => void }> = ({ onOpenMobi
           {showProfile && (
             <div className="absolute right-0 mt-3 w-56 bg-white rounded-2xl shadow-kolix-lg border border-[#E2DCF8] p-2 z-50 animate-in fade-in zoom-in-95">
               <div className="px-3 py-2 border-b border-[#F0EDFB]">
-                <div className="font-bold text-sm text-[#16131F]">{user.name}</div>
-                <div className="text-xs text-[#5E5A70] truncate">{user.email}</div>
+                <div className="font-bold text-sm text-[#16131F]">{user?.name || 'Mon Compte'}</div>
+                <div className="text-xs text-[#5E5A70] truncate">{user?.email || ''}</div>
               </div>
               <div className="flex flex-col gap-1 mt-1 text-sm font-semibold">
                 <Link to="/boutique" onClick={() => setShowProfile(false)} className="px-3 py-2 rounded-xl hover:bg-[#F4F1FE] text-[#16131F] no-underline">Ma Boutique</Link>

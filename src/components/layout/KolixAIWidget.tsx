@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Sparkles, X, Send, Bot, ArrowRight, Zap, RefreshCw } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 import { useOrders } from '../../context/OrdersContext';
 import { useStock } from '../../context/StockContext';
 import { useWallet } from '../../context/WalletContext';
@@ -10,6 +11,7 @@ interface Message {
 }
 
 export const KolixAIWidget: React.FC = () => {
+  const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
   const { orders } = useOrders();
@@ -19,7 +21,7 @@ export const KolixAIWidget: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       sender: 'ai',
-      text: 'Bonjour Souleymane ! Je suis **Kolix AI**, votre copilote e-commerce & Cash on Delivery. Comment puis-je vous aider à maximiser vos livraisons aujourd’hui ?'
+      text: `Bonjour ${user?.name?.split(' ')[0] || 'Marchand'} ! Je suis **Kolix AI**, votre copilote e-commerce & Cash on Delivery. Comment puis-je vous aider à maximiser vos livraisons aujourd’hui ?`
     }
   ]);
 
