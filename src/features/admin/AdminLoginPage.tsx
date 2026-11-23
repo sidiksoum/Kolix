@@ -8,11 +8,10 @@ import { authApi } from '../../api/auth.api';
 export const AdminLoginPage: React.FC = () => {
   const navigate = useNavigate();
 
-  const savedAdminIdent = typeof window !== 'undefined' ? (localStorage.getItem('kolix_admin_remembered') || '') : '';
-  const [identifier, setIdentifier] = useState(savedAdminIdent);
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(!!savedAdminIdent);
+  const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -120,7 +119,7 @@ export const AdminLoginPage: React.FC = () => {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <form onSubmit={handleSubmit} autoComplete="off" className="flex flex-col gap-4">
             {/* Email / Phone Field */}
             <div className="flex flex-col gap-1.5">
               <label className="text-xs font-bold text-[#D9D3F5]">
@@ -131,6 +130,7 @@ export const AdminLoginPage: React.FC = () => {
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
                 placeholder="Ex. admin@kolix.ci ou 07 00 00 00 00"
+                autoComplete="off"
                 required
                 className="w-full min-h-[48px] px-4 rounded-xl bg-[#16131F] border border-[#3A3355] focus:border-[#6C4CF1] text-white placeholder-white/40 text-sm outline-none transition-colors"
               />
@@ -147,6 +147,7 @@ export const AdminLoginPage: React.FC = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••••••"
+                  autoComplete="new-password"
                   required
                   className="w-full min-h-[48px] px-4 pr-11 rounded-xl bg-[#16131F] border border-[#3A3355] focus:border-[#6C4CF1] text-white placeholder-white/40 text-sm outline-none transition-colors"
                 />

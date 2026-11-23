@@ -22,14 +22,13 @@ const flagMap: Record<string, string> = {
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const { login, user } = useAuth();
-  const savedIdentifier = typeof window !== 'undefined' ? (localStorage.getItem('kolix_remembered_identifier') || '') : '';
   const [view, setView] = useState<LoginView>('login');
-  const [mode, setMode] = useState<LoginMode>(savedIdentifier && !savedIdentifier.includes('@') ? 'phone' : 'email');
+  const [mode, setMode] = useState<LoginMode>('email');
   const [dial, setDial] = useState('+225');
-  const [identifier, setIdentifier] = useState(savedIdentifier);
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [remember, setRemember] = useState(!!savedIdentifier);
+  const [remember, setRemember] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [activeShopInfo, setActiveShopInfo] = useState<{ name: string; domain: string } | null>(null);
@@ -92,12 +91,14 @@ export const LoginPage: React.FC = () => {
 
   const handleUseCode = () => {
     setIsReset(false);
+    setOtp('');
     setView('code');
     toast.info(`Code de connexion envoyé par WhatsApp au ${dial} ${identifier || '[votre numéro]'}`);
   };
 
   const handleForgot = () => {
     setIsReset(true);
+    setOtp('');
     setView('code');
     toast.info(`Code de réinitialisation envoyé par WhatsApp au ${dial} ${identifier || '[votre numéro]'}`);
   };
@@ -112,7 +113,7 @@ export const LoginPage: React.FC = () => {
     toast.success(isReset ? 'Mot de passe réinitialisé avec succès !' : 'Connexion validée !');
   };
 
-  const idShown = mode === 'phone' ? (identifier || '07 •• •• •• 01') : 'votre numéro lié';
+  const idShown = mode === 'phone' ? (identifier || 'votre numéro') : (identifier || 'votre adresse e-mail');
 
   return (
     <div className="font-sans text-[#16131F] bg-[#F4F1FE] min-h-screen flex flex-col items-center justify-center p-5 sm:p-8">
@@ -169,7 +170,7 @@ export const LoginPage: React.FC = () => {
                 </button>
               </div>
 
-              <form onSubmit={handleLogin} className="flex flex-col gap-4">
+              <form onSubmit={handleLogin} autoComplete="off" className="flex flex-col gap-4">
                 {/* Identifier Input */}
                 {mode === 'phone' ? (
                   <div className="flex items-center gap-2 border border-[#E2DCF8] rounded-2xl px-3 min-h-[52px] bg-white focus-within:ring-2 focus-within:ring-[#6C4CF1]/30 transition-all">
@@ -193,6 +194,7 @@ export const LoginPage: React.FC = () => {
                       value={identifier}
                       onChange={(e) => setIdentifier(e.target.value)}
                       placeholder="Ex: 07 00 00 00 00"
+                      autoComplete="off"
                       className="flex-1 min-w-0 font-bold text-sm border-0 bg-transparent text-[#16131F] focus:outline-none px-2"
                     />
                   </div>
@@ -204,6 +206,7 @@ export const LoginPage: React.FC = () => {
                       value={identifier}
                       onChange={(e) => setIdentifier(e.target.value)}
                       placeholder="Ex: souleymane@kolix.ci"
+                      autoComplete="off"
                       className="flex-1 min-w-0 font-bold text-sm border-0 bg-transparent text-[#16131F] focus:outline-none"
                     />
                   </div>
@@ -217,6 +220,7 @@ export const LoginPage: React.FC = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
+                    autoComplete="new-password"
                     className="flex-1 min-w-0 font-bold text-sm border-0 bg-transparent text-[#16131F] focus:outline-none"
                   />
                   <button

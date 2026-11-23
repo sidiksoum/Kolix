@@ -79,7 +79,7 @@ export const RegisterPage: React.FC = () => {
 
   // Step 2: Shop Creation Fields
   const [shopName, setShopName] = useState('');
-  const [shopActivity, setShopActivity] = useState('Mode & Vêtements');
+  const [shopActivity, setShopActivity] = useState('');
   const [shopSlogan, setShopSlogan] = useState('');
 
   // Step 3: Plan Selection & Payment Flow
@@ -92,7 +92,7 @@ export const RegisterPage: React.FC = () => {
   const phoneDigits = phone.replace(/\D/g, '');
   const suggestedSlug = shopName.trim()
     ? shopName.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
-    : 'ma-boutique';
+    : 'nom-de-boutique';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -138,9 +138,7 @@ export const RegisterPage: React.FC = () => {
         promo_code: promoCode || undefined
       });
 
-      if (res?.otp_debug) {
-        setOtp(res.otp_debug);
-      }
+      setOtp('');
       setStep('otp');
       toast.info(`Code de validation envoyé par e-mail à ${email.trim()}`);
     } catch (err: any) {
@@ -523,7 +521,7 @@ export const RegisterPage: React.FC = () => {
             <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-kolix border border-[#E2DCF8]/60 flex flex-col gap-6">
               {/* STEP 1: REGISTRATION FORM */}
               {step === 'form' && (
-                <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                <form onSubmit={handleSubmit} autoComplete="off" className="flex flex-col gap-4">
                   <div>
                     <h2 className="text-2xl font-black text-[#16131F] tracking-tight">Créer un compte</h2>
                     <p className="text-xs text-[#5E5A70] mt-1">
@@ -546,6 +544,7 @@ export const RegisterPage: React.FC = () => {
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         placeholder="Ex: Souleymane Sanogo"
+                        autoComplete="off"
                         className="w-full text-xs font-semibold py-2.5 px-3.5 border border-[#E2DCF8] rounded-xl text-[#16131F] focus:outline-none focus:ring-2 focus:ring-[#6C4CF1]/30 bg-[#FAF9FE]"
                       />
                     </div>
@@ -558,6 +557,7 @@ export const RegisterPage: React.FC = () => {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="Ex: souleymane@exemple.ci"
+                        autoComplete="off"
                         className="w-full text-xs font-semibold py-2.5 px-3.5 border border-[#E2DCF8] rounded-xl text-[#16131F] focus:outline-none focus:ring-2 focus:ring-[#6C4CF1]/30 bg-[#FAF9FE]"
                       />
                     </div>
@@ -581,6 +581,7 @@ export const RegisterPage: React.FC = () => {
                           value={phone}
                           onChange={(e) => setPhone(e.target.value)}
                           placeholder="Ex: 07 00 00 00 00"
+                          autoComplete="off"
                           className="flex-1 text-xs font-semibold py-2.5 px-3.5 border border-[#E2DCF8] rounded-xl text-[#16131F] focus:outline-none focus:ring-2 focus:ring-[#6C4CF1]/30 bg-[#FAF9FE]"
                         />
                       </div>
@@ -613,6 +614,7 @@ export const RegisterPage: React.FC = () => {
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
                           placeholder="Ex: Au moins 6 caractères"
+                          autoComplete="new-password"
                           className="w-full text-xs font-semibold py-2.5 px-3.5 border border-[#E2DCF8] rounded-xl text-[#16131F] focus:outline-none focus:ring-2 focus:ring-[#6C4CF1]/30 bg-[#FAF9FE]"
                         />
                         <button
@@ -682,6 +684,7 @@ export const RegisterPage: React.FC = () => {
                         value={otp}
                         onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
                         placeholder="• • • • • •"
+                        autoComplete="off"
                         className="w-full text-center tracking-[0.5em] text-2xl font-black py-3.5 border border-[#E2DCF8] rounded-2xl text-[#16131F] focus:outline-none focus:ring-2 focus:ring-[#6C4CF1]/30 bg-[#FAF9FE]"
                       />
                     </div>
@@ -721,7 +724,7 @@ export const RegisterPage: React.FC = () => {
 
               {/* STEP 3: CONFIGURE SHOP DETAILS */}
               {step === 'create_shop' && (
-                <form onSubmit={handleShopCreateSubmit} className="flex flex-col gap-5 animate-fade-in">
+                <form onSubmit={handleShopCreateSubmit} autoComplete="off" className="flex flex-col gap-5 animate-fade-in">
                   <div>
                     <span className="text-[11px] font-black uppercase tracking-wider text-[#6C4CF1] bg-[#EEE9FF] px-2.5 py-0.5 rounded-full">
                       Étape 2 / 3
@@ -751,6 +754,7 @@ export const RegisterPage: React.FC = () => {
                         value={shopName}
                         onChange={(e) => setShopName(e.target.value)}
                         placeholder="Ex: Kaly Cosmétiques, Ivoire Tech..."
+                        autoComplete="off"
                         className="w-full text-xs font-semibold py-2.5 px-3.5 border border-[#E2DCF8] rounded-xl text-[#16131F] focus:outline-none focus:ring-2 focus:ring-[#6C4CF1]/30 bg-[#FAF9FE]"
                       />
                     </div>
@@ -764,6 +768,7 @@ export const RegisterPage: React.FC = () => {
                         onChange={(e) => setShopActivity(e.target.value)}
                         className="w-full text-xs font-semibold py-2.5 px-3.5 border border-[#E2DCF8] rounded-xl text-[#16131F] bg-[#FAF9FE]"
                       >
+                        <option value="">Sélectionnez votre domaine</option>
                         <option value="Mode & Vêtements">Mode & Vêtements</option>
                         <option value="Beauté & Cosmétiques">Beauté & Cosmétiques</option>
                         <option value="Électronique & High-Tech">Électronique & High-Tech</option>
@@ -782,6 +787,7 @@ export const RegisterPage: React.FC = () => {
                         value={shopSlogan}
                         onChange={(e) => setShopSlogan(e.target.value)}
                         placeholder="Ex: Les meilleurs produits livrés chez vous en 24h"
+                        autoComplete="off"
                         className="w-full text-xs font-semibold py-2.5 px-3.5 border border-[#E2DCF8] rounded-xl text-[#16131F] focus:outline-none focus:ring-2 focus:ring-[#6C4CF1]/30 bg-[#FAF9FE]"
                       />
                     </div>
