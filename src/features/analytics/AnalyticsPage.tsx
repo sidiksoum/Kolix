@@ -7,7 +7,6 @@ import {
   X, 
   HelpCircle, 
   ArrowRight, 
-  Sparkles, 
   Loader2 
 } from 'lucide-react';
 import { analyticsApi, AnalyticsReportData } from '../../api/analytics.api';
@@ -270,60 +269,41 @@ export const AnalyticsPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Row: Status Analysis + Lecture Kolix AI */}
-      <div className="flex flex-col lg:flex-row gap-4 items-stretch">
-        {/* Status Analysis */}
-        <section className="flex-1 lg:flex-[3] min-w-0 bg-white rounded-3xl p-6 sm:p-7 border border-gray-100 shadow-sm space-y-5 flex flex-col justify-between">
-          <div className="space-y-4">
-            <h2 className="text-lg font-bold text-[#16131F]">Analyse des statuts de commande</h2>
-            
-            {/* Segmented Bar */}
-            <div className="h-4 rounded-full overflow-hidden flex bg-gray-100 shadow-inner">
-              {displayStatuses.map(s => {
-                const segPct = totalStatusOrders > 0 ? (s.rawCount / totalStatusOrders) * 100 : 16.6;
-                return (
-                  <div 
-                    key={s.name}
-                    style={{ width: `${segPct}%`, backgroundColor: s.color }}
-                    title={`${s.name}: ${s.pct}`}
-                    className="h-full transition-all duration-300 hover:opacity-90"
-                  />
-                );
-              })}
-            </div>
+      {/* Status Analysis */}
+      <section className="bg-white rounded-3xl p-6 sm:p-7 border border-gray-100 shadow-sm space-y-5">
+        <div className="space-y-4">
+          <h2 className="text-lg font-bold text-[#16131F]">Analyse des statuts de commande</h2>
+          
+          {/* Segmented Bar */}
+          <div className="h-4 rounded-full overflow-hidden flex bg-gray-100 shadow-inner">
+            {displayStatuses.map(s => {
+              const segPct = totalStatusOrders > 0 ? (s.rawCount / totalStatusOrders) * 100 : 16.6;
+              return (
+                <div 
+                  key={s.name}
+                  style={{ width: `${segPct}%`, backgroundColor: s.color }}
+                  title={`${s.name}: ${s.pct}`}
+                  className="h-full transition-all duration-300 hover:opacity-90"
+                />
+              );
+            })}
           </div>
+        </div>
 
-          {/* Cards Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-            {displayStatuses.map(s => (
-              <div key={s.name} className="border border-[#EEEAFB] rounded-2xl p-3.5 flex flex-col gap-1 hover:border-[#6C4CF1]/30 transition-colors bg-[#FAF9FE]/30">
-                <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: s.color }} />
-                  <span className="text-xs font-bold text-[#3A3647] truncate">{s.rateLabel}</span>
-                </div>
-                <span className="text-xl font-extrabold text-[#16131F] mt-1">{s.pct}</span>
-                <span className="text-xs text-[#5E5A70] font-medium">{s.count} commandes</span>
+        {/* Cards Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          {displayStatuses.map(s => (
+            <div key={s.name} className="border border-[#EEEAFB] rounded-2xl p-3.5 flex flex-col gap-1 hover:border-[#6C4CF1]/30 transition-colors bg-[#FAF9FE]/30">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: s.color }} />
+                <span className="text-xs font-bold text-[#3A3647] truncate">{s.rateLabel}</span>
               </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Lecture Kolix AI */}
-        <section className="flex-1 lg:max-w-xs bg-[#241D5E] text-white rounded-3xl p-6 shadow-sm flex flex-col justify-between gap-4">
-          <div className="space-y-3">
-            <span className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-widest text-[#B9AAFF]">
-              <Sparkles className="w-4 h-4 text-[#B9AAFF]" />
-              Lecture Kolix AI
-            </span>
-            <p className="text-sm font-semibold text-white leading-relaxed">
-              {reportData?.insights?.description || "Korhogo et Daloa livrent à peine plus d’une commande sur deux. Un appel de confirmation avant expédition ou un acompte Mobile Money pourrait réduire les retours."}
-            </p>
-          </div>
-          <p className="text-xs text-[#D9D3F5] leading-relaxed pt-3 border-t border-white/10 font-medium">
-            {reportData?.insights?.tip || "Votre formulaire convertit bien : près d’un formulaire ouvert sur trois devient une commande."}
-          </p>
-        </section>
-      </div>
+              <span className="text-xl font-extrabold text-[#16131F] mt-1">{s.pct}</span>
+              <span className="text-xs text-[#5E5A70] font-medium">{s.count} commandes</span>
+            </div>
+          ))}
+        </div>
+      </section>
 
       {/* Sales by Period */}
       <section className="bg-white rounded-3xl p-6 sm:p-7 border border-gray-100 shadow-sm space-y-4">
