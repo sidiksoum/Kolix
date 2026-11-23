@@ -63,6 +63,7 @@ export const RegisterPage: React.FC = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // Form Fields - Step 1
   const [name, setName] = useState('');
@@ -70,6 +71,7 @@ export const RegisterPage: React.FC = () => {
   const [dial, setDial] = useState('+225');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [activity, setActivity] = useState('');
   const [country, setCountry] = useState('Côte d’Ivoire');
   const [source, setSource] = useState('');
@@ -110,6 +112,10 @@ export const RegisterPage: React.FC = () => {
     }
     if (password.length < 6) {
       setError('Le mot de passe doit contenir au moins 6 caractères');
+      return;
+    }
+    if (password !== confirmPassword) {
+      setError('Les mots de passe ne correspondent pas');
       return;
     }
     if (!activity) {
@@ -623,6 +629,28 @@ export const RegisterPage: React.FC = () => {
                           className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600"
                         >
                           {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-bold text-[#3A3647] block mb-1">Confirmer le mot de passe *</label>
+                      <div className="relative">
+                        <input
+                          type={showConfirmPassword ? 'text' : 'password'}
+                          required
+                          value={confirmPassword}
+                          onChange={(e) => setConfirmPassword(e.target.value)}
+                          placeholder="Ex: Confirmez votre mot de passe"
+                          autoComplete="new-password"
+                          className="w-full text-xs font-semibold py-2.5 px-3.5 border border-[#E2DCF8] rounded-xl text-[#16131F] focus:outline-none focus:ring-2 focus:ring-[#6C4CF1]/30 bg-[#FAF9FE]"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                          className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600"
+                        >
+                          {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                         </button>
                       </div>
                     </div>

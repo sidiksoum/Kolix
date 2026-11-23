@@ -4,6 +4,9 @@ export const API_ENDPOINTS = {
     REGISTER: '/api/v1/auth/register',
     ME: '/api/v1/auth/me',
     REFRESH: '/api/v1/auth/refresh',
+    FORGOT_PASSWORD: '/api/v1/auth/forgot-password',
+    VERIFY_RESET_OTP: '/api/v1/auth/verify-reset-otp',
+    RESET_PASSWORD: '/api/v1/auth/reset-password',
   },
   ORDERS: {
     BASE: '/api/v1/orders',

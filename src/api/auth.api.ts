@@ -87,6 +87,30 @@ export const authApi = {
     return res.data;
   },
 
+  async requestPasswordReset(email: string): Promise<{ email: string; otp_debug?: string }> {
+    const res = await apiClient.post<StandardApiResponse<{ email: string; otp_debug?: string }>>(
+      API_ENDPOINTS.AUTH.FORGOT_PASSWORD,
+      { email }
+    );
+    return res.data;
+  },
+
+  async verifyResetOtp(email: string, otp_code: string): Promise<{ verified: boolean; email: string }> {
+    const res = await apiClient.post<StandardApiResponse<{ verified: boolean; email: string }>>(
+      API_ENDPOINTS.AUTH.VERIFY_RESET_OTP,
+      { email, otp_code }
+    );
+    return res.data;
+  },
+
+  async resetPassword(email: string, otp_code: string, new_password: string): Promise<{ success: boolean }> {
+    const res = await apiClient.post<StandardApiResponse<{ success: boolean }>>(
+      API_ENDPOINTS.AUTH.RESET_PASSWORD,
+      { email, otp_code, new_password }
+    );
+    return res.data;
+  },
+
   logout() {
     apiClient.setToken(null);
     localStorage.removeItem('kolix_user');

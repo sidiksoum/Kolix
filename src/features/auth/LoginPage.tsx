@@ -2,10 +2,13 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Lock, Mail, Eye, EyeOff, Check, ArrowRight, Phone, MessageSquare, AlertCircle, Loader2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { authApi } from '../../api/auth.api';
+import { cn } from '../../utils/cn';
 import { toast } from 'sonner';
 
 type LoginMode = 'phone' | 'email';
-type LoginView = 'login' | 'code' | 'done';
+type LoginView = 'login' | 'code' | 'forgot' | 'done';
+type ForgotStep = 'email' | 'otp' | 'new_password';
 
 const flagMap: Record<string, string> = {
   '+225': 'linear-gradient(90deg, #F77F00 33.3%, #FFFFFF 33.3% 66.6%, #009E60 66.6%)',
@@ -33,10 +36,19 @@ export const LoginPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [activeShopInfo, setActiveShopInfo] = useState<{ name: string; domain: string } | null>(null);
   
-  // Code / OTP state
+  // Code / OTP state (Connexion rapide WhatsApp)
   const [otp, setOtp] = useState('');
   const [isReset, setIsReset] = useState(false);
+
+  // Forgot Password 3-step state
+  const [forgotStep, setForgotStep] = useState<ForgotStep>('email');
+  const [resetEmail, setResetEmail] = useState('');
+  const [resetOtp, setResetOtp] = useState('');
   const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmNewPassword, setShowConfirmNewPassword] = useState(false);
+  const [isResetLoading, setIsResetLoading] = useState(false);
 
   const handleLogin = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -97,10 +109,87 @@ export const LoginPage: React.FC = () => {
   };
 
   const handleForgot = () => {
-    setIsReset(true);
-    setOtp('');
-    setView('code');
-    toast.info(`Code de réinitialisation envoyé par WhatsApp au ${dial} ${identifier || '[votre numéro]'}`);
+    setError('');
+    setForgotStep('email');
+    setResetEmail(mode === 'email' && identifier.includes('@') ? identifier.trim() : '');
+    setResetOtp('');
+    setNewPassword('');
+    setConfirmNewPassword('');
+    setView('forgot');
+  };
+
+  const handleSendResetOtp = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!resetEmail.trim() || !resetEmail.includes('@')) {
+      setError('Veuillez saisir une adresse e-mail valide');
+      return;
+    }
+    setError('');
+    setIsResetLoading(true);
+    try {
+      await authApi.requestPasswordReset(resetEmail.trim());
+      setResetOtp('');
+      setForgotStep('otp');
+      toast.info(`Code OTP envoyé par e-mail à ${resetEmail.trim()}`);
+    } catch (err: any) {
+      setError(err.message || "Erreur lors de l'envoi du code.");
+      toast.error(err.message || 'Erreur d’envoi');
+    } finally {
+      setIsResetLoading(false);
+    }
+  };
+
+  const handleVerifyResetOtp = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (resetOtp.trim().length < 6) {
+      setError('Veuillez saisir le code OTP à 6 chiffres reçu par e-mail');
+      return;
+    }
+    setError('');
+    setIsResetLoading(true);
+    try {
+      await authApi.verifyResetOtp(resetEmail.trim(), resetOtp.trim());
+      setNewPassword('');
+      setConfirmNewPassword('');
+      setForgotStep('new_password');
+      toast.success('Code OTP vérifié ! Vous pouvez définir votre nouveau mot de passe.');
+    } catch (err: any) {
+      setError(err.message || 'Code OTP invalide ou expiré.');
+      toast.error(err.message || 'Validation échouée');
+    } finally {
+      setIsResetLoading(false);
+    }
+  };
+
+  const handleResetPasswordSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (newPassword.length < 6) {
+      setError('Le mot de passe doit contenir au moins 6 caractères');
+      return;
+    }
+    if (newPassword !== confirmNewPassword) {
+      setError('Les mots de passe ne correspondent pas');
+      return;
+    }
+    setError('');
+    setIsResetLoading(true);
+    try {
+      await authApi.resetPassword(resetEmail.trim(), resetOtp.trim(), newPassword);
+      toast.success('Mot de passe réinitialisé avec succès ! Connectez-vous avec votre nouveau mot de passe.');
+      setResetOtp('');
+      setNewPassword('');
+      setConfirmNewPassword('');
+      setPassword('');
+      setIdentifier(resetEmail.trim());
+      setMode('email');
+      setForgotStep('email');
+      setView('login');
+    } catch (err: any) {
+      setError(err.message || 'Erreur lors de la réinitialisation du mot de passe.');
+      toast.error(err.message || 'Réinitialisation échouée');
+    } finally {
+      setIsResetLoading(false);
+    }
   };
 
   const handleVerifyOtp = () => {
@@ -380,6 +469,265 @@ export const LoginPage: React.FC = () => {
                   </button>
                 </div>
               </div>
+            </div>
+          )}
+
+          {/* VIEW: MOT DE PASSE OUBLIÉ (WORKFLOW 3 ÉTAPES) */}
+          {view === 'forgot' && (
+            <div className="flex flex-col gap-5 animate-fade-in">
+              {/* Stepper Progress */}
+              <div className="flex items-center justify-between pb-2 border-b border-[#F0EDFB]">
+                {[
+                  { step: 'email', num: 1, label: 'E-mail' },
+                  { step: 'otp', num: 2, label: 'Code OTP' },
+                  { step: 'new_password', num: 3, label: 'Nouveau mot de passe' },
+                ].map((item, idx) => {
+                  const isCurrent = forgotStep === item.step;
+                  const isDone =
+                    (item.step === 'email' && (forgotStep === 'otp' || forgotStep === 'new_password')) ||
+                    (item.step === 'otp' && forgotStep === 'new_password');
+                  return (
+                    <div key={item.step} className="flex items-center gap-1.5 sm:gap-2">
+                      <span
+                        className={cn(
+                          'w-6 h-6 rounded-full flex items-center justify-center text-xs font-black transition-colors',
+                          isDone
+                            ? 'bg-[#10B981] text-white'
+                            : isCurrent
+                            ? 'bg-[#6C4CF1] text-white'
+                            : 'bg-[#E2DCF8] text-[#5E5A70]'
+                        )}
+                      >
+                        {isDone ? '✓' : item.num}
+                      </span>
+                      <span
+                        className={cn(
+                          'text-xs font-bold hidden sm:inline',
+                          isCurrent ? 'text-[#16131F]' : 'text-[#5E5A70]'
+                        )}
+                      >
+                        {item.label}
+                      </span>
+                      {idx < 2 && <span className="w-3 sm:w-8 h-0.5 bg-[#E2DCF8] mx-0.5 sm:mx-1" />}
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Étape 1 : Saisie de l'e-mail */}
+              {forgotStep === 'email' && (
+                <form onSubmit={handleSendResetOtp} autoComplete="off" className="flex flex-col gap-4">
+                  <div>
+                    <h2 className="text-2xl font-extrabold text-[#16131F] tracking-tight">
+                      Mot de passe oublié ?
+                    </h2>
+                    <p className="text-xs sm:text-sm text-[#5E5A70] mt-1 leading-relaxed">
+                      Étape 1 sur 3 · Entrez votre adresse e-mail. Nous vous enverrons un code de sécurité temporaire à 6 chiffres par e-mail.
+                    </p>
+                  </div>
+
+                  {error && (
+                    <div className="flex items-center gap-2 p-3 bg-red-50 text-red-700 rounded-xl text-xs font-bold border border-red-200">
+                      <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                      <span>{error}</span>
+                    </div>
+                  )}
+
+                  <div className="flex items-center gap-2.5 border border-[#E2DCF8] rounded-2xl px-4 min-h-[52px] bg-white focus-within:ring-2 focus-within:ring-[#6C4CF1]/30 transition-all">
+                    <Mail className="w-4 h-4 text-[#5E5A70] flex-shrink-0" />
+                    <input
+                      type="email"
+                      required
+                      value={resetEmail}
+                      onChange={(e) => setResetEmail(e.target.value)}
+                      placeholder="Ex: souleymane@kolix.ci"
+                      autoComplete="off"
+                      className="flex-1 min-w-0 font-bold text-sm border-0 bg-transparent text-[#16131F] focus:outline-none"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={isResetLoading}
+                    className="w-full py-3.5 bg-[#6C4CF1] text-white font-extrabold rounded-2xl text-sm sm:text-base shadow-lg shadow-[#6C4CF1]/30 hover:bg-[#5B3FD6] active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-60 cursor-pointer"
+                  >
+                    {isResetLoading ? (
+                      <>
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                        <span>Envoi du code…</span>
+                      </>
+                    ) : (
+                      <span>Envoyer le code OTP</span>
+                    )}
+                  </button>
+
+                  <div className="text-center pt-2">
+                    <button
+                      type="button"
+                      onClick={() => { setView('login'); setError(''); }}
+                      className="text-xs font-extrabold text-[#3F25A8] hover:underline"
+                    >
+                      ← Retour à la connexion
+                    </button>
+                  </div>
+                </form>
+              )}
+
+              {/* Étape 2 : Saisie de l'OTP reçu */}
+              {forgotStep === 'otp' && (
+                <form onSubmit={handleVerifyResetOtp} autoComplete="off" className="flex flex-col gap-4">
+                  <div>
+                    <h2 className="text-2xl font-extrabold text-[#16131F] tracking-tight">
+                      Code de confirmation
+                    </h2>
+                    <p className="text-xs sm:text-sm text-[#5E5A70] mt-1 leading-relaxed">
+                      Étape 2 sur 3 · Saisissez le code à 6 chiffres envoyé à <strong>{resetEmail}</strong>.
+                    </p>
+                  </div>
+
+                  {error && (
+                    <div className="flex items-center gap-2 p-3 bg-red-50 text-red-700 rounded-xl text-xs font-bold border border-red-200">
+                      <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                      <span>{error}</span>
+                    </div>
+                  )}
+
+                  <div>
+                    <label className="text-xs font-bold text-[#3A3647] block mb-1.5">Code OTP à 6 chiffres</label>
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      maxLength={6}
+                      value={resetOtp}
+                      onChange={(e) => setResetOtp(e.target.value.replace(/\D/g, ''))}
+                      placeholder="• • • • • •"
+                      autoComplete="off"
+                      className="w-full text-center tracking-[0.5em] text-2xl font-black py-3.5 border border-[#E2DCF8] rounded-2xl text-[#16131F] focus:outline-none focus:ring-2 focus:ring-[#6C4CF1]/30 bg-[#FAF9FE]"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={isResetLoading}
+                    className="w-full py-3.5 bg-[#6C4CF1] text-white font-extrabold rounded-2xl text-sm sm:text-base shadow-lg shadow-[#6C4CF1]/30 hover:bg-[#5B3FD6] active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-60 cursor-pointer"
+                  >
+                    {isResetLoading ? (
+                      <>
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                        <span>Vérification…</span>
+                      </>
+                    ) : (
+                      <span>Confirmer le code</span>
+                    )}
+                  </button>
+
+                  <div className="flex justify-between items-center text-xs pt-2">
+                    <button
+                      type="button"
+                      onClick={() => { setForgotStep('email'); setError(''); }}
+                      className="font-extrabold text-[#3F25A8] hover:underline"
+                    >
+                      ← Modifier l'e-mail
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleSendResetOtp}
+                      disabled={isResetLoading}
+                      className="font-extrabold text-[#3F25A8] hover:underline"
+                    >
+                      Renvoyer le code
+                    </button>
+                  </div>
+                </form>
+              )}
+
+              {/* Étape 3 : Nouveau mot de passe et confirmation */}
+              {forgotStep === 'new_password' && (
+                <form onSubmit={handleResetPasswordSubmit} autoComplete="off" className="flex flex-col gap-4">
+                  <div>
+                    <h2 className="text-2xl font-extrabold text-[#16131F] tracking-tight">
+                      Nouveau mot de passe
+                    </h2>
+                    <p className="text-xs sm:text-sm text-[#5E5A70] mt-1 leading-relaxed">
+                      Étape 3 sur 3 · Choisissez votre nouveau mot de passe et confirmez-le (au moins 6 caractères).
+                    </p>
+                  </div>
+
+                  {error && (
+                    <div className="flex items-center gap-2 p-3 bg-red-50 text-red-700 rounded-xl text-xs font-bold border border-red-200">
+                      <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                      <span>{error}</span>
+                    </div>
+                  )}
+
+                  {/* Nouveau mot de passe */}
+                  <div className="flex items-center gap-2.5 border border-[#E2DCF8] rounded-2xl px-4 min-h-[52px] bg-white focus-within:ring-2 focus-within:ring-[#6C4CF1]/30 transition-all">
+                    <Lock className="w-4 h-4 text-[#5E5A70] flex-shrink-0" />
+                    <input
+                      type={showNewPassword ? 'text' : 'password'}
+                      required
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      placeholder="Nouveau mot de passe (6 car. min.)"
+                      autoComplete="new-password"
+                      className="flex-1 min-w-0 font-bold text-sm border-0 bg-transparent text-[#16131F] focus:outline-none"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowNewPassword(!showNewPassword)}
+                      className="text-[#5E5A70] hover:text-[#16131F] p-1"
+                    >
+                      {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+
+                  {/* Confirmer le nouveau mot de passe */}
+                  <div className="flex items-center gap-2.5 border border-[#E2DCF8] rounded-2xl px-4 min-h-[52px] bg-white focus-within:ring-2 focus-within:ring-[#6C4CF1]/30 transition-all">
+                    <Lock className="w-4 h-4 text-[#5E5A70] flex-shrink-0" />
+                    <input
+                      type={showConfirmNewPassword ? 'text' : 'password'}
+                      required
+                      value={confirmNewPassword}
+                      onChange={(e) => setConfirmNewPassword(e.target.value)}
+                      placeholder="Confirmez le nouveau mot de passe"
+                      autoComplete="new-password"
+                      className="flex-1 min-w-0 font-bold text-sm border-0 bg-transparent text-[#16131F] focus:outline-none"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmNewPassword(!showConfirmNewPassword)}
+                      className="text-[#5E5A70] hover:text-[#16131F] p-1"
+                    >
+                      {showConfirmNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={isResetLoading}
+                    className="w-full py-3.5 bg-[#6C4CF1] text-white font-extrabold rounded-2xl text-sm sm:text-base shadow-lg shadow-[#6C4CF1]/30 hover:bg-[#5B3FD6] active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-60 cursor-pointer"
+                  >
+                    {isResetLoading ? (
+                      <>
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                        <span>Mise à jour du mot de passe…</span>
+                      </>
+                    ) : (
+                      <span>Enregistrer et se connecter</span>
+                    )}
+                  </button>
+
+                  <div className="text-center pt-2">
+                    <button
+                      type="button"
+                      onClick={() => { setView('login'); setError(''); }}
+                      className="text-xs font-extrabold text-[#3F25A8] hover:underline"
+                    >
+                      ← Annuler et revenir à la connexion
+                    </button>
+                  </div>
+                </form>
+              )}
             </div>
           )}
 
