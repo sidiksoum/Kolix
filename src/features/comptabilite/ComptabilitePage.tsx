@@ -47,7 +47,7 @@ export const ComptabilitePage: React.FC = () => {
   const [startDate, setStartDate] = useState('01/10/2026');
   const [endDate, setEndDate] = useState('31/10/2026');
   const [modalOpen, setModalOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Form State for new charge
   const [formCat, setFormCat] = useState('Publicité');
@@ -234,6 +234,15 @@ export const ComptabilitePage: React.FC = () => {
     if (filterType === 'all') return true;
     return t.type === filterType;
   });
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] gap-3">
+        <div className="w-10 h-10 border-4 border-[#6C4CF1] border-t-transparent rounded-full animate-spin" />
+        <span className="text-sm font-semibold text-[#5E5A70]">Chargement de votre comptabilité...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-12 animate-fade-in font-sans">

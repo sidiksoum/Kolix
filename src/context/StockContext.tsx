@@ -11,7 +11,7 @@ interface StockContextType {
   threshold: number;
   updateQuantity: (id: string, delta: number) => Promise<void>;
   updateThreshold: (newVal: number) => Promise<void>;
-  refreshStock: () => Promise<void>;
+  refreshStock: (showSpinner?: boolean) => Promise<void>;
   isLoading: boolean;
 }
 

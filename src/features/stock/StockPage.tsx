@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useStock } from '../../context/StockContext';
 import { InventoryItem, StockStatus } from '../../types/inventory';
 import { Button } from '../../components/ui/Button';
@@ -29,13 +29,22 @@ export const StockPage: React.FC = () => {
     threshold,
     updateQuantity,
     updateThreshold,
+    refreshStock,
     isLoading
   } = useStock();
 
+  const [pageLoading, setPageLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [selectedItemForUpdate, setSelectedItemForUpdate] = useState<InventoryItem | null>(null);
   const [restockAmount, setRestockAmount] = useState<string>('10');
+
+  useEffect(() => {
+    setPageLoading(true);
+    refreshStock(false).finally(() => {
+      setPageLoading(false);
+    });
+  }, [refreshStock]);
 
   const filtered = inventory
     .filter(item => {
@@ -61,7 +70,7 @@ export const StockPage: React.FC = () => {
     setRestockAmount('10');
   };
 
-  if (isLoading && inventory.length === 0) {
+  if (pageLoading || (isLoading && inventory.length === 0)) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] gap-3">
         <div className="w-10 h-10 border-4 border-[#6C4CF1] border-t-transparent rounded-full animate-spin" />

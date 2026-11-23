@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useOrders } from '../../context/OrdersContext';
 import { Order, OrderStatus } from '../../types/order';
 import { Badge } from '../../components/ui/Badge';
@@ -39,10 +39,18 @@ export const CommandesPage: React.FC = () => {
     isLoading
   } = useOrders();
 
+  const [pageLoading, setPageLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [productFilter, setProductFilter] = useState('all');
   const [dateFilter, setDateFilter] = useState('7d');
   const [sortBy, setSortBy] = useState<'recent' | 'amount' | 'client'>('recent');
+
+  useEffect(() => {
+    setPageLoading(true);
+    refreshOrders(false).finally(() => {
+      setPageLoading(false);
+    });
+  }, [refreshOrders]);
   
   // Dropdown states
   const [menuOpen, setMenuOpen] = useState(false);
@@ -127,7 +135,7 @@ export const CommandesPage: React.FC = () => {
     setNewNote('');
   };
 
-  if (isLoading && orders.length === 0) {
+  if (pageLoading || (isLoading && orders.length === 0)) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] gap-3">
         <div className="w-10 h-10 border-4 border-[#6C4CF1] border-t-transparent rounded-full animate-spin" />

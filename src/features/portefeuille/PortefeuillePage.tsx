@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useWallet } from '../../context/WalletContext';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
@@ -29,13 +29,23 @@ export const PortefeuillePage: React.FC = () => {
     accounts,
     isWithdrawModalOpen,
     setIsWithdrawModalOpen,
-    withdrawFunds
+    withdrawFunds,
+    refreshWallet,
+    isLoading
   } = useWallet();
 
+  const [pageLoading, setPageLoading] = useState(true);
   const [filterMode, setFilterMode] = useState<string>('all');
   const [withdrawAmount, setWithdrawAmount] = useState<string>('150000');
   const [selectedAccountId, setSelectedAccountId] = useState<string>(accounts[0]?.id || 'acc_01');
   const [isAddAccountModalOpen, setIsAddAccountModalOpen] = useState(false);
+
+  useEffect(() => {
+    setPageLoading(true);
+    refreshWallet().finally(() => {
+      setPageLoading(false);
+    });
+  }, []);
 
   // New Account State
   const [newAccName, setNewAccName] = useState('');
@@ -58,6 +68,15 @@ export const PortefeuillePage: React.FC = () => {
     }
     await withdrawFunds(amount, selectedAccountId);
   };
+
+  if (pageLoading || (isLoading && !summary)) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] gap-3">
+        <div className="w-10 h-10 border-4 border-[#6C4CF1] border-t-transparent rounded-full animate-spin" />
+        <span className="text-sm font-semibold text-[#5E5A70]">Chargement de votre portefeuille...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-6 animate-in fade-in duration-300">

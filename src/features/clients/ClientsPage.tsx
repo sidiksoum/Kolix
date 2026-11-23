@@ -13,7 +13,7 @@ export const ClientsPage: React.FC = () => {
   const { subscribe } = useRealtime();
   const [search, setSearch] = useState('');
   const [apiClients, setApiClients] = useState<ClientItem[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [isExporting, setIsExporting] = useState(false);
 
   const fetchClients = useCallback(async () => {
@@ -29,9 +29,10 @@ export const ClientsPage: React.FC = () => {
   }, [search]);
 
   useEffect(() => {
-    const timer = setTimeout(fetchClients, 300);
+    const delay = search ? 300 : 0;
+    const timer = setTimeout(fetchClients, delay);
     return () => clearTimeout(timer);
-  }, [fetchClients]);
+  }, [fetchClients, search]);
 
   // Écoute temps réel
   useEffect(() => {
@@ -111,7 +112,7 @@ export const ClientsPage: React.FC = () => {
     }
   };
 
-  if (isLoading && clients.length === 0) {
+  if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] gap-3">
         <div className="w-10 h-10 border-4 border-[#6C4CF1] border-t-transparent rounded-full animate-spin" />

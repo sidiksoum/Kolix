@@ -58,8 +58,16 @@ export const BoutiquePage: React.FC = () => {
   } = useStore();
   const { subscribe } = useRealtime();
 
+  const [pageLoading, setPageLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'shops' | 'templates' | 'editor' | 'domains'>('shops');
   const [selectedStore, setSelectedStore] = useState<MerchantStore | null>(activeStore || stores[0] || null);
+
+  useEffect(() => {
+    setPageLoading(true);
+    refreshStoreData().finally(() => {
+      setPageLoading(false);
+    });
+  }, []);
 
   // Template tab filters state
   const [selectedNiche, setSelectedNiche] = useState<string>('all');
@@ -195,7 +203,7 @@ export const BoutiquePage: React.FC = () => {
     { id: 'p-wellness-1', name: 'Vitalis Nature', niche: 'Compléments et bien-être', style: 'Moderne', color: '#4E7F2A', free: false },
   ];
 
-  if (isLoading && stores.length === 0) {
+  if (pageLoading || (isLoading && stores.length === 0)) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] gap-3">
         <div className="w-10 h-10 border-4 border-[#6C4CF1] border-t-transparent rounded-full animate-spin" />
