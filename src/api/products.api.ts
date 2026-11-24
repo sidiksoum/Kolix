@@ -149,6 +149,50 @@ export const productsApi = {
     }
   },
 
+  async update(id: string, dto: Partial<CreateProductDto>): Promise<Product> {
+    try {
+      const payload: any = {};
+      if (dto.name !== undefined) payload.name = dto.name;
+      if (dto.category !== undefined) payload.category = dto.category;
+      if (dto.price !== undefined) payload.price = dto.price;
+      if (dto.priceOld !== undefined) payload.price_old = dto.priceOld || null;
+      if (dto.stockQuantity !== undefined) payload.stock_quantity = dto.stockQuantity;
+      if (dto.stockMain !== undefined) payload.stock_main = dto.stockMain;
+      if (dto.stockRest !== undefined) payload.stock_rest = dto.stockRest;
+      if (dto.type !== undefined) payload.product_type = dto.type;
+      if (dto.hasCountdown !== undefined) payload.has_countdown = dto.hasCountdown;
+      if (dto.description !== undefined) payload.description = dto.description;
+      if (dto.images !== undefined) payload.images = dto.images;
+      if (dto.fiche_produit !== undefined) payload.fiche_produit = dto.fiche_produit;
+
+      const res = await apiClient.put<any>(API_ENDPOINTS.PRODUCTS.DETAIL(id), payload);
+      const updated = normalizeProduct(res.data || res);
+      productsCache = productsCache.map(p => p.id === id ? updated : p);
+      persist();
+      return updated;
+    } catch (err) {
+      console.warn('update product API failed, updating locally:', err);
+      productsCache = productsCache.map(p => {
+        if (p.id === id) {
+          return {
+            ...p,
+            ...dto,
+            stockMain: dto.stockMain || p.stockMain,
+            stockQuantity: dto.stockQuantity ?? p.stockQuantity,
+            price: dto.price ?? p.price,
+            priceOld: dto.priceOld ?? p.priceOld,
+            images: dto.images ?? p.images,
+            fiche_produit: dto.fiche_produit ?? p.fiche_produit
+          };
+        }
+        return p;
+      });
+      persist();
+      const updated = productsCache.find(p => p.id === id)!;
+      return updated;
+    }
+  },
+
   async delete(id: string): Promise<void> {
     try {
       await apiClient.delete(API_ENDPOINTS.PRODUCTS.DETAIL(id));

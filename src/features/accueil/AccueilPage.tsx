@@ -165,7 +165,13 @@ export const AccueilPage: React.FC = () => {
 
       {/* 5 KPI Cards Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-        {data.kpis.map((kpi) => (
+        {(data.kpis && data.kpis.length > 0 ? data.kpis : [
+          { id: 'ca', label: 'Chiffre d’affaires (FCFA)', value: '0', rawValue: 0, trend: '+0 %', isPositive: true, iconName: 'DollarSign', iconBg: '#E9E3FD', iconFg: '#4B2FC9' },
+          { id: 'visites', label: 'Visites boutique', value: '0', rawValue: 0, trend: '+0 %', isPositive: true, iconName: 'Eye', iconBg: '#E3EEFF', iconFg: '#1F4FA8' },
+          { id: 'commandes', label: 'Commandes reçues', value: '0', rawValue: 0, trend: '+0 %', isPositive: true, iconName: 'ShoppingBag', iconBg: '#FFEBDD', iconFg: '#8A3D0A' },
+          { id: 'ventes', label: 'Ventes effectives', value: '0', rawValue: 0, trend: '+0 %', isPositive: true, iconName: 'CheckCircle2', iconBg: '#E9E3FD', iconFg: '#4B2FC9' },
+          { id: 'conversion', label: 'Taux de conversion', value: '0 %', rawValue: 0, trend: '+0 pt', isPositive: true, iconName: 'TrendingUp', iconBg: '#E3EEFF', iconFg: '#1F4FA8' },
+        ]).map((kpi) => (
           <div
             key={kpi.id}
             className="bg-white rounded-[22px] p-5 flex flex-col gap-3.5 shadow-kolix hover:shadow-kolix-md transition-shadow"

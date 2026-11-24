@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { useOrders } from '../../context/OrdersContext';
 import { useStore } from '../../context/StoreContext';
 import { productsApi } from '../../api/products.api';
-import { Product } from '../../types/product';
+import { Product, FicheProduitReview } from '../../types/product';
 import { toast } from 'sonner';
 
 interface Offer {
@@ -55,12 +55,18 @@ export const ProductPage: React.FC = () => {
 
   const productParam = searchParams.get('product') || searchParams.get('p') || searchParams.get('slug');
   const [productData, setProductData] = useState<Product | null>(null);
+  const [isProductLoading, setIsProductLoading] = useState<boolean>(Boolean(productParam));
 
   useEffect(() => {
     if (productParam) {
+      setIsProductLoading(true);
       productsApi.getByIdOrSlug(productParam).then((res) => {
         if (res) setProductData(res);
+      }).finally(() => {
+        setIsProductLoading(false);
       });
+    } else {
+      setIsProductLoading(false);
     }
   }, [productParam]);
 
@@ -96,7 +102,39 @@ export const ProductPage: React.FC = () => {
 
   const activeOldPrice = productData?.priceOld || (productData ? Math.round(productData.price * 1.45) : CONFIG.oldPrice);
   const activeStock = productData?.fiche_produit?.stockUrgency || productData?.stockQuantity || CONFIG.stock;
-  const activeCountdown = productData?.fiche_produit?.countdownEnabled ?? true;
+  const activeCountdown = productData?.fiche_produit?.countdownEnabled ?? (productData?.hasCountdown ?? true);
+
+  const activeStoryTitle = productData?.fiche_produit?.storyTitle || (productData ? `Pourquoi choisir ${productData.name} ?` : "Votre jus frais, où que vous soyez");
+  const activeStoryText = productData?.fiche_produit?.storyText || productData?.description || (
+    "Au bureau, à la salle de sport ou en voyage, BlendGo vous permet de préparer une boisson fraîche sans prise électrique ni gros appareil. Ajoutez vos fruits, un peu d’eau ou de lait, appuyez deux fois : c’est prêt.\n\nSes 6 lames en acier inoxydable broient mangue, ananas, banane, gingembre et même la glace pilée. Le gobelet de 400 ml se ferme hermétiquement : vous buvez directement dedans, sans transvaser."
+  );
+
+  const isReviewsEnabled = productData?.fiche_produit?.reviewsEnabled ?? true;
+  const activeReviews: FicheProduitReview[] = (productData?.fiche_produit?.reviews && productData.fiche_produit.reviews.length > 0)
+    ? productData.fiche_produit.reviews
+    : [
+        {
+          rating: 5,
+          comment: "« J’ai pris le pack de deux, un pour moi et un pour ma sœur. Je fais mon jus de gingembre au bureau chaque matin. »",
+          author: "Mariam K.",
+          location: "Cocody",
+          verified: true
+        },
+        {
+          rating: 5,
+          comment: "« Livré en 48 h à Bouaké. Le livreur a attendu que je teste avant de payer. Très sérieux. »",
+          author: "Yao F.",
+          location: "Bouaké",
+          verified: true
+        },
+        {
+          rating: 4,
+          comment: "« Petit mais costaud, il écrase bien la mangue et les glaçons. La batterie tient presque une semaine. »",
+          author: "Christelle A.",
+          location: "Yopougon",
+          verified: true
+        }
+      ];
 
   const activeBenefits = productData?.fiche_produit?.benefits || [
     { icon: '🔋', title: '15 mixages par charge', description: 'Rechargez avec n’importe quel chargeur de téléphone USB-C, en 2 à 3 heures.' },
@@ -359,6 +397,16 @@ export const ProductPage: React.FC = () => {
   const scrollToForm = () => {
     orderFormRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
+
+  if (isProductLoading) {
+    return (
+      <div className="min-h-screen bg-[#FBFAFE] flex flex-col items-center justify-center p-6 text-center">
+        <div className="w-12 h-12 border-4 border-[#6B3FD4] border-t-transparent rounded-full animate-spin mb-4" />
+        <h2 className="bricolage text-2xl font-black text-[#1D1430]">Chargement de votre produit…</h2>
+        <p className="text-xs text-[#6A6080] mt-1 font-semibold">Récupération des informations et des offres exclusives en direct</p>
+      </div>
+    );
+  }
 
   return (
     <div className="product-page-wrapper bg-[#FBFAFE] text-[#1D1430] min-h-screen selection:bg-[#C9B6F7]">
@@ -825,14 +873,15 @@ export const ProductPage: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-8 lg:gap-12 items-start">
           <div>
             <h2 id="descTitle" className="bricolage text-2xl sm:text-3xl font-extrabold text-[#1D1430] mb-4">
-              Votre jus frais, où que vous soyez
+              {activeStoryTitle}
             </h2>
-            <p className="text-[#6A6080] leading-relaxed mb-4">
-              Au bureau, à la salle de sport ou en voyage, BlendGo vous permet de préparer une boisson fraîche sans prise électrique ni gros appareil. Ajoutez vos fruits, un peu d’eau ou de lait, appuyez deux fois : c’est prêt.
-            </p>
-            <p className="text-[#6A6080] leading-relaxed mb-6">
-              Ses 6 lames en acier inoxydable broient mangue, ananas, banane, gingembre et même la glace pilée. Le gobelet de 400 ml se ferme hermétiquement : vous buvez directement dedans, sans transvaser.
-            </p>
+            <div className="space-y-4 text-[#6A6080] leading-relaxed mb-6">
+              {activeStoryText.split('\n').filter(p => p.trim().length > 0).map((para, pIdx) => (
+                <p key={pIdx} className="m-0">
+                  {para}
+                </p>
+              ))}
+            </div>
 
             <div className="grid gap-4 mt-6">
               {activeBenefits.map((b, i) => (
@@ -904,48 +953,34 @@ export const ProductPage: React.FC = () => {
       </section>
 
       {/* Verified Reviews */}
-      <section className="max-w-[1180px] mx-auto px-5 py-14" aria-labelledby="reviewsTitle">
-        <h2 id="reviewsTitle" className="bricolage text-2xl sm:text-3xl font-extrabold text-[#1D1430] mb-8">
-          Ce qu’en disent nos clients
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          <figure className="bg-white border border-[#E3DAF7] rounded-[22px] p-5 shadow-sm m-0 flex flex-col justify-between">
-            <div>
-              <span className="text-[#F2A516] tracking-widest text-sm" aria-label="5 sur 5">★★★★★</span>
-              <blockquote className="my-2.5 text-sm text-[#1D1430] italic leading-relaxed">
-                « J’ai pris le pack de deux, un pour moi et un pour ma sœur. Je fais mon jus de gingembre au bureau chaque matin. »
-              </blockquote>
-            </div>
-            <figcaption className="text-xs text-[#6A6080] pt-2 border-t border-[#F1ECFC]">
-              <b className="text-[#1D1430]">Mariam K.</b>, Cocody · <span className="text-[#1F9D6B] font-bold">Achat vérifié</span>
-            </figcaption>
-          </figure>
-
-          <figure className="bg-white border border-[#E3DAF7] rounded-[22px] p-5 shadow-sm m-0 flex flex-col justify-between">
-            <div>
-              <span className="text-[#F2A516] tracking-widest text-sm" aria-label="5 sur 5">★★★★★</span>
-              <blockquote className="my-2.5 text-sm text-[#1D1430] italic leading-relaxed">
-                « Livré en 48 h à Bouaké. Le livreur a attendu que je teste avant de payer. Très sérieux. »
-              </blockquote>
-            </div>
-            <figcaption className="text-xs text-[#6A6080] pt-2 border-t border-[#F1ECFC]">
-              <b className="text-[#1D1430]">Yao F.</b>, Bouaké · <span className="text-[#1F9D6B] font-bold">Achat vérifié</span>
-            </figcaption>
-          </figure>
-
-          <figure className="bg-white border border-[#E3DAF7] rounded-[22px] p-5 shadow-sm m-0 flex flex-col justify-between">
-            <div>
-              <span className="text-[#F2A516] tracking-widest text-sm" aria-label="4 sur 5">★★★★☆</span>
-              <blockquote className="my-2.5 text-sm text-[#1D1430] italic leading-relaxed">
-                « Petit mais costaud, il écrase bien la mangue et les glaçons. La batterie tient presque une semaine. »
-              </blockquote>
-            </div>
-            <figcaption className="text-xs text-[#6A6080] pt-2 border-t border-[#F1ECFC]">
-              <b className="text-[#1D1430]">Christelle A.</b>, Yopougon · <span className="text-[#1F9D6B] font-bold">Achat vérifié</span>
-            </figcaption>
-          </figure>
-        </div>
-      </section>
+      {isReviewsEnabled && activeReviews.length > 0 && (
+        <section className="max-w-[1180px] mx-auto px-5 py-14" aria-labelledby="reviewsTitle">
+          <h2 id="reviewsTitle" className="bricolage text-2xl sm:text-3xl font-extrabold text-[#1D1430] mb-8">
+            Ce qu’en disent nos clients
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {activeReviews.map((rev, rIdx) => (
+              <figure key={rIdx} className="bg-white border border-[#E3DAF7] rounded-[22px] p-5 shadow-sm m-0 flex flex-col justify-between">
+                <div>
+                  <span className="text-[#F2A516] tracking-widest text-sm" aria-label={`${rev.rating} sur 5`}>
+                    {'★'.repeat(rev.rating) + '☆'.repeat(Math.max(0, 5 - rev.rating))}
+                  </span>
+                  <blockquote className="my-2.5 text-sm text-[#1D1430] italic leading-relaxed">
+                    {rev.comment}
+                  </blockquote>
+                </div>
+                <figcaption className="text-xs text-[#6A6080] pt-2 border-t border-[#F1ECFC]">
+                  <b className="text-[#1D1430]">{rev.author}</b>
+                  {rev.location && `, ${rev.location}`}
+                  {rev.verified !== false && (
+                    <> · <span className="text-[#1F9D6B] font-bold">Achat vérifié</span></>
+                  )}
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* FAQ */}
       <section className="max-w-[780px] mx-auto px-5 pb-16" aria-labelledby="faqTitle">

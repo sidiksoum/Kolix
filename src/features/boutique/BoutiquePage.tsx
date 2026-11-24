@@ -27,7 +27,9 @@ import {
   CreditCard,
   ShieldCheck,
   Tag,
-  Box
+  Box,
+  Pencil,
+  Trash2
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '../../utils/cn';
@@ -90,6 +92,25 @@ export const BoutiquePage: React.FC = () => {
 
   // Modal: Add Product to selected store
   const [showAddProductModal, setShowAddProductModal] = useState<boolean>(false);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+
+  const handleEditProduct = (prod: Product) => {
+    setEditingProduct(prod);
+    setShowAddProductModal(true);
+  };
+
+  const handleDeleteProduct = async (prodId: string, prodName: string) => {
+    if (!window.confirm(`Confirmer la suppression du produit « ${prodName} » ?`)) return;
+    try {
+      await productsApi.delete(prodId);
+      toast.success(`Produit « ${prodName} » supprimé.`);
+      if (selectedStore?.id) {
+        loadStoreProducts(selectedStore.id);
+      }
+    } catch {
+      toast.error('Erreur lors de la suppression');
+    }
+  };
 
   useEffect(() => {
     if (activeStore) {
@@ -463,7 +484,10 @@ export const BoutiquePage: React.FC = () => {
                   <Button
                     variant="primary"
                     size="sm"
-                    onClick={() => setShowAddProductModal(true)}
+                    onClick={() => {
+                      setEditingProduct(null);
+                      setShowAddProductModal(true);
+                    }}
                     className="rounded-2xl text-xs gap-1.5"
                   >
                     <Plus className="w-3.5 h-3.5" />
@@ -552,7 +576,10 @@ export const BoutiquePage: React.FC = () => {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setShowAddProductModal(true)}
+                    onClick={() => {
+                      setEditingProduct(null);
+                      setShowAddProductModal(true);
+                    }}
                     className="rounded-2xl text-xs gap-1.5 font-bold"
                   >
                     <Plus className="w-3.5 h-3.5" />
@@ -624,28 +651,36 @@ export const BoutiquePage: React.FC = () => {
                             </Badge>
                           </div>
 
-                          {/* Action Buttons: Visualiser la fiche produit & Personnaliser */}
-                          <div className="grid grid-cols-2 gap-2 mt-auto">
+                          {/* Action Buttons: Visualiser, Modifier, Supprimer */}
+                          <div className="flex items-center gap-1.5 mt-auto pt-2 border-t border-[#E2DCF8]/40">
                             <Link
                               to={productUrl}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-[#241D5E] hover:bg-[#1C164A] text-white text-xs font-bold no-underline transition-colors"
+                              className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl bg-[#241D5E] hover:bg-[#1C164A] text-white text-xs font-bold no-underline transition-colors"
+                              title="Ouvrir la fiche produit en direct"
                             >
                               <Eye className="w-3.5 h-3.5" />
-                              <span>Fiche produit</span>
+                              <span>Fiche</span>
                             </Link>
 
                             <button
                               type="button"
-                              onClick={() => {
-                                setActiveTab('editor');
-                                toast.info(`Personnalisation de la fiche pour ${prod.name}`);
-                              }}
-                              className="inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-white hover:bg-[#EEE9FF] border border-[#E2DCF8] text-[#6C4CF1] text-xs font-bold transition-colors cursor-pointer"
+                              onClick={() => handleEditProduct(prod)}
+                              className="inline-flex items-center justify-center gap-1 py-2 px-2.5 rounded-xl bg-[#F4F1FE] hover:bg-[#EAE5FC] border border-[#6C4CF1]/30 text-[#6C4CF1] text-xs font-bold transition-colors cursor-pointer"
+                              title="Modifier toutes les informations de ce produit"
                             >
-                              <Palette className="w-3.5 h-3.5" />
-                              <span>Personnaliser</span>
+                              <Pencil className="w-3.5 h-3.5" />
+                              <span>Modifier</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteProduct(prod.id, prod.name)}
+                              className="w-8 h-8 rounded-xl bg-white hover:bg-rose-50 border border-[#E2DCF8] text-[#8B869C] hover:text-rose-600 inline-flex items-center justify-center transition-colors cursor-pointer"
+                              title="Supprimer ce produit"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
                             </button>
                           </div>
                         </div>
@@ -1202,16 +1237,20 @@ export const BoutiquePage: React.FC = () => {
       )}
 
       {/* ========================================================================= */}
-      {/* MODAL: AJOUTER UN PRODUIT COMPLET (Standard Shopify + 3 images MinIO) */}
+      {/* MODAL: AJOUTER / MODIFIER UN PRODUIT COMPLET */}
       <ProductCreateModal
         isOpen={showAddProductModal}
-        onClose={() => setShowAddProductModal(false)}
+        onClose={() => {
+          setShowAddProductModal(false);
+          setEditingProduct(null);
+        }}
         onSuccess={() => {
           if (selectedStore) {
             loadStoreProducts(selectedStore.id);
           }
         }}
         defaultShopId={selectedStore?.id || activeStore?.id}
+        productToEdit={editingProduct}
       />
     </div>
   );

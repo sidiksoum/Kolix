@@ -65,6 +65,7 @@ class ApiClient {
     }
 
     const config: RequestInit = {
+      signal: customConfig.signal || (typeof AbortSignal !== 'undefined' && 'timeout' in AbortSignal ? AbortSignal.timeout(8000) : undefined),
       ...customConfig,
       headers: requestHeaders,
     };

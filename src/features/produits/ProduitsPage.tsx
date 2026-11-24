@@ -19,7 +19,8 @@ import {
   Timer,
   Eye,
   Package,
-  Loader2
+  Loader2,
+  Pencil
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatFCFA } from '../../utils/formatters';
@@ -35,6 +36,7 @@ export const ProduitsPage: React.FC = () => {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
   const loadProducts = async () => {
     setIsLoading(true);
@@ -101,6 +103,11 @@ export const ProduitsPage: React.FC = () => {
     setSelectedIds(prev => 
       prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
     );
+  };
+
+  const handleEditProduct = (prod: Product) => {
+    setEditingProduct(prod);
+    setIsAddModalOpen(true);
   };
 
   const handleBulkStatus = async (status: ProductStatus) => {
@@ -173,7 +180,10 @@ export const ProduitsPage: React.FC = () => {
           </Button>
           <Button
             variant="primary"
-            onClick={() => setIsAddModalOpen(true)}
+            onClick={() => {
+              setEditingProduct(null);
+              setIsAddModalOpen(true);
+            }}
             className="rounded-full shadow-kolix-cta"
           >
             <Plus className="w-4 h-4 mr-1" />
@@ -358,13 +368,24 @@ export const ProduitsPage: React.FC = () => {
                         </Link>
                       </td>
                       <td className="py-3 px-4 text-right">
-                        <button
-                          onClick={() => handleDeleteOne(product.id, product.name)}
-                          className="w-8 h-8 rounded-lg hover:bg-rose-50 text-[#8B869C] hover:text-rose-600 inline-flex items-center justify-center transition-colors cursor-pointer"
-                          title="Supprimer le produit"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        <div className="flex items-center justify-end gap-1">
+                          <button
+                            type="button"
+                            onClick={() => handleEditProduct(product)}
+                            className="w-8 h-8 rounded-lg hover:bg-[#F4F1FE] text-[#8B869C] hover:text-[#6C4CF1] inline-flex items-center justify-center transition-colors cursor-pointer"
+                            title="Modifier les informations du produit"
+                          >
+                            <Pencil className="w-4 h-4" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteOne(product.id, product.name)}
+                            className="w-8 h-8 rounded-lg hover:bg-rose-50 text-[#8B869C] hover:text-rose-600 inline-flex items-center justify-center transition-colors cursor-pointer"
+                            title="Supprimer le produit"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   );
@@ -384,9 +405,13 @@ export const ProduitsPage: React.FC = () => {
       {/* Comprehensive Product & Multi-fiche COD Modal */}
       <ProductCreateModal
         isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
+        onClose={() => {
+          setIsAddModalOpen(false);
+          setEditingProduct(null);
+        }}
         onSuccess={loadProducts}
         defaultShopId={activeStore?.id || user?.currentShop?.id}
+        productToEdit={editingProduct}
       />
     </div>
   );

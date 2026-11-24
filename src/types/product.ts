@@ -23,9 +23,19 @@ export interface FicheProduitFAQ {
   answer: string;
 }
 
+export interface FicheProduitReview {
+  author: string;
+  location: string;
+  rating: number;
+  comment: string;
+  verified?: boolean;
+}
+
 export interface FicheProduitData {
   headline?: string;
   leadSubtitle?: string;
+  storyTitle?: string;
+  storyText?: string;
   offers?: FicheProduitOffer[];
   stockUrgency?: number;
   countdownEnabled?: boolean;
@@ -33,6 +43,8 @@ export interface FicheProduitData {
   specs?: FicheProduitSpec[];
   inTheBox?: string;
   faqs?: FicheProduitFAQ[];
+  reviews?: FicheProduitReview[];
+  reviewsEnabled?: boolean;
 }
 
 export interface Product {
