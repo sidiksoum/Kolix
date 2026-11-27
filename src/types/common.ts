@@ -16,6 +16,7 @@ export interface MerchantUser {
   name: string;
   initials: string;
   email: string;
+  phone?: string;
   role: 'Propriétaire' | 'Gestionnaire' | 'Livreur' | 'Comptable' | string;
   permissions?: string[];
   currentShop: {

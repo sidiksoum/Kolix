@@ -11,6 +11,7 @@ export const INITIAL_USER: MerchantUser = {
   name: 'Souleymane Sanogo',
   initials: 'SS',
   email: 'souleymane@kolix.ci',
+  phone: '+225 07 08 09 10 11',
   role: 'Propriétaire',
   currentShop: {
     id: 'shp_abidjan',

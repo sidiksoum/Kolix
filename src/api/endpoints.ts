@@ -62,5 +62,10 @@ export const API_ENDPOINTS = {
   },
   AI: {
     CHAT: '/api/v1/ai/chat',
+  },
+  WHATSAPP: {
+    CAMPAIGNS: '/api/v1/whatsapp/campaigns',
+    DELETE_CAMPAIGN: (id: string) => `/api/v1/whatsapp/campaigns/${id}`,
+    AUDIENCES: '/api/v1/whatsapp/audiences',
   }
 } as const;

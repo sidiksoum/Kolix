@@ -50,6 +50,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 id: me.id || prev.id,
                 name: resolvedName,
                 email: me.email || prev.email,
+                phone: me.phone_number || me.phone || prev.phone || '+225 07 08 09 10 11',
                 role: (me.role as any) || prev.role || 'Propriétaire',
                 permissions: (me as any).permissions || prev.permissions || ((me.role as any) === 'Propriétaire' ? ['*'] : []),
                 initials,
@@ -87,6 +88,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         name: resolvedName,
         initials,
         email: tokens.email,
+        phone: (tokens as any).phone || (tokens as any).phone_number || user?.phone || '+225 07 08 09 10 11',
         role: (tokens.role as any) || 'Propriétaire',
         permissions: tokens.permissions || (tokens.role === 'Propriétaire' ? ['*'] : []),
         currentShop: {
