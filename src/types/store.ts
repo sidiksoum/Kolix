@@ -32,6 +32,7 @@ export interface MerchantStore {
   id: string;
   name: string;
   domain: string;
+  slug?: string;
   custom_domain?: string;
   customDomain?: string;
   templateId?: string;
@@ -59,6 +60,8 @@ export interface CreateStoreDto {
 
 export interface UpdateStoreDto {
   name?: string;
+  slug?: string;
+  domain?: string;
   custom_domain?: string;
   accent_color?: string;
   plan?: string;

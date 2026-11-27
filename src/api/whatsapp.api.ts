@@ -33,53 +33,19 @@ export interface SavedAudienceItem {
 const STORAGE_KEY_CAMPAIGNS = 'kolix_whatsapp_campaigns';
 const STORAGE_KEY_AUDIENCES = 'kolix_whatsapp_audiences';
 
-const DEFAULT_CAMPAIGNS: WhatsAppCampaignItem[] = [
-  {
-    id: 'camp_01',
-    name: 'Collection fête des mères',
-    target_type: 'all',
-    when_type: 'now',
-    status: 'Envoyée',
-    recipients_count: 540,
-    sent_count: 540,
-    read_count: 508,
-    created_at: '2026-05-12T10:00:00Z'
-  },
-  {
-    id: 'camp_02',
-    name: 'Réactivation clients inactifs',
-    target_type: 'date',
-    when_type: 'now',
-    status: 'Envoyée',
-    recipients_count: 180,
-    sent_count: 180,
-    read_count: 158,
-    created_at: '2026-06-28T14:30:00Z'
-  },
-  {
-    id: 'camp_03',
-    name: 'Lancement Sérum Éclat',
-    target_type: 'product',
-    when_type: 'now',
-    status: 'Envoyée',
-    recipients_count: 92,
-    sent_count: 92,
-    read_count: 88,
-    created_at: '2026-09-15T11:00:00Z'
-  },
-  {
-    id: 'camp_04',
-    name: 'Flash Sale Weekend',
-    target_type: 'all',
-    when_type: 'schedule',
-    scheduled_at: '2026-10-23T18:30:00Z',
-    status: 'Programmée',
-    recipients_count: 320,
-    sent_count: 0,
-    read_count: 0,
-    created_at: '2026-10-20T09:00:00Z'
+// Nettoyer toute campagne mockée antérieure stockée dans le navigateur
+try {
+  const saved = localStorage.getItem(STORAGE_KEY_CAMPAIGNS);
+  if (saved && (saved.includes('Collection fête des mères') || saved.includes('Lancement Sérum Éclat'))) {
+    localStorage.removeItem(STORAGE_KEY_CAMPAIGNS);
   }
-];
+  const savedAud = localStorage.getItem(STORAGE_KEY_AUDIENCES);
+  if (savedAud && savedAud.includes('Grosses commandes')) {
+    localStorage.removeItem(STORAGE_KEY_AUDIENCES);
+  }
+} catch {}
+
+const DEFAULT_CAMPAIGNS: WhatsAppCampaignItem[] = [];
 
 export const whatsappApi = {
   async getCampaigns(): Promise<WhatsAppCampaignItem[]> {
@@ -174,11 +140,7 @@ export const whatsappApi = {
       if (saved) return JSON.parse(saved);
     } catch {}
 
-    return [
-      { id: 'aud_1', name: 'Grosses commandes', criteria: { minOrders: 2 }, contacts_count: 42 },
-      { id: 'aud_2', name: 'Clients Abidjan', criteria: { city: 'Abidjan' }, contacts_count: 128 },
-      { id: 'aud_3', name: 'Inactifs 60j', criteria: { days: 60 }, contacts_count: 56 }
-    ];
+    return [];
   },
 
   async createAudience(name: string, criteria: Record<string, any>, count: number): Promise<SavedAudienceItem> {

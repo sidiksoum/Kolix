@@ -53,11 +53,11 @@ export const Sidebar: React.FC<{ isOpen?: boolean; onClose?: () => void }> = ({ 
   const location = useLocation();
 
   const shop = user?.currentShop || {
-    id: 'shp_abidjan',
-    name: 'Élégance & Tech Abidjan',
-    domain: 'elegance-tech.kolix.shop',
+    id: '',
+    name: 'Ma Boutique',
+    domain: 'maboutique.kolix.shop',
     plan: 'Kolix Grow',
-    ordersCount: 412,
+    ordersCount: 0,
     maxOrders: 1500
   };
 

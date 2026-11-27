@@ -26,6 +26,7 @@ import confetti from 'canvas-confetti';
 import { useAuth } from '../../context/AuthContext';
 import { useOrders } from '../../context/OrdersContext';
 import { clientsApi, ClientItem } from '../../api/clients.api';
+import { productsApi } from '../../api/products.api';
 import { whatsappApi, WhatsAppCampaignItem, SavedAudienceItem } from '../../api/whatsapp.api';
 import { formatFCFA } from '../../utils/formatters';
 
@@ -101,23 +102,28 @@ export const WhatsAppMarketingPage: React.FC = () => {
   const [sentClients, setSentClients] = useState<Set<string>>(new Set());
   const [currentDispatchIndex, setCurrentDispatchIndex] = useState(0);
 
-  // 1. Récupération des clients livrés
+  // 1. Récupération des clients livrés et produits réels
   const [apiClients, setApiClients] = useState<ClientItem[]>([]);
+  const [catalogProducts, setCatalogProducts] = useState<string[]>([]);
 
   useEffect(() => {
     let isMounted = true;
     const loadInitData = async () => {
       setIsLoadingData(true);
       try {
-        const [cList, camps, auds] = await Promise.all([
+        const [cList, camps, auds, prods] = await Promise.all([
           clientsApi.getAll(),
           whatsappApi.getCampaigns(),
-          whatsappApi.getAudiences()
+          whatsappApi.getAudiences(),
+          productsApi.getAll()
         ]);
         if (isMounted) {
           setApiClients(cList);
           setCampaigns(camps);
           setSavedAudiences(auds);
+          if (Array.isArray(prods)) {
+            setCatalogProducts(prods.map(p => p.name).filter(Boolean));
+          }
         }
       } catch (err) {
         console.error('Erreur chargement marketing WhatsApp', err);
@@ -205,21 +211,17 @@ export const WhatsAppMarketingPage: React.FC = () => {
     return Array.from(map.values());
   }, [apiClients, orders]);
 
-  // Liste des produits uniques achetés par les clients livrés
+  // Liste des produits uniques achetés par les clients livrés ou issus du catalogue
   const availableProducts = useMemo(() => {
     const set = new Set<string>();
+    catalogProducts.forEach(p => set.add(p));
     orders.forEach(o => {
-      if (o.product && (o.status === 'Livrée' || o.status.toLowerCase().includes('livr'))) {
+      if (o.product && (o.status === 'Livrée' || (typeof o.status === 'string' && o.status.toLowerCase().includes('livr')))) {
         set.add(o.product);
       }
     });
-    // Fallback si pas encore de commandes livrées variées
-    if (set.size === 0) {
-      set.add('BlendGo Pro');
-      set.add('Montre élégante');
-    }
     return Array.from(set);
-  }, [orders]);
+  }, [orders, catalogProducts]);
 
   // Initialisation du produit sélectionné
   useEffect(() => {
@@ -267,21 +269,24 @@ export const WhatsAppMarketingPage: React.FC = () => {
       const found = targetedClients.find(c => c.cleanPhone === previewClientId);
       return found || targetedClients[0];
     }
+    if (deliveredClients.length > 0) {
+      return deliveredClients[0];
+    }
     return {
-      id: 'demo_client',
-      name: 'Amina Traoré',
-      firstName: 'Amina',
-      lastName: 'Traoré',
-      phone: '+225 07 12 34 56 78',
-      cleanPhone: '2250712345678',
-      city: 'Cocody',
-      place: 'Angré 8e Tranche',
-      totalOrders: 3,
-      totalSpent: 45000,
+      id: 'preview_client',
+      name: 'Client',
+      firstName: 'Client',
+      lastName: '',
+      phone: '+225 07 00 00 00 00',
+      cleanPhone: '2250700000000',
+      city: 'Abidjan',
+      place: 'Lieu de livraison',
+      totalOrders: 1,
+      totalSpent: 0,
       lastOrderDate: new Date().toISOString(),
-      products: ['BlendGo Pro']
+      products: []
     };
-  }, [targetedClients, previewClientId]);
+  }, [targetedClients, deliveredClients, previewClientId]);
 
   // Nettoyage de l'URL objet lors du démontage ou changement de fichier
   useEffect(() => {

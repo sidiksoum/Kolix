@@ -29,7 +29,8 @@ import {
   Tag,
   Box,
   Pencil,
-  Trash2
+  Trash2,
+  Loader2
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '../../utils/cn';
@@ -40,7 +41,7 @@ import { ProductCreateModal } from '../../components/products/ProductCreateModal
 
 export const BoutiquePage: React.FC = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, switchShop } = useAuth();
   const {
     stores,
     activeStore,
@@ -81,6 +82,45 @@ export const BoutiquePage: React.FC = () => {
   // Custom domain edit state
   const [customDomainInput, setCustomDomainInput] = useState<string>('');
   const [isSavingDomain, setIsSavingDomain] = useState<boolean>(false);
+
+  // État de modification du lien Kolix de la boutique
+  const [isEditingDomain, setIsEditingDomain] = useState<boolean>(false);
+  const [editDomainInput, setEditDomainInput] = useState<string>('');
+  const [isSavingKolixDomain, setIsSavingKolixDomain] = useState<boolean>(false);
+
+  const handleStartEditDomain = () => {
+    if (!selectedStore) return;
+    const currentSub = selectedStore.domain
+      ? selectedStore.domain.replace('.kolix.shop', '').replace('.kolix.ci', '')
+      : (selectedStore.slug || '');
+    setEditDomainInput(currentSub);
+    setIsEditingDomain(true);
+  };
+
+  const handleSaveKolixDomain = async () => {
+    if (!selectedStore || !editDomainInput.trim()) return;
+    const cleanSub = editDomainInput.trim().toLowerCase().replace(/[^a-z0-9\-]/g, '-').replace(/^-+|-+$/g, '');
+    if (!cleanSub) {
+      toast.error('Veuillez saisir un nom de lien valide (lettres, chiffres, tirets)');
+      return;
+    }
+    const newDomain = `${cleanSub}.kolix.shop`;
+    try {
+      setIsSavingKolixDomain(true);
+      const updated = await updateStore(selectedStore.id, {
+        slug: cleanSub,
+        domain: newDomain
+      });
+      setSelectedStore(updated);
+      setIsEditingDomain(false);
+      switchShop(updated.name, newDomain);
+      toast.success(`Lien de votre boutique mis à jour : https://${newDomain}`);
+    } catch (err: any) {
+      toast.error(err.message || 'Impossible de mettre à jour le lien de la boutique');
+    } finally {
+      setIsSavingKolixDomain(false);
+    }
+  };
 
   // Modal: Create Store
   const [showCreateModal, setShowCreateModal] = useState<boolean>(false);
@@ -466,6 +506,15 @@ export const BoutiquePage: React.FC = () => {
                   <Button
                     variant="outline"
                     size="sm"
+                    onClick={handleStartEditDomain}
+                    className="rounded-2xl text-xs gap-1.5 border-[#C5B8F9] text-[#6C4CF1] hover:bg-[#F4F1FE]"
+                  >
+                    <Pencil className="w-3.5 h-3.5" />
+                    <span>Modifier le lien</span>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={() => handleCopyLink(`https://${selectedStore.domain}`)}
                     className="rounded-2xl text-xs gap-1.5"
                   >
@@ -513,25 +562,98 @@ export const BoutiquePage: React.FC = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Default domain card */}
-                  <div className="bg-white p-4 rounded-xl border border-[#E2DCF8] flex items-center justify-between">
-                    <div>
-                      <span className="text-[11px] font-bold text-[#5E5A70] uppercase tracking-wider block">
-                        Domaine Kolix par défaut
-                      </span>
-                      <span className="font-extrabold text-sm text-[#241D5E] mt-0.5 block">
-                        https://{selectedStore.domain}
+                  {!isEditingDomain ? (
+                    <div className="bg-white p-4 rounded-xl border border-[#E2DCF8] flex items-center justify-between">
+                      <div className="min-w-0 pr-2">
+                        <span className="text-[11px] font-bold text-[#5E5A70] uppercase tracking-wider block">
+                          Domaine Kolix par défaut
+                        </span>
+                        <span className="font-extrabold text-sm text-[#241D5E] mt-0.5 block truncate">
+                          https://{selectedStore.domain}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={handleStartEditDomain}
+                          className="rounded-xl text-xs gap-1 py-1 px-2.5 border-[#C5B8F9] text-[#6C4CF1] hover:bg-[#F4F1FE]"
+                          title="Modifier le lien"
+                        >
+                          <Pencil className="w-3.5 h-3.5" />
+                          <span>Modifier</span>
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleCopyLink(`https://${selectedStore.domain}`)}
+                          className="p-2 h-auto text-[#6C4CF1]"
+                          title="Copier le lien"
+                        >
+                          <Copy className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="bg-white p-4 rounded-xl border-2 border-[#6C4CF1] flex flex-col gap-2.5 animate-in fade-in duration-150">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[11px] font-bold text-[#6C4CF1] uppercase tracking-wider">
+                          Modifier le lien de votre boutique
+                        </span>
+                        <button 
+                          type="button" 
+                          onClick={() => setIsEditingDomain(false)}
+                          className="text-gray-400 hover:text-gray-600 text-xs p-1"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <div className="flex items-center flex-1 bg-[#FAF8FF] border border-[#E2DCF8] rounded-xl px-2.5 py-1.5 text-xs">
+                          <span className="text-[#8B869C] font-semibold select-none">https://</span>
+                          <input
+                            type="text"
+                            value={editDomainInput}
+                            onChange={(e) => setEditDomainInput(e.target.value.toLowerCase().replace(/[^a-z0-9\-]/g, ''))}
+                            placeholder="nom-boutique"
+                            className="bg-transparent flex-1 font-bold text-[#16131F] focus:outline-none px-1"
+                            autoFocus
+                          />
+                          <span className="text-[#6C4CF1] font-bold select-none">.kolix.shop</span>
+                        </div>
+                        <Button
+                          variant="primary"
+                          size="sm"
+                          disabled={isSavingKolixDomain || !editDomainInput.trim()}
+                          onClick={handleSaveKolixDomain}
+                          className="rounded-xl text-xs py-1.5 px-3 shadow-sm"
+                        >
+                          {isSavingKolixDomain ? (
+                            <>
+                              <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" />
+                              <span>Enregistrement...</span>
+                            </>
+                          ) : (
+                            <>
+                              <Check className="w-3.5 h-3.5 mr-1" />
+                              <span>Enregistrer</span>
+                            </>
+                          )}
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setIsEditingDomain(false)}
+                          className="rounded-xl text-xs py-1.5 px-2"
+                        >
+                          Annuler
+                        </Button>
+                      </div>
+                      <span className="text-[10px] text-[#5E5A70]">
+                        Nouveau lien : <strong className="text-[#241D5E]">https://{editDomainInput.trim() || 'nom-boutique'}.kolix.shop</strong>
                       </span>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleCopyLink(`https://${selectedStore.domain}`)}
-                      className="p-2 h-auto text-[#6C4CF1]"
-                      title="Copier le lien"
-                    >
-                      <Copy className="w-4 h-4" />
-                    </Button>
-                  </div>
+                  )}
 
                   {/* Custom domain input */}
                   <div className="bg-white p-4 rounded-xl border border-[#E2DCF8] flex flex-col gap-2">
@@ -1057,15 +1179,74 @@ export const BoutiquePage: React.FC = () => {
             </div>
 
             <div className="flex flex-col gap-3">
-              <div className="p-4 rounded-2xl bg-[#F4F1FE] flex items-center justify-between">
-                <div>
-                  <span className="text-xs text-[#5E5A70]">Sous-domaine par défaut Kolix</span>
-                  <div className="font-extrabold text-sm text-[#241D5E]">
-                    https://{selectedStore?.domain || 'maboutique.kolix.shop'}
+              {!isEditingDomain ? (
+                <div className="p-4 rounded-2xl bg-[#F4F1FE] flex items-center justify-between">
+                  <div>
+                    <span className="text-xs text-[#5E5A70]">Sous-domaine par défaut Kolix</span>
+                    <div className="font-extrabold text-sm text-[#241D5E]">
+                      https://{selectedStore?.domain || 'maboutique.kolix.shop'}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleStartEditDomain}
+                      className="rounded-xl text-xs gap-1 py-1.5 px-3 bg-white border-[#C5B8F9] text-[#6C4CF1] hover:bg-[#F4F1FE]"
+                    >
+                      <Pencil className="w-3.5 h-3.5" />
+                      <span>Modifier le lien</span>
+                    </Button>
+                    <Badge variant="optimal">Actif & SSL</Badge>
                   </div>
                 </div>
-                <Badge variant="optimal">Actif & SSL sécurisé</Badge>
-              </div>
+              ) : (
+                <div className="p-4 rounded-2xl bg-white border-2 border-[#6C4CF1] flex flex-col gap-2.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-[#6C4CF1] uppercase tracking-wider">
+                      Modifier le lien de votre boutique
+                    </span>
+                    <button 
+                      type="button" 
+                      onClick={() => setIsEditingDomain(false)}
+                      className="text-gray-400 hover:text-gray-600 text-xs p-1"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <div className="flex items-center flex-1 bg-[#FAF8FF] border border-[#E2DCF8] rounded-xl px-2.5 py-2 text-xs">
+                      <span className="text-[#8B869C] font-semibold select-none">https://</span>
+                      <input
+                        type="text"
+                        value={editDomainInput}
+                        onChange={(e) => setEditDomainInput(e.target.value.toLowerCase().replace(/[^a-z0-9\-]/g, ''))}
+                        placeholder="nom-boutique"
+                        className="bg-transparent flex-1 font-bold text-[#16131F] focus:outline-none px-1"
+                        autoFocus
+                      />
+                      <span className="text-[#6C4CF1] font-bold select-none">.kolix.shop</span>
+                    </div>
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      disabled={isSavingKolixDomain || !editDomainInput.trim()}
+                      onClick={handleSaveKolixDomain}
+                      className="rounded-xl text-xs py-2 px-3 shadow-sm"
+                    >
+                      {isSavingKolixDomain ? 'Enregistrement...' : 'Enregistrer le lien'}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setIsEditingDomain(false)}
+                      className="rounded-xl text-xs py-2 px-2"
+                    >
+                      Annuler
+                    </Button>
+                  </div>
+                </div>
+              )}
 
               <div className="flex flex-col gap-2 mt-2">
                 <span className="text-xs font-bold text-[#16131F]">Domaine personnalisé</span>

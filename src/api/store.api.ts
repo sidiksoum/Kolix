@@ -2,10 +2,18 @@ import { apiClient } from './client';
 import { API_ENDPOINTS } from './endpoints';
 import { StoreTemplate, MerchantStore, StoreCustomization, CreateStoreDto, UpdateStoreDto } from '../types/store';
 import { Product } from '../types/product';
-import { INITIAL_TEMPLATES, INITIAL_STORES, INITIAL_CUSTOMIZATION } from './mockData';
+import { INITIAL_TEMPLATES, INITIAL_CUSTOMIZATION } from './mockData';
+
+// Nettoyage proactif de tout vestige de boutiques mockées dans le navigateur
+try {
+  const saved = localStorage.getItem('kolix_my_stores');
+  if (saved && (saved.includes('shp_abidjan') || saved.includes('Élégance & Tech'))) {
+    localStorage.removeItem('kolix_my_stores');
+  }
+} catch {}
 
 let templatesCache: StoreTemplate[] = [...INITIAL_TEMPLATES];
-let storesCache: MerchantStore[] = [...INITIAL_STORES];
+let storesCache: MerchantStore[] = [];
 let customizationCache: StoreCustomization = { ...INITIAL_CUSTOMIZATION };
 
 function getInitials(name: string): string {
@@ -43,8 +51,9 @@ export const storeApi = {
     try {
       const activeSavedId = localStorage.getItem('kolix_active_shop_id');
       const res = await apiClient.get<{ data: any[] }>(API_ENDPOINTS.STORE.MY_STORES);
-      if (res && Array.isArray(res.data) && res.data.length > 0) {
-        const mapped = res.data.map((s: any, idx: number) => {
+      const items = res?.data || res;
+      if (Array.isArray(items)) {
+        const mapped = items.map((s: any, idx: number) => {
           const isAct = activeSavedId ? String(s.id) === activeSavedId : (s.is_active || idx === 0);
           return {
             id: String(s.id),
@@ -67,12 +76,26 @@ export const storeApi = {
           };
         });
         storesCache = mapped;
+        try {
+          localStorage.setItem('kolix_my_stores', JSON.stringify(mapped));
+        } catch {}
         return mapped;
       }
-      return [...storesCache];
     } catch {
-      return [...storesCache];
+      // Échec réseau : tentative de lecture du cache réel local
     }
+
+    try {
+      const saved = localStorage.getItem('kolix_my_stores');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && !parsed.some(s => s.id === 'shp_abidjan')) {
+          return parsed;
+        }
+      }
+    } catch {}
+
+    return storesCache;
   },
 
   async createStore(data: CreateStoreDto): Promise<MerchantStore> {
@@ -104,7 +127,7 @@ export const storeApi = {
 
   async updateStore(storeId: string, data: UpdateStoreDto): Promise<MerchantStore> {
     const res = await apiClient.put<{ data: any }>(API_ENDPOINTS.STORE.DETAIL(storeId), data);
-    const s = res.data;
+    const s = res?.data || res;
     const updated: MerchantStore = {
       id: String(s.id),
       name: s.name,
@@ -125,6 +148,9 @@ export const storeApi = {
       logoUrl: s.logo_url
     };
     storesCache = storesCache.map(st => st.id === storeId ? updated : st);
+    try {
+      localStorage.setItem('kolix_my_stores', JSON.stringify(storesCache));
+    } catch {}
     return updated;
   },
 

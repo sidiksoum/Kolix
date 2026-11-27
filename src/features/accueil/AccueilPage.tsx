@@ -179,9 +179,9 @@ export const AccueilPage: React.FC = () => {
             <div className="flex justify-between items-start gap-2">
               <span
                 className="w-11 h-11 rounded-2xl flex items-center justify-center shrink-0"
-                style={{ backgroundColor: kpi.iconBg, color: kpi.iconFg }}
+                style={{ backgroundColor: kpi.iconBg || '#E9E3FD', color: kpi.iconFg || '#4B2FC9' }}
               >
-                {iconMap[kpi.iconName]}
+                {iconMap[kpi.iconName] || <DollarSign className="w-5 h-5" />}
               </span>
               <span
                 className={cn(
@@ -189,9 +189,12 @@ export const AccueilPage: React.FC = () => {
                   kpi.isPositive ? 'bg-[#F4F1FE] text-[#3F25A8]' : 'bg-[#FCE3E0] text-[#8A2414]'
                 )}
               >
-                {kpi.trend.startsWith('↗') || kpi.trend.startsWith('↘')
-                  ? kpi.trend
-                  : `${kpi.isPositive ? '↗ ' : '↘ '} ${kpi.trend}`}
+                {(() => {
+                  const t = String(kpi.trend || '+0 %');
+                  return t.startsWith('↗') || t.startsWith('↘')
+                    ? t
+                    : `${kpi.isPositive ? '↗ ' : '↘ '} ${t}`;
+                })()}
               </span>
             </div>
             <div className="flex flex-col gap-1">
@@ -339,7 +342,9 @@ export const AccueilPage: React.FC = () => {
               })}
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-              <span className="text-2xl font-extrabold text-[#241D5E]">{data.conversionRate}</span>
+              <span className="text-2xl font-extrabold text-[#241D5E]">
+                {typeof data.conversionRate === 'string' ? data.conversionRate : (data.conversionRate as any)?.global || '0 %'}
+              </span>
               <span className="text-xs text-[#5E5A70] font-semibold">livrées</span>
             </div>
           </div>

@@ -72,8 +72,8 @@ export const LoginPage: React.FC = () => {
         localStorage.removeItem('kolix_remembered_identifier');
       }
       setActiveShopInfo({
-        name: tokens.shop_domain ? tokens.shop_domain.split('.')[0] : 'Style & Élégance',
-        domain: tokens.shop_domain || 'styleelegance.kolix.ci'
+        name: tokens.shop_domain ? tokens.shop_domain.split('.')[0] : 'Ma Boutique',
+        domain: tokens.shop_domain || 'maboutique.kolix.shop'
       });
       setView('done');
       toast.success('Connexion réussie !');
@@ -87,8 +87,8 @@ export const LoginPage: React.FC = () => {
           localStorage.removeItem('kolix_remembered_identifier');
         }
         setActiveShopInfo({
-          name: tokens.shop_domain ? tokens.shop_domain.split('.')[0] : 'Style & Élégance',
-          domain: tokens.shop_domain || 'styleelegance.kolix.ci'
+          name: tokens.shop_domain ? tokens.shop_domain.split('.')[0] : 'Ma Boutique',
+          domain: tokens.shop_domain || 'maboutique.kolix.shop'
         });
         setView('done');
         toast.success('Connexion réussie !');
@@ -751,8 +751,8 @@ export const LoginPage: React.FC = () => {
                   {activeShopInfo?.name?.[0]?.toUpperCase() || 'S'}
                 </span>
                 <div className="flex-1 min-w-0">
-                  <span className="font-extrabold text-sm text-[#16131F] block truncate">{activeShopInfo?.name || 'Style & Élégance'}</span>
-                  <span className="text-xs text-[#5E5A70] block truncate">{activeShopInfo?.domain || 'styleelegance.kolix.ci'} · Kolix Grow</span>
+                  <span className="font-extrabold text-sm text-[#16131F] block truncate">{activeShopInfo?.name || 'Ma Boutique'}</span>
+                  <span className="text-xs text-[#5E5A70] block truncate">{activeShopInfo?.domain || 'maboutique.kolix.shop'} · Kolix Grow</span>
                 </div>
               </div>
 

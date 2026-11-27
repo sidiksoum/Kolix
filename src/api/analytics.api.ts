@@ -1,8 +1,51 @@
 import { apiClient } from './client';
 import { API_ENDPOINTS } from './endpoints';
-import { DashboardAnalytics } from '../types/analytics';
+import { DashboardAnalytics, DashboardKpiItem } from '../types/analytics';
 import { PeriodType } from '../types/common';
-import { MOCK_DASHBOARD_DATA } from './mockData';
+
+const EMPTY_KPIS: DashboardKpiItem[] = [
+  { id: 'ca', label: 'Chiffre d’affaires (FCFA)', value: '0', rawValue: 0, trend: '+0 %', isPositive: true, iconName: 'DollarSign', iconBg: '#E9E3FD', iconFg: '#4B2FC9' },
+  { id: 'visites', label: 'Visites boutique', value: '0', rawValue: 0, trend: '+0 %', isPositive: true, iconName: 'Eye', iconBg: '#E3EEFF', iconFg: '#1F4FA8' },
+  { id: 'commandes', label: 'Commandes reçues', value: '0', rawValue: 0, trend: '+0 %', isPositive: true, iconName: 'ShoppingBag', iconBg: '#FFEBDD', iconFg: '#8A3D0A' },
+  { id: 'ventes', label: 'Ventes effectives', value: '0', rawValue: 0, trend: '+0 %', isPositive: true, iconName: 'CheckCircle2', iconBg: '#E9E3FD', iconFg: '#4B2FC9' },
+  { id: 'conversion', label: 'Taux de conversion', value: '0 %', rawValue: 0, trend: '+0 pt', isPositive: true, iconName: 'TrendingUp', iconBg: '#E3EEFF', iconFg: '#1F4FA8' },
+];
+
+const getEmptyDashboard = (period: PeriodType): DashboardAnalytics => ({
+  period,
+  periodLabel: period === 'jour' ? "Aujourd'hui" : period === 'semaine' ? 'Cette semaine' : 'Ce mois-ci',
+  kpis: EMPTY_KPIS,
+  chartData: [],
+  conversionRate: '0 %',
+  statusDistribution: [],
+  zones: [],
+  topProducts: [],
+  calendarDays: [],
+  calendarMonth: new Date().toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })
+});
+
+function normalizeKpi(k: any, idx: number): DashboardKpiItem {
+  const defaultStyles = [
+    { name: 'DollarSign', bg: '#E9E3FD', fg: '#4B2FC9' },
+    { name: 'Eye', bg: '#E3EEFF', fg: '#1F4FA8' },
+    { name: 'ShoppingBag', bg: '#FFEBDD', fg: '#8A3D0A' },
+    { name: 'CheckCircle2', bg: '#E9E3FD', fg: '#4B2FC9' },
+    { name: 'TrendingUp', bg: '#E3EEFF', fg: '#1F4FA8' },
+  ];
+  const fallbackStyle = defaultStyles[idx % defaultStyles.length];
+
+  return {
+    id: String(k.id || `kpi-${idx}`),
+    label: String(k.label || ''),
+    value: String(k.value ?? '0'),
+    rawValue: Number(k.rawValue ?? k.raw_value ?? 0),
+    trend: String(k.trend ?? k.change ?? '+0 %'),
+    isPositive: Boolean(k.isPositive ?? k.is_positive ?? true),
+    iconName: String(k.iconName || k.icon || fallbackStyle.name),
+    iconBg: String(k.iconBg || fallbackStyle.bg),
+    iconFg: String(k.iconFg || fallbackStyle.fg),
+  };
+}
 
 export interface FunnelStep {
   label: string;
@@ -65,42 +108,41 @@ export interface AnalyticsReportData {
 
 export const analyticsApi = {
   async getDashboard(period: PeriodType = 'mois'): Promise<DashboardAnalytics> {
-    const fallback = MOCK_DASHBOARD_DATA[period] || MOCK_DASHBOARD_DATA.mois;
+    const emptyFallback = getEmptyDashboard(period);
     try {
       const res = await apiClient.get<any>(API_ENDPOINTS.ANALYTICS.DASHBOARD(period));
       const serverData = res?.data || res;
       if (serverData && typeof serverData === 'object') {
-        const kpis = (Array.isArray(serverData.kpis) && serverData.kpis.length > 0)
+        const rawKpis = Array.isArray(serverData.kpis) && serverData.kpis.length > 0
           ? serverData.kpis
-          : fallback.kpis;
+          : emptyFallback.kpis;
+        const kpis = rawKpis.map(normalizeKpi);
+
+        const rawConv = serverData.conversionRate ?? serverData.conversion_rate;
+        const conversionRate = typeof rawConv === 'string'
+          ? rawConv
+          : (rawConv && typeof rawConv === 'object' && rawConv.global)
+            ? String(rawConv.global)
+            : '0 %';
+
         return {
           period: serverData.period || period,
-          periodLabel: serverData.periodLabel || fallback.periodLabel,
+          periodLabel: serverData.periodLabel || emptyFallback.periodLabel,
           kpis,
-          chartData: (Array.isArray(serverData.chartData) && serverData.chartData.length > 0)
-            ? serverData.chartData
-            : fallback.chartData,
-          conversionRate: serverData.conversionRate || fallback.conversionRate,
-          statusDistribution: (Array.isArray(serverData.status_distribution) && serverData.status_distribution.length > 0)
-            ? serverData.status_distribution
-            : ((Array.isArray(serverData.statusDistribution) && serverData.statusDistribution.length > 0)
-              ? serverData.statusDistribution
-              : fallback.statusDistribution),
-          zones: (Array.isArray(serverData.zones) && serverData.zones.length > 0)
-            ? serverData.zones
-            : fallback.zones,
-          topProducts: (Array.isArray(serverData.topProducts) && serverData.topProducts.length > 0)
-            ? serverData.topProducts
-            : fallback.topProducts,
-          calendarDays: (Array.isArray(serverData.calendarDays) && serverData.calendarDays.length > 0)
-            ? serverData.calendarDays
-            : fallback.calendarDays,
-          calendarMonth: serverData.calendarMonth || serverData.calendar_month || fallback.calendarMonth
+          chartData: Array.isArray(serverData.chartData) ? serverData.chartData : [],
+          conversionRate,
+          statusDistribution: Array.isArray(serverData.status_distribution) 
+            ? serverData.status_distribution 
+            : (Array.isArray(serverData.statusDistribution) ? serverData.statusDistribution : []),
+          zones: Array.isArray(serverData.zones) ? serverData.zones : [],
+          topProducts: Array.isArray(serverData.topProducts) ? serverData.topProducts : [],
+          calendarDays: Array.isArray(serverData.calendarDays) ? serverData.calendarDays : [],
+          calendarMonth: serverData.calendarMonth || serverData.calendar_month || emptyFallback.calendarMonth
         };
       }
-      return fallback;
+      return emptyFallback;
     } catch {
-      return fallback;
+      return emptyFallback;
     }
   },
 

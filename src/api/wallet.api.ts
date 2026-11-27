@@ -3,6 +3,18 @@ import { API_ENDPOINTS } from './endpoints';
 import { WalletSummary, WalletTransaction, PayoutAccount, PaymentProvider } from '../types/wallet';
 import { INITIAL_WALLET, INITIAL_TRANSACTIONS, INITIAL_PAYOUT_ACCOUNTS } from './mockData';
 
+// Nettoyer toute donnée mockée stockée
+try {
+  const saved = localStorage.getItem('kolix_wallet');
+  if (saved && (saved.includes('1320000') || saved.includes('845000'))) {
+    localStorage.removeItem('kolix_wallet');
+  }
+  const savedTx = localStorage.getItem('kolix_transactions');
+  if (savedTx && (savedTx.includes('Aya Kouassi') || savedTx.includes('Wave Souleymane'))) {
+    localStorage.removeItem('kolix_transactions');
+  }
+} catch {}
+
 let walletCache: WalletSummary = (() => {
   const saved = localStorage.getItem('kolix_wallet');
   if (saved) {

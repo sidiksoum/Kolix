@@ -24,7 +24,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<MerchantUser>(() => {
     try {
       const saved = localStorage.getItem('kolix_user_profile');
-      if (saved) return JSON.parse(saved);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && !parsed.currentShop?.id?.includes('shp_abidjan')) {
+          return parsed;
+        }
+      }
     } catch {}
     return INITIAL_USER;
   });
@@ -43,26 +48,34 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           const me = await authApi.getMe();
           if (me) {
             setUser(prev => {
-              const resolvedName = me.full_name || prev.name || 'Souleymane Sanogo';
-              const initials = resolvedName.trim().split(/\s+/).map((n: string) => n[0]).join('').toUpperCase().slice(0, 2) || 'SS';
-              return {
+              const resolvedName = me.full_name || prev.name || 'Marchand Kolix';
+              const initials = resolvedName.trim().split(/\s+/).map((n: string) => n[0]).join('').toUpperCase().slice(0, 2) || 'MK';
+              const shopId = me.shop_id || prev?.currentShop?.id || 'shop-1';
+              const shopName = me.shop_name || prev?.currentShop?.name || 'Ma Boutique';
+              const shopDomain = me.shop_domain || prev?.currentShop?.domain || 'maboutique.kolix.shop';
+
+              const updatedUser: MerchantUser = {
                 ...prev,
                 id: me.id || prev.id,
                 name: resolvedName,
                 email: me.email || prev.email,
-                phone: me.phone_number || me.phone || prev.phone || '+225 07 08 09 10 11',
+                phone: me.phone_number || me.phone || prev.phone || '',
                 role: (me.role as any) || prev.role || 'Propriétaire',
                 permissions: (me as any).permissions || prev.permissions || ((me.role as any) === 'Propriétaire' ? ['*'] : []),
                 initials,
-                currentShop: prev?.currentShop || {
-                  id: 'shp_abidjan',
-                  name: 'Élégance & Tech Abidjan',
-                  domain: 'elegance-tech.kolix.shop',
-                  plan: 'Kolix Grow',
-                  ordersCount: 412,
-                  maxOrders: 1500
+                currentShop: {
+                  id: shopId,
+                  name: shopName,
+                  domain: shopDomain,
+                  plan: (me as any).shop_plan || prev?.currentShop?.plan || 'Kolix Grow',
+                  ordersCount: prev?.currentShop?.ordersCount ?? 0,
+                  maxOrders: prev?.currentShop?.maxOrders || 1500
                 }
               };
+              try {
+                localStorage.setItem('kolix_user_profile', JSON.stringify(updatedUser));
+              } catch {}
+              return updatedUser;
             });
           }
         } catch {
@@ -88,13 +101,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         name: resolvedName,
         initials,
         email: tokens.email,
-        phone: (tokens as any).phone || (tokens as any).phone_number || user?.phone || '+225 07 08 09 10 11',
+        phone: (tokens as any).phone || (tokens as any).phone_number || user?.phone || '',
         role: (tokens.role as any) || 'Propriétaire',
         permissions: tokens.permissions || (tokens.role === 'Propriétaire' ? ['*'] : []),
         currentShop: {
           id: tokens.shop_id || user?.currentShop?.id || 'shop-1',
           name: tokens.shop_domain ? tokens.shop_domain.split('.')[0] : (user?.currentShop?.name || 'Ma Boutique'),
-          domain: tokens.shop_domain || user?.currentShop?.domain || 'maboutique.kolix.ci',
+          domain: tokens.shop_domain || user?.currentShop?.domain || 'maboutique.kolix.shop',
           plan: user?.currentShop?.plan || 'Kolix Grow',
           ordersCount: user?.currentShop?.ordersCount ?? 0,
           maxOrders: user?.currentShop?.maxOrders || 1500
@@ -136,7 +149,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       currentShop: {
         id: tokens.shop_id || user?.currentShop?.id || 'shop-1',
         name: tokens.shop_domain ? tokens.shop_domain.split('.')[0] : (user?.currentShop?.name || 'Ma Boutique'),
-        domain: tokens.shop_domain || user?.currentShop?.domain || 'maboutique.kolix.ci',
+        domain: tokens.shop_domain || user?.currentShop?.domain || 'maboutique.kolix.shop',
         plan: 'Kolix Grow',
         ordersCount: 0,
         maxOrders: 1500

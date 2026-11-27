@@ -5,7 +5,7 @@ import { Order, OrderStatus, CreateOrderDto } from '../types/order';
 // Clear any stale mock data in localStorage
 try {
   const saved = localStorage.getItem('kolix_orders');
-  if (saved && (saved.includes('Amadou Diallo') || saved.includes('KX-1048') && saved.includes('Écouteurs'))) {
+  if (saved && (saved.includes('Amadou Diallo') || saved.includes('Aya Kouassi') || saved.includes('KX-1048'))) {
     localStorage.removeItem('kolix_orders');
   }
 } catch {}
@@ -15,7 +15,7 @@ let ordersCache: Order[] = (() => {
   if (saved) {
     try {
       const parsed = JSON.parse(saved);
-      if (Array.isArray(parsed) && !parsed.some(o => o.client === 'Amadou Diallo')) {
+      if (Array.isArray(parsed) && !parsed.some(o => o.client === 'Amadou Diallo' || o.client === 'Aya Kouassi')) {
         return parsed;
       }
     } catch {}

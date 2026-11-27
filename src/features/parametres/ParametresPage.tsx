@@ -729,7 +729,8 @@ export const ParametresPage: React.FC = () => {
                     <label className="text-xs font-bold text-[#5E5A70] block mb-1">E-mail de connexion</label>
                     <input 
                       type="email" 
-                      defaultValue="souleymane@styleelegance.ci" 
+                      defaultValue={user?.email || ''} 
+                      placeholder="Ex: contact@maboutique.ci"
                       className="w-full border border-[#E2DCF8] rounded-xl px-3.5 py-2.5 text-sm font-bold text-[#16131F]"
                     />
                   </div>
@@ -737,7 +738,8 @@ export const ParametresPage: React.FC = () => {
                     <label className="text-xs font-bold text-[#5E5A70] block mb-1">Numéro de téléphone</label>
                     <input 
                       type="tel" 
-                      defaultValue="+225 07 00 00 01" 
+                      defaultValue={user?.phone || ''} 
+                      placeholder="Ex: +225 07 00 00 00"
                       className="w-full border border-[#E2DCF8] rounded-xl px-3.5 py-2.5 text-sm font-bold text-[#16131F]"
                     />
                   </div>
@@ -767,7 +769,7 @@ export const ParametresPage: React.FC = () => {
                     <label className="text-xs font-bold text-[#5E5A70] block mb-1">Raison sociale ou Nom</label>
                     <input 
                       type="text" 
-                      defaultValue="Style & Élégance SARL" 
+                      placeholder="Ex: Ma Société SARL" 
                       className="w-full border border-[#E2DCF8] rounded-xl px-3.5 py-2.5 text-sm font-bold text-[#16131F]"
                     />
                   </div>

@@ -85,7 +85,7 @@ export const ProductPage: React.FC = () => {
     } catch {}
   }
 
-  const currentShopName = (productData as any)?.shop_name || activeStore?.name || "Élégance & Tech Abidjan";
+  const currentShopName = (productData as any)?.shop_name || activeStore?.name || "Boutique Kolix";
   const currentShopLogo = (productData as any)?.shop_logo || activeStore?.logoUrl || null;
   const currentShopAccent = activeStore?.accentColor || "#6C4CF1";
 

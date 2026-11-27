@@ -150,7 +150,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const activeTemplate = templates.find(t => t.isActive) || templates[0] || null;
 
   const setActiveTemplate = async (templateId: string) => {
-    const storeId = activeStore?.id || stores[0]?.id || 'shp_abidjan';
+    const storeId = activeStore?.id || stores[0]?.id || '';
     try {
       await storeApi.setActiveTemplate(storeId, templateId);
       setTemplates(prev => prev.map(t => ({ ...t, isActive: t.id === templateId })));

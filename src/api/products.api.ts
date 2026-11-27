@@ -5,7 +5,7 @@ import { Product, ProductStatus, CreateProductDto } from '../types/product';
 // Clear any stale mock data in localStorage
 try {
   const saved = localStorage.getItem('kolix_products');
-  if (saved && saved.includes('Écouteurs Sans Fil Pro')) {
+  if (saved && (saved.includes('Écouteurs Sans Fil Pro') || saved.includes('Montre connectée') || saved.includes('prd_01'))) {
     localStorage.removeItem('kolix_products');
   }
 } catch {}
@@ -37,7 +37,7 @@ let productsCache: Product[] = (() => {
   if (saved) {
     try {
       const parsed = JSON.parse(saved);
-      if (Array.isArray(parsed) && !parsed.some(p => p.name.includes('Écouteurs Sans Fil'))) {
+      if (Array.isArray(parsed) && !parsed.some(p => p.name.includes('Écouteurs Sans Fil') || p.name.includes('Montre connectée'))) {
         return parsed;
       }
     } catch {}
