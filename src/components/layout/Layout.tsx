@@ -36,8 +36,8 @@ export const Layout: React.FC = () => {
       {/* Native-style Mobile Nav */}
       <MobileNav />
 
-      {/* Floating Kolix AI Widget */}
-      <KolixAIWidget />
+      {/* Floating Kolix AI Widget - Mis en commentaire à la demande */}
+      {/* <KolixAIWidget /> */}
     </div>
   );
 };

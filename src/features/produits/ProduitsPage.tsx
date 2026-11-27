@@ -398,7 +398,6 @@ export const ProduitsPage: React.FC = () => {
         {/* Footer */}
         <div className="p-4 bg-[#FAF9FE] border-t border-[#F0EDFB] text-xs text-[#5E5A70] flex justify-between items-center">
           <span>Affichage de {filtered.length} produit(s)</span>
-          <span className="font-semibold text-[#6C4CF1]">Catalogue Connecté Backend PostgreSQL</span>
         </div>
       </div>
 

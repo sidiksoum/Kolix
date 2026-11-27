@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import {
   Home,
@@ -20,6 +20,12 @@ import {
   LogOut
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useOrders } from '../../context/OrdersContext';
+import { useStock } from '../../context/StockContext';
+import { useStore } from '../../context/StoreContext';
+import { productsApi } from '../../api/products.api';
+import { affiliatesApi } from '../../api/affiliates.api';
+import { usersApi } from '../../api/users.api';
 import { cn } from '../../utils/cn';
 
 export interface NavItemDef {
@@ -35,8 +41,8 @@ export const navItems: NavItemDef[] = [
   { label: 'Accueil', path: '/dashboard', icon: Home },
   { label: 'Boutique', path: '/boutique', icon: Store },
   { label: 'Produits', path: '/produits', icon: Tag },
-  { label: 'Commandes', path: '/commandes', icon: ShoppingBag, badge: '12' },
-  { label: 'Stock', path: '/stock', icon: Layers, badge: '4', badgeColor: 'warn' },
+  { label: 'Commandes', path: '/commandes', icon: ShoppingBag },
+  { label: 'Stock', path: '/stock', icon: Layers },
   { label: 'Comptabilité', path: '/comptabilite', icon: FileText },
   { label: 'Portefeuille', path: '/portefeuille', icon: Wallet },
   { label: 'Client', path: '/clients', icon: Users },
@@ -52,6 +58,41 @@ export const Sidebar: React.FC<{ isOpen?: boolean; onClose?: () => void }> = ({ 
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Données contextuelles réelles
+  const { orders } = useOrders();
+  const { inventory, kpis } = useStock();
+  const { stores } = useStore();
+
+  const [productsCount, setProductsCount] = useState<number>(0);
+  const [partnersCount, setPartnersCount] = useState<number>(0);
+  const [usersCount, setUsersCount] = useState<number>(1);
+
+  // Récupération asynchrone des compteurs pour Partenaire, Utilisateurs et Produits
+  useEffect(() => {
+    let isMounted = true;
+    Promise.allSettled([
+      affiliatesApi.getSummary(),
+      usersApi.getCollaborators(),
+      productsApi.getAll()
+    ]).then(([affRes, userRes, prodRes]) => {
+      if (!isMounted) return;
+
+      if (affRes.status === 'fulfilled' && affRes.value) {
+        setPartnersCount(affRes.value.referrals ? affRes.value.referrals.length : 0);
+      }
+
+      if (userRes.status === 'fulfilled' && Array.isArray(userRes.value)) {
+        setUsersCount(userRes.value.length || 1);
+      }
+
+      if (prodRes.status === 'fulfilled' && Array.isArray(prodRes.value)) {
+        setProductsCount(prodRes.value.length);
+      }
+    });
+
+    return () => { isMounted = false; };
+  }, []);
+
   const shop = user?.currentShop || {
     id: '',
     name: 'Ma Boutique',
@@ -64,10 +105,34 @@ export const Sidebar: React.FC<{ isOpen?: boolean; onClose?: () => void }> = ({ 
   const userPerms = user?.permissions || ['*'];
   const isOwner = user?.role === 'Propriétaire' || userPerms.includes('*');
 
+  // Menus avec badges numériques dynamisés en temps réel
+  const dynamicNavItems = useMemo<NavItemDef[]>(() => {
+    const ordersCount = orders.filter(o => o.status === 'En cours').length;
+    const stockLowCount = kpis?.underThresholdCount ?? 0;
+    const effectiveProductsCount = productsCount || (inventory ? inventory.length : 0);
+    const storesCount = stores.length || 1;
+
+    return [
+      { label: 'Accueil', path: '/dashboard', icon: Home },
+      { label: 'Boutique', path: '/boutique', icon: Store, badge: String(storesCount) },
+      { label: 'Produits', path: '/produits', icon: Tag, badge: String(effectiveProductsCount) },
+      { label: 'Commandes', path: '/commandes', icon: ShoppingBag, badge: String(ordersCount) },
+      { label: 'Stock', path: '/stock', icon: Layers, badge: String(stockLowCount), badgeColor: 'warn' },
+      { label: 'Comptabilité', path: '/comptabilite', icon: FileText },
+      { label: 'Portefeuille', path: '/portefeuille', icon: Wallet },
+      { label: 'Client', path: '/clients', icon: Users },
+      { label: 'WhatsApp Marketing', path: '/whatsapp', icon: MessageSquare, badge: 'PRO', badgeColor: 'pro' },
+      { label: 'Analytics', path: '/analytics', icon: BarChart2 },
+      { label: 'Partenaire', path: '/partenaires', icon: Gift, badge: String(partnersCount) },
+      { label: 'Utilisateurs', path: '/utilisateurs', icon: UserCheck, badge: String(usersCount) },
+      { label: 'Paramètres', path: '/parametres', icon: Settings },
+    ];
+  }, [orders, kpis, productsCount, inventory, stores.length, partnersCount, usersCount]);
+
   // Filtrer les menus selon les permissions accordées par le propriétaire
   const visibleNavItems = isOwner
-    ? navItems
-    : navItems.filter(item => userPerms.includes(item.label));
+    ? dynamicNavItems
+    : dynamicNavItems.filter(item => userPerms.includes(item.label));
 
   return (
     <aside
@@ -132,7 +197,7 @@ export const Sidebar: React.FC<{ isOpen?: boolean; onClose?: () => void }> = ({ 
                   <Lock className="w-3.5 h-3.5 text-[#F7B940] shrink-0" />
                 </span>
               )}
-              {n.badge && (
+              {n.badge !== undefined && n.badge !== '' && (
                 <span className={cn(
                   'text-[10px] font-extrabold rounded-full px-2 py-0.5',
                   n.badgeColor === 'pro' && 'bg-white/25 text-white',

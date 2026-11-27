@@ -65,7 +65,7 @@ export const UtilisateursPage: React.FC = () => {
   const MAX_SEATS = 5;
 
   const [users, setUsers] = useState<Collaborator[]>([]);
-  const [isLoadingList, setIsLoadingList] = useState(false);
+  const [isLoadingList, setIsLoadingList] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Load collaborators from backend API
@@ -265,6 +265,15 @@ export const UtilisateursPage: React.FC = () => {
 
   const targetUserToDelete = users.find(u => u.id === deleteTargetId);
   const activeModsCount = formMods.filter(m => !LOCKED_MODULES.includes(m)).length;
+
+  if (isLoadingList && users.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] gap-3">
+        <div className="w-10 h-10 border-4 border-[#6C4CF1] border-t-transparent rounded-full animate-spin" />
+        <span className="text-sm font-semibold text-[#5E5A70]">Chargement des utilisateurs de votre boutique...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-12 animate-fade-in font-sans">

@@ -497,6 +497,15 @@ export const WhatsAppMarketingPage: React.FC = () => {
   const totalClientsContactable = deliveredClients.length;
   const estimatedRevenueFromWhatsApp = targetedClients.reduce((acc, c) => acc + (c.totalSpent * 0.15), 0);
 
+  if (isLoadingData) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] gap-3">
+        <div className="w-10 h-10 border-4 border-[#6C4CF1] border-t-transparent rounded-full animate-spin" />
+        <span className="text-sm font-semibold text-[#5E5A70]">Chargement de votre espace WhatsApp Marketing...</span>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-12 animate-in fade-in duration-300">
       {/* En-tête de la page */}
