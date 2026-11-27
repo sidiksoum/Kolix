@@ -67,5 +67,10 @@ export const API_ENDPOINTS = {
     CAMPAIGNS: '/api/v1/whatsapp/campaigns',
     DELETE_CAMPAIGN: (id: string) => `/api/v1/whatsapp/campaigns/${id}`,
     AUDIENCES: '/api/v1/whatsapp/audiences',
+  },
+  AFFILIATES: {
+    SUMMARY: '/api/v1/affiliates/summary',
+    TRANSFER: '/api/v1/affiliates/transfer',
+    SUBSCRIBE: '/api/v1/affiliates/subscribe-with-commissions',
   }
 } as const;

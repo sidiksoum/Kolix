@@ -42,7 +42,7 @@ export const navItems: NavItemDef[] = [
   { label: 'Client', path: '/clients', icon: Users },
   { label: 'WhatsApp Marketing', path: '/whatsapp', icon: MessageSquare, badge: 'PRO', badgeColor: 'pro' },
   { label: 'Analytics', path: '/analytics', icon: BarChart2 },
-  { label: 'Partenaire', path: '/partenaires', icon: Gift, locked: true },
+  { label: 'Partenaire', path: '/partenaires', icon: Gift },
   { label: 'Utilisateurs', path: '/utilisateurs', icon: UserCheck },
   { label: 'Paramètres', path: '/parametres', icon: Settings },
 ];

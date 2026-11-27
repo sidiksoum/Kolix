@@ -74,6 +74,15 @@ export const WhatsAppMarketingPage: React.FC = () => {
   const [message, setMessage] = useState(
     'Bonjour {Prénom} ! Merci infiniment pour votre commande chez {Boutique}. Découvrez nos nouveautés exclusives et profitez de -15% aujourd’hui avec le code MERCI15 sur votre prochaine commande : {Lien}'
   );
+  const [messageLink, setMessageLink] = useState(() => {
+    return shopDomain ? (shopDomain.startsWith('http') ? shopDomain : `https://${shopDomain}`) : 'https://maboutique.kolix.shop';
+  });
+
+  useEffect(() => {
+    if (shopDomain && (!messageLink || messageLink === 'https://maboutique.kolix.shop')) {
+      setMessageLink(shopDomain.startsWith('http') ? shopDomain : `https://${shopDomain}`);
+    }
+  }, [shopDomain]);
 
   // Fichiers joints temporaires (non stockés sur le serveur)
   const [attachedFile, setAttachedFile] = useState<File | null>(null);
@@ -347,18 +356,18 @@ export const WhatsAppMarketingPage: React.FC = () => {
 
   // Remplacement dynamique des variables pour un client donné
   const formatPersonalizedMessage = (template: string, client: DeliveredClient) => {
-    const storeUrl = shopDomain.startsWith('http') ? shopDomain : `https://${shopDomain}`;
+    const finalLink = messageLink.trim() || (shopDomain.startsWith('http') ? shopDomain : `https://${shopDomain}`);
     return template
       .replace(/{Prénom}/g, client.firstName)
       .replace(/{Nom}/g, client.name)
       .replace(/{Boutique}/g, shopName)
-      .replace(/{Lien}/g, storeUrl)
+      .replace(/{Lien}/g, finalLink)
       .replace(/{Ville}/g, client.city);
   };
 
   const previewPersonalizedText = useMemo(() => {
     return formatPersonalizedMessage(message, previewClient);
-  }, [message, previewClient, shopName, shopDomain]);
+  }, [message, previewClient, shopName, shopDomain, messageLink]);
 
   // Enregistrement d'une audience personnalisée
   const handleSaveAudience = async () => {
@@ -884,7 +893,7 @@ export const WhatsAppMarketingPage: React.FC = () => {
                   { tag: '{Prénom}', label: 'Prénom du client' },
                   { tag: '{Nom}', label: 'Nom complet' },
                   { tag: '{Boutique}', label: 'Nom de votre boutique' },
-                  { tag: '{Lien}', label: 'Lien de votre boutique' },
+                  { tag: '{Lien}', label: 'Lien inséré dans le message' },
                   { tag: '{Ville}', label: 'Commune / Ville' },
                 ].map((v) => (
                   <button
@@ -892,11 +901,42 @@ export const WhatsAppMarketingPage: React.FC = () => {
                     type="button"
                     onClick={() => insertVariable(v.tag)}
                     title={v.label}
-                    className="text-xs font-extrabold bg-[#EEE9FF] text-[#3F25A8] hover:bg-[#E2DCFF] px-2.5 py-1.5 rounded-lg transition-colors"
+                    className="text-xs font-extrabold bg-[#EEE9FF] text-[#3F25A8] hover:bg-[#E2DCFF] px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer"
                   >
                     + {v.tag}
                   </button>
                 ))}
+              </div>
+
+              {/* Champ d'édition personnalisée pour la variable {Lien} */}
+              <div className="bg-[#FAF8FF] border border-[#E2DCF8] rounded-2xl p-3.5 space-y-1.5 mt-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-extrabold text-[#241D5E] flex items-center gap-1.5">
+                    <ExternalLink className="w-3.5 h-3.5 text-[#6C4CF1]" />
+                    Lien personnalisé pour la variable {'{Lien}'} :
+                  </label>
+                  <span className="text-[11px] text-[#6C4CF1] font-bold">Modifiable à tout moment</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="url"
+                    value={messageLink}
+                    onChange={(e) => setMessageLink(e.target.value)}
+                    placeholder="https://maboutique.kolix.shop"
+                    className="flex-1 bg-white border border-[#E2DCF8] rounded-xl px-3.5 py-2 text-xs font-bold text-[#16131F] focus:outline-none focus:ring-2 focus:ring-[#6C4CF1]"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setMessageLink(shopDomain.startsWith('http') ? shopDomain : `https://${shopDomain}`)}
+                    className="px-3 py-2 bg-white border border-[#E2DCF8] hover:bg-gray-50 text-[11px] font-bold text-[#6C4CF1] rounded-xl whitespace-nowrap transition-colors shadow-xs"
+                    title="Réinitialiser avec le lien de votre boutique"
+                  >
+                    Lien boutique
+                  </button>
+                </div>
+                <p className="text-[11px] text-[#5E5A70]">
+                  Ce lien remplace automatiquement la balise <code className="text-[#6C4CF1] font-bold">{'{Lien}'}</code> dans votre message. Vous pouvez le personnaliser pour diriger vos clients vers un produit spécifique ou une page de vente.
+                </p>
               </div>
             </div>
           </div>

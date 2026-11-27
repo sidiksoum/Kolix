@@ -16,6 +16,7 @@ export interface RegisterStep1Dto {
   country?: string;
   source?: string;
   promo_code?: string;
+  partner_code?: string;
 }
 
 export interface VerifyOtpDto {

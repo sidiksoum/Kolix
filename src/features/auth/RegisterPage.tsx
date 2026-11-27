@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { 
   Store, 
   ShoppingBag, 
@@ -76,6 +76,17 @@ export const RegisterPage: React.FC = () => {
   const [country, setCountry] = useState('Côte d’Ivoire');
   const [source, setSource] = useState('');
   const [promoCode, setPromoCode] = useState('');
+  const [partnerCode, setPartnerCode] = useState('');
+  const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    const refParam = searchParams.get('ref') || searchParams.get('code') || searchParams.get('partner') || searchParams.get('parrain');
+    if (refParam) {
+      const cleanRef = refParam.toUpperCase().trim();
+      setPartnerCode(cleanRef);
+      setPromoCode(cleanRef);
+    }
+  }, [searchParams]);
   const [cgu, setCgu] = useState(false);
   const [otp, setOtp] = useState('');
 
@@ -141,7 +152,8 @@ export const RegisterPage: React.FC = () => {
         activity,
         country,
         source: source || 'Recherche Google',
-        promo_code: promoCode || undefined
+        promo_code: partnerCode.trim() || promoCode.trim() || undefined,
+        partner_code: partnerCode.trim() || undefined
       });
 
       setOtp('');
@@ -653,6 +665,26 @@ export const RegisterPage: React.FC = () => {
                           {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                         </button>
                       </div>
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-bold text-[#3A3647] flex items-center justify-between mb-1">
+                        <span>Code partenaire / Parrainage <span className="text-[#8B869C] font-normal">(facultatif)</span></span>
+                        {partnerCode && <span className="text-[11px] font-black text-[#6C4CF1]">Code appliqué ✓</span>}
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="text"
+                          value={partnerCode}
+                          onChange={(e) => setPartnerCode(e.target.value.toUpperCase().replace(/\s/g, ''))}
+                          placeholder="Ex: AMINA10 ou KX10"
+                          autoComplete="off"
+                          className="w-full text-xs font-semibold py-2.5 px-3.5 border border-[#E2DCF8] rounded-xl text-[#16131F] focus:outline-none focus:ring-2 focus:ring-[#6C4CF1]/30 bg-[#FAF9FE] uppercase tracking-wider"
+                        />
+                      </div>
+                      <p className="text-[11px] text-[#5E5A70] mt-1">
+                        Si un marchand ou formateur vous a recommandé Kolix, saisissez son code pour lui rattacher votre compte.
+                      </p>
                     </div>
 
                     <label className="flex items-start gap-2 cursor-pointer pt-1">
